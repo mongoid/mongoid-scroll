@@ -6,6 +6,9 @@ require 'mongoid'
 require 'mongoid/scroll/version'
 require 'mongoid/scroll/errors'
 require 'mongoid/scroll/cursor'
+
+require 'moped/scrollable'
 require 'mongoid/criterion/scrollable'
 
+Moped::Query.send(:include, Moped::Scrollable)
 Mongoid::Criteria.send(:include, Mongoid::Criterion::Scrollable)

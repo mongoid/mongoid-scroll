@@ -13,14 +13,19 @@ Traditional pagination does not work when data changes between paginated request
 
 The solution implemented by the `scroll` extension paginates data using a cursor, giving you the ability to restart pagination where you left it off. This is a non-trivial problem when combined with sorting over non-unique record fields, such as timestamps.
 
-Usage
------
+Installation
+------------
 
-Add `mongoid-scroll` to Gemfile.
+Add the gem to Gemfile and run `bundle install`.
 
 ```ruby
 gem 'mongoid-scroll'
 ```
+
+Usage
+-----
+
+### Mongoid
 
 A sample model.
 
@@ -61,6 +66,27 @@ Feed::Item.desc(:created_at).scroll(saved_cursor) do |record, next_cursor|
 end
 ```
 
+### Moped
+
+Scroll and save a cursor to the last item. Note that you need to supply a `field_type`.
+
+```ruby
+saved_cursor = nil
+session[:splines].find.sort(created_at: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
+  # each record, one-by-one
+  saved_cursor = next_cursor
+end
+```
+
+Resume iterating using the previously saved cursor.
+
+```ruby
+session[:splines].find.sort(created_at: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
+  # each record, one-by-one
+  saved_cursor = next_cursor
+end
+```
+
 Cursors
 -------
 
@@ -71,6 +97,13 @@ record = Feed::Item.desc(:created_at).limit(3).last
 cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields["created_at"] })
 # cursor or cursor.to_s can be returned to a client and passed into .scroll(cursor)
 ```
+
+You can also a `field_name` and `field_type` instead of a Mongoid field.
+
+```ruby
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: "created_at" })
+```
+
 
 Note that unlike MongoDB cursors, `Mongoid::Scroll::Cursor` values don't expire.
 

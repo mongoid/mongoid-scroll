@@ -19,8 +19,9 @@ module Mongoid
       class << self
         def from_record(record, options)
           cursor = Mongoid::Scroll::Cursor.new(nil, options)
-          cursor.value = Mongoid::Scroll::Cursor.parse_field_value(cursor.field_type, cursor.field_name, record.send(cursor.field_name))
-          cursor.tiebreak_id = record.id
+          value = record.respond_to?(cursor.field_name) ? record.send(cursor.field_name) : record[cursor.field_name]
+          cursor.value = Mongoid::Scroll::Cursor.parse_field_value(cursor.field_type, cursor.field_name, value)
+          cursor.tiebreak_id = record["_id"]
           cursor
         end
       end
@@ -47,9 +48,9 @@ module Mongoid
 
           def extract_field_options(options)
             if options && (field_name = options[:field_name]) && (field_type = options[:field_type])
-              [ field_type, field_name ]
+              [ field_type.to_s, field_name.to_s ]
             elsif options && (field = options[:field])
-              [ field.type, field.name ]
+              [ field.type.to_s, field.name.to_s ]
             else
               raise ArgumentError.new "Missing options[:field_name] and/or options[:field_type]."
             end
@@ -57,10 +58,11 @@ module Mongoid
 
           def parse_field_value(field_type, field_name, value)
             case field_type.to_s
+            when "Moped::BSON::ObjectId" then value
             when "String" then value.to_s
-            when "DateTime" then Time.at(value.to_i).to_datetime
-            when "Time" then Time.at(value.to_i)
-            when "Date" then Time.at(value.to_i).utc.to_date
+            when "DateTime" then value.is_a?(DateTime) ? value : Time.at(value.to_i).to_datetime
+            when "Time" then value.is_a?(Time) ? value : Time.at(value.to_i)
+            when "Date" then value.is_a?(Date) ? value : Time.at(value.to_i).utc.to_date
             when "Float" then value.to_f
             when "Integer" then value.to_i
             else
@@ -70,6 +72,7 @@ module Mongoid
 
           def transform_field_value(field_type, field_name, value)
             case field_type.to_s
+            when "Moped::BSON::ObjectId" then value
             when "String" then value.to_s
             when "Date" then value.to_time(:utc).to_i
             when "DateTime", "Time" then value.to_i
