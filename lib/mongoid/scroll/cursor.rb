@@ -23,7 +23,7 @@ module Mongoid
           unless options && (field = options[:field])
             raise ArgumentError.new "Missing options[:field]."
           end
-          Mongoid::Scroll::Cursor.new("#{field.mongoize(record.send(field.name))}:#{record.id}", options)
+          Mongoid::Scroll::Cursor.new("#{transform_field_value(field, record.send(field.name))}:#{record.id}", options)
         end
       end
 
@@ -34,6 +34,7 @@ module Mongoid
       private
 
         class << self
+
           def parse(value, options)
             return [ nil, nil ] unless value
             parts = value.split(":")
@@ -42,8 +43,20 @@ module Mongoid
             end
             id = parts[-1]
             value = parts[0...-1].join(":")
-            [ options[:field].mongoize(value), Moped::BSON::ObjectId(id) ]
+            [ transform_field_value(options[:field], value), Moped::BSON::ObjectId(id) ]
           end
+
+          def transform_field_value(field, value)
+            case field.type.to_s
+            when "String" then value.to_s
+            when "DateTime" then value.to_i
+            when "Float" then value.to_f
+            when "Integer" then value.to_i
+            else
+              raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field.name, type: field.type)
+            end
+          end
+
         end
 
     end

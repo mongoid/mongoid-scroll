@@ -15,4 +15,8 @@ en:
             message: "Invalid field."
             summary: "The field supplied in the cursor does not exist: %{field}."
             resolution: "Has the model changed or are you not sorting the criteria by the right field."
+          unsupported_field_type:
+            message: "Unsupported field type."
+            summary: "The type of the field '%{field}' is not supported: %{type}."
+            resolution: "Please open a feature request in https://github.com/dblock/mongoid-scroll."
 

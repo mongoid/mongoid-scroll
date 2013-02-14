@@ -46,16 +46,25 @@ describe Mongoid::Scroll::Cursor do
   context "a date/time field cursor" do
     let(:feed_item) { Feed::Item.create!(a_datetime: DateTime.new(2013, 12, 21, 1, 42, 3)) }
     subject do
-      Mongoid::Scroll::Cursor.new "#{feed_item.a_datetime}:#{feed_item.id}", field: Feed::Item.fields["a_datetime"]
+      Mongoid::Scroll::Cursor.new "#{feed_item.a_datetime.to_i}:#{feed_item.id}", field: Feed::Item.fields["a_datetime"]
     end
-    its(:value) { should eq feed_item.a_datetime }
+    its(:value) { should eq feed_item.a_datetime.to_i }
     its(:tiebreak_id) { should eq feed_item.id }
+    its(:to_s) { should eq "#{feed_item.a_datetime.to_i}:#{feed_item.id}" }
     its(:criteria) {
       should eq({ "$or" => [
-        { "a_datetime" => { "$gt" => feed_item.a_datetime }},
-        { "a_datetime" => feed_item.a_datetime, :_id => { "$gt" => feed_item.id }}
+        { "a_datetime" => { "$gt" => feed_item.a_datetime.to_i }},
+        { "a_datetime" => feed_item.a_datetime.to_i, :_id => { "$gt" => feed_item.id }}
       ]})
     }
+  end
+  context "an array field cursor" do
+    let(:feed_item) { Feed::Item.create!(a_array: [ "x", "y" ]) }
+    it "is not supported" do
+      expect {
+        Mongoid::Scroll::Cursor.from_record(feed_item, field: Feed::Item.fields["a_array"])
+      }.to raise_error Mongoid::Scroll::Errors::UnsupportedFieldTypeError, /The type of the field 'a_array' is not supported: Array./
+    end
   end
   context "an invalid field cursor" do
     it "raises ArgumentError" do

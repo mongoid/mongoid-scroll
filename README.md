@@ -72,7 +72,7 @@ cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields[
 # cursor or cursor.to_s can be returned to a client and passed into .scroll(cursor)
 ```
 
-Note that unlike MongoDB cursors, Mongoid::Scroll::Cursor instances don't expire.
+Note that unlike MongoDB cursors, `Mongoid::Scroll::Cursor` values don't expire.
 
 Contributing
 ------------
