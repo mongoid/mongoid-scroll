@@ -28,7 +28,7 @@ module Mongoid
       end
 
       def to_s
-        tiebreak_id ? [ value, tiebreak_id ].join(":") : nil
+        tiebreak_id ? [ Mongoid::Scroll::Cursor.transform_field_value(field, value), tiebreak_id ].join(":") : nil
       end
 
       private
@@ -43,13 +43,27 @@ module Mongoid
             end
             id = parts[-1]
             value = parts[0...-1].join(":")
-            [ transform_field_value(options[:field], value), Moped::BSON::ObjectId(id) ]
+            [ parse_field_value(options[:field], value), Moped::BSON::ObjectId(id) ]
+          end
+
+          def parse_field_value(field, value)
+            case field.type.to_s
+            when "String" then value.to_s
+            when "DateTime" then Time.at(value.to_i).to_datetime
+            when "Time" then Time.at(value.to_i)
+            when "Date" then Time.at(value.to_i).utc.to_date
+            when "Float" then value.to_f
+            when "Integer" then value.to_i
+            else
+              raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field.name, type: field.type)
+            end
           end
 
           def transform_field_value(field, value)
             case field.type.to_s
             when "String" then value.to_s
-            when "DateTime" then value.to_i
+            when "Date" then value.to_time(:utc).to_i
+            when "DateTime", "Time" then value.to_i
             when "Float" then value.to_f
             when "Integer" then value.to_i
             else

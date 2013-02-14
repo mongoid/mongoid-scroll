@@ -48,13 +48,43 @@ describe Mongoid::Scroll::Cursor do
     subject do
       Mongoid::Scroll::Cursor.new "#{feed_item.a_datetime.to_i}:#{feed_item.id}", field: Feed::Item.fields["a_datetime"]
     end
-    its(:value) { should eq feed_item.a_datetime.to_i }
+    its(:value) { should eq feed_item.a_datetime }
     its(:tiebreak_id) { should eq feed_item.id }
     its(:to_s) { should eq "#{feed_item.a_datetime.to_i}:#{feed_item.id}" }
     its(:criteria) {
       should eq({ "$or" => [
-        { "a_datetime" => { "$gt" => feed_item.a_datetime.to_i }},
-        { "a_datetime" => feed_item.a_datetime.to_i, :_id => { "$gt" => feed_item.id }}
+        { "a_datetime" => { "$gt" => feed_item.a_datetime }},
+        { "a_datetime" => feed_item.a_datetime, :_id => { "$gt" => feed_item.id }}
+      ]})
+    }
+  end
+  context "a date field cursor" do
+    let(:feed_item) { Feed::Item.create!(a_date: Date.new(2013, 12, 21)) }
+    subject do
+      Mongoid::Scroll::Cursor.new "#{feed_item.a_date.to_datetime.to_i}:#{feed_item.id}", field: Feed::Item.fields["a_date"]
+    end
+    its(:value) { should eq feed_item.a_date }
+    its(:tiebreak_id) { should eq feed_item.id }
+    its(:to_s) { should eq "#{feed_item.a_date.to_datetime.to_i}:#{feed_item.id}" }
+    its(:criteria) {
+      should eq({ "$or" => [
+        { "a_date" => { "$gt" => feed_item.a_date.to_datetime }},
+        { "a_date" => feed_item.a_date.to_datetime, :_id => { "$gt" => feed_item.id }}
+      ]})
+    }
+  end
+  context "a time field cursor" do
+    let(:feed_item) { Feed::Item.create!(a_time: Time.new(2013, 12, 21, 1, 2, 3)) }
+    subject do
+      Mongoid::Scroll::Cursor.new "#{feed_item.a_time.to_i}:#{feed_item.id}", field: Feed::Item.fields["a_time"]
+    end
+    its(:value) { should eq feed_item.a_time }
+    its(:tiebreak_id) { should eq feed_item.id }
+    its(:to_s) { should eq "#{feed_item.a_time.to_i}:#{feed_item.id}" }
+    its(:criteria) {
+      should eq({ "$or" => [
+        { "a_time" => { "$gt" => feed_item.a_time }},
+        { "a_time" => feed_item.a_time, :_id => { "$gt" => feed_item.id }}
       ]})
     }
   end
