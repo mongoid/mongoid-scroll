@@ -70,7 +70,7 @@ describe Mongoid::Criteria do
       end
       it "map" do
         record = Feed::Item.desc(:a_integer).limit(3).scroll.map { |record, cursor| record }.last
-        cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields["a_integer"] })
+        cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: Integer, field_name: "a_integer" })
         cursor.should_not be_nil
         cursor.to_s.split(":").should == [ record.a_integer.to_s, record.id.to_s ]
       end
