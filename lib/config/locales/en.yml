@@ -3,3 +3,16 @@ en:
     scroll:
       errors:
         messages:
+          multiple_sort_fields:
+            message: "Scrolling over a criteria with multiple fields is not supported."
+            summary: "You're attempting to scroll over data with a sort order that includes multiple fields: %{sort}."
+            resolution: "Simplify the sort order to a single field."
+          invalid_cursor:
+            message: "The cursor supplied is invalid."
+            summary: "The cursor supplied is invalid: %{cursor}."
+            resolution: "Cursors must be in the form 'value:tiebreak_id'."
+          no_such_field:
+            message: "Invalid field."
+            summary: "The field supplied in the cursor does not exist: %{field}."
+            resolution: "Has the model changed or are you not sorting the criteria by the right field."
+
