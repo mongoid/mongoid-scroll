@@ -1,7 +1,12 @@
 Mongoid::Scroll [![Build Status](https://travis-ci.org/dblock/mongoid-scroll.png?branch=master)](https://travis-ci.org/dblock/mongoid-scroll)
 ===============
 
-Mongoid extension that enable infinite scrolling.
+Mongoid extension that enables infinite scrolling.
+
+Demo
+----
+
+Check out [artsy.net](http://artsy.net) homepage. Scroll down.
 
 The Problem
 -----------
