@@ -16,11 +16,12 @@ module Mongoid
         scroll_direction = c.options[:sort].values.first.to_i == 1 ? '$gt' : '$lt'
         # scroll cursor from the parameter, with value and tiebreak_id
         field = c.klass.fields[scroll_field.to_s]
-        cursor = Mongoid::Scroll::Cursor.new(cursor, { field: field, direction: scroll_direction })
+        cursor_options = { field: field, direction: scroll_direction }
+        cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
         # scroll
         if block_given?
           c.where(cursor.criteria).each do |record|
-            yield record, Mongoid::Scroll::Cursor.from_record(field, record)
+            yield record, Mongoid::Scroll::Cursor.from_record(record, cursor_options)
           end
         else
           c

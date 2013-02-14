@@ -1,7 +1,7 @@
 Mongoid::Scroll [![Build Status](https://travis-ci.org/dblock/mongoid-scroll.png?branch=master)](https://travis-ci.org/dblock/mongoid-scroll)
 ===============
 
-Mongoid extension that enable infinite scroll.
+Mongoid extension that enable infinite scrolling.
 
 The Problem
 -----------
@@ -14,13 +14,15 @@ Traditional pagination does not work when data changes between paginated request
 The solution implemented by the `scroll` extension paginates data using a cursor, giving you the ability to restart pagination where you left it off. This is a non-trivial problem when combined with sorting over non-unique record fields, such as timestamps.
 
 Usage
-=====
+-----
 
 Add `mongoid-scroll` to Gemfile.
 
 ```ruby
 gem 'mongoid-scroll'
 ```
+
+A sample model.
 
 ```ruby
 module Feed
@@ -58,6 +60,19 @@ Feed::Item.desc(:created_at).scroll(saved_cursor) do |record, next_cursor|
   # each record, one-by-one
 end
 ```
+
+Cursors
+-------
+
+You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. This can be useful when you just want to return a collection of results and the cursor pointing to after the last item.
+
+```ruby
+record = Feed::Item.desc(:created_at).limit(3).last
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields["created_at"] })
+# cursor or cursor.to_s can be returned to a client and passed into .scroll(cursor)
+```
+
+Note that unlike MongoDB cursors, Mongoid::Scroll::Cursor instances don't expire.
 
 Contributing
 ------------

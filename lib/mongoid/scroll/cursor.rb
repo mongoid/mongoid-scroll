@@ -19,9 +19,16 @@ module Mongoid
       end
 
       class << self
-        def from_record(field, record)
-          "#{field.mongoize(record.send(field.name))}:#{record.id}"
+        def from_record(record, options)
+          unless options && (field = options[:field])
+            raise ArgumentError.new "Missing options[:field]."
+          end
+          Mongoid::Scroll::Cursor.new("#{field.mongoize(record.send(field.name))}:#{record.id}", options)
         end
+      end
+
+      def to_s
+        tiebreak_id ? [ value, tiebreak_id ].join(":") : nil
       end
 
       private
