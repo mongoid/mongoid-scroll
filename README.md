@@ -1,7 +1,7 @@
 Mongoid::Scroll [![Build Status](https://travis-ci.org/dblock/mongoid-scroll.png?branch=master)](https://travis-ci.org/dblock/mongoid-scroll)
 ===============
 
-Mongoid extension that enables infinite scrolling.
+Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `Moped::Query`.
 
 Demo
 ----
