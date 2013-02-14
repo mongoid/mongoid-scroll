@@ -77,7 +77,7 @@ Scroll and save a cursor to the last item. Note that you need to supply a `field
 
 ```ruby
 saved_cursor = nil
-session[:splines].find.sort(created_at: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
+session[:feed_items].find.sort(created_at: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
   # each record, one-by-one
   saved_cursor = next_cursor
 end
@@ -86,7 +86,7 @@ end
 Resume iterating using the previously saved cursor.
 
 ```ruby
-session[:splines].find.sort(created_at: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
+session[:feed_items].find.sort(created_at: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
   # each record, one-by-one
   saved_cursor = next_cursor
 end
