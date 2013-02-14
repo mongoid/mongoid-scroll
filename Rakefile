@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'bundler'
+require 'bundler/gem_tasks'
 
 require File.expand_path('../lib/mongoid/scroll/version', __FILE__)
 
