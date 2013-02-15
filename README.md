@@ -8,22 +8,22 @@ Demo
 
 Check out [artsy.net](http://artsy.net) homepage. Scroll down.
 
-There's also a code sample in [examples](examples). Run `bundle exec ruby examples/scroll_feed.rb`.
+There're also two code samples for Mongoid and Moped in [examples](examples). Run `bundle exec ruby examples/mongoid_scroll_feed.rb`.
 
 The Problem
 -----------
 
 Traditional pagination does not work when data changes between paginated requests, which makes it unsuitable for infinite scroll behaviors.
 
-* If a record is inserted before the current page limit, the collection will shift to the right, and the returned result will include a duplicate from a previous page.
-* If a record is removed before the current page limit, the collection will shift to the left, and the returned result will be missing a record.
+* If a record is inserted before the current page limit, items will shift right, and the next page will include a duplicate.
+* If a record is removed before the current page limit, items will shift left, and the next page will be missing a record.
 
 The solution implemented by the `scroll` extension paginates data using a cursor, giving you the ability to restart pagination where you left it off. This is a non-trivial problem when combined with sorting over non-unique record fields, such as timestamps.
 
 Installation
 ------------
 
-Add the gem to Gemfile and run `bundle install`.
+Add the gem to your Gemfile and run `bundle install`.
 
 ```ruby
 gem 'mongoid-scroll'
@@ -47,7 +47,7 @@ module Feed
 end
 ```
 
-Scroll and save a cursor to the last item.
+Scroll by `:position` and save a cursor to the last item.
 
 ```ruby
 saved_cursor = nil
@@ -76,7 +76,7 @@ end
 
 ### Moped
 
-Scroll and save a cursor to the last item. Note that you need to supply a `field_type`.
+Scroll and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
 
 ```ruby
 saved_cursor = nil
@@ -105,15 +105,13 @@ A query without a cursor is identical to a query without a scroll.
 Feed::Item.desc(:position).limit(5).scroll
 ```
 
-Subsequent queries use an `$or`.
+Subsequent queries use an `$or` to avoid skipping items with the same value as the one at the current cursor position.
 
 ``` ruby
-#
 # db.feed_items.find({ "$or" : [
 #   { "position" : { "$gt" : 13 }},
 #   { "position" : 13, "_id": { "$gt" : ObjectId("511d7c7c3b5552c92400000e") }}
 # ]}).sort({ position: 1 })
-#
 Feed:Item.desc(:position).limit(5).scroll(cursor)
 ```
 
@@ -130,12 +128,10 @@ module Feed
 end
 ```
 
-Don't forget to invoke `Feed::Item.create_indexes`.
-
 Cursors
 -------
 
-You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. This can be useful when you just want to return a collection of results and the cursor pointing to after the last item.
+You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. A cursor points at the last record of the previous iteration and unlike MongoDB cursors will not expire.
 
 ```ruby
 record = Feed::Item.desc(:position).limit(3).last
@@ -148,9 +144,6 @@ You can also a `field_name` and `field_type` instead of a Mongoid field.
 ```ruby
 cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: "position" })
 ```
-
-
-Note that unlike MongoDB cursors, `Mongoid::Scroll::Cursor` values don't expire.
 
 Contributing
 ------------

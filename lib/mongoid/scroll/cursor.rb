@@ -11,8 +11,9 @@ module Mongoid
       end
 
       def criteria
-        cursor_criteria = { field_name => { direction => value } } if value
-        tiebreak_criteria = { field_name => value, :_id => { '$gt' => tiebreak_id } } if value && tiebreak_id
+        mongo_value = value.class.mongoize(value) if value
+        cursor_criteria = { field_name => { direction => mongo_value } } if mongo_value
+        tiebreak_criteria = { field_name => mongo_value, :_id => { '$gt' => tiebreak_id } } if mongo_value && tiebreak_id
         (cursor_criteria || tiebreak_criteria) ? { '$or' => [ cursor_criteria, tiebreak_criteria].compact } : {}
       end
 
@@ -74,7 +75,7 @@ module Mongoid
             case field_type.to_s
             when "Moped::BSON::ObjectId" then value
             when "String" then value.to_s
-            when "Date" then value.to_time(:utc).to_i
+            when "Date" then Time.utc_time(value.year, value.month, value.day).to_i
             when "DateTime", "Time" then value.to_i
             when "Float" then value.to_f
             when "Integer" then value.to_i

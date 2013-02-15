@@ -1,5 +1,5 @@
-Next Release
-============
+0.2.0 (3/14/2013)
+=================
 
 * Extended `Moped::Query` with `scroll` - [@dblock](https://github.com/dblock).
 * `Mongoid::Scroll::Cursor.from_record` can now be called with either a Mongoid field or `field_type` and `field_name` in the `options` hash - [@dblock](https://github.com/dblock).
