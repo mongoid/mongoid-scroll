@@ -101,8 +101,8 @@ Indexes and Performance
 A query without a cursor is identical to a query without a scroll.
 
 ``` ruby
-# db.feed_items.find().sort({ position: 1 }).limit(5)
-Feed::Item.desc(:position).limit(5).scroll
+# db.feed_items.find().sort({ position: 1 }).limit(7)
+Feed::Item.desc(:position).limit(7).scroll
 ```
 
 Subsequent queries use an `$or` to avoid skipping items with the same value as the one at the current cursor position.
@@ -111,8 +111,8 @@ Subsequent queries use an `$or` to avoid skipping items with the same value as t
 # db.feed_items.find({ "$or" : [
 #   { "position" : { "$gt" : 13 }},
 #   { "position" : 13, "_id": { "$gt" : ObjectId("511d7c7c3b5552c92400000e") }}
-# ]}).sort({ position: 1 })
-Feed:Item.desc(:position).limit(5).scroll(cursor)
+# ]}).sort({ position: 1 }).limit(7)
+Feed:Item.desc(:position).limit(7).scroll(cursor)
 ```
 
 This means you need to hit an index on `position` and `_id`.
