@@ -8,6 +8,8 @@ Demo
 
 Check out [artsy.net](http://artsy.net) homepage. Scroll down.
 
+There's also a code sample in [examples](examples). Run `bundle exec ruby examples/scroll_feed.rb`.
+
 The Problem
 -----------
 
@@ -38,8 +40,9 @@ A sample model.
 module Feed
   class Item
     include Mongoid::Document
-    field :content, type: String
-    field :created_at, type: DateTime
+    field :title, type: String
+    field :position, type: Integer
+    index({ position: 1, _id: 1 })
   end
 end
 ```
@@ -48,7 +51,7 @@ Scroll and save a cursor to the last item.
 
 ```ruby
 saved_cursor = nil
-Feed::Item.desc(:created_at).limit(5).scroll do |record, next_cursor|
+Feed::Item.desc(:position).limit(5).scroll do |record, next_cursor|
   # each record, one-by-one
   saved_cursor = next_cursor
 end
@@ -57,7 +60,7 @@ end
 Resume iterating using the previously saved cursor.
 
 ```ruby
-Feed::Item.desc(:created_at).limit(5).scroll(saved_cursor) do |record, next_cursor|
+Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record, next_cursor|
   # each record, one-by-one
   saved_cursor = next_cursor
 end
@@ -66,7 +69,7 @@ end
 The iteration finishes when no more records are available. You can also finish iterating over the remaining records by omitting the query limit.
 
 ```ruby
-Feed::Item.desc(:created_at).scroll(saved_cursor) do |record, next_cursor|
+Feed::Item.desc(:position).scroll(saved_cursor) do |record, next_cursor|
   # each record, one-by-one
 end
 ```
@@ -77,7 +80,7 @@ Scroll and save a cursor to the last item. Note that you need to supply a `field
 
 ```ruby
 saved_cursor = nil
-session[:feed_items].find.sort(created_at: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
+session[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
   # each record, one-by-one
   saved_cursor = next_cursor
 end
@@ -86,11 +89,48 @@ end
 Resume iterating using the previously saved cursor.
 
 ```ruby
-session[:feed_items].find.sort(created_at: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
+session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
   # each record, one-by-one
   saved_cursor = next_cursor
 end
 ```
+
+Indexes and Performance
+-----------------------
+
+A query without a cursor is identical to a query without a scroll.
+
+``` ruby
+# db.feed_items.find().sort({ position: 1 }).limit(5)
+Feed::Item.desc(:position).limit(5).scroll
+```
+
+Subsequent queries use an `$or`.
+
+``` ruby
+#
+# db.feed_items.find({ "$or" : [
+#   { "position" : { "$gt" : 13 }},
+#   { "position" : 13, "_id": { "$gt" : ObjectId("511d7c7c3b5552c92400000e") }}
+# ]}).sort({ position: 1 })
+#
+Feed:Item.desc(:position).limit(5).scroll(cursor)
+```
+
+This means you need to hit an index on `position` and `_id`.
+
+``` ruby
+# db.feed_items.ensureIndex({ position: 1, _id: 1 })
+
+module Feed
+  class Item
+    ...
+    index({ position: 1, _id: 1 })
+  end
+end
+```
+
+Don't forget to invoke `Feed::Item.create_indexes`.
 
 Cursors
 -------
@@ -98,15 +138,15 @@ Cursors
 You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. This can be useful when you just want to return a collection of results and the cursor pointing to after the last item.
 
 ```ruby
-record = Feed::Item.desc(:created_at).limit(3).last
-cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields["created_at"] })
+record = Feed::Item.desc(:position).limit(3).last
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields["position"] })
 # cursor or cursor.to_s can be returned to a client and passed into .scroll(cursor)
 ```
 
 You can also a `field_name` and `field_type` instead of a Mongoid field.
 
 ```ruby
-cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: "created_at" })
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: "position" })
 ```
 
 
