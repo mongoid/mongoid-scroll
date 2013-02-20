@@ -97,19 +97,21 @@ describe Mongoid::Criteria do
     before :each do
       3.times { Feed::Item.create! a_integer: 5 }
     end
-    it "scrolls" do
-      records = []
-      cursor = nil
-      Feed::Item.desc(:a_integer).limit(2).scroll do |record, next_cursor|
-        records << record
-        cursor = next_cursor
+    [ { a_integer: 1 }, { a_integer: -1 }].each do |sort_order|
+      it "scrolls by #{sort_order}" do
+        records = []
+        cursor = nil
+        Feed::Item.order_by(sort_order).limit(2).scroll do |record, next_cursor|
+          records << record
+          cursor = next_cursor
+        end
+        records.size.should == 2
+        Feed::Item.order_by(sort_order).scroll(cursor) do |record, next_cursor|
+          records << record
+        end
+        records.size.should == 3
+        records.sort_by { |r| r.a_integer }.should eq Feed::Item.all.sort(a_integer: 1).to_a
       end
-      records.size.should == 2
-      Feed::Item.desc(:a_integer).scroll(cursor) do |record, next_cursor|
-        records << record
-      end
-      records.size.should == 3
-      records.should eq Feed::Item.all.to_a
     end
   end
 end
