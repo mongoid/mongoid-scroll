@@ -6,14 +6,15 @@ module Mongoid
 
       def initialize(value = nil, options = {})
         @field_type, @field_name = Mongoid::Scroll::Cursor.extract_field_options(options)
-        @direction = options[:direction] || '$gt'
+        @direction = options[:direction] || 1
         parse(value)
       end
 
       def criteria
         mongo_value = value.class.mongoize(value) if value
-        cursor_criteria = { field_name => { direction => mongo_value } } if mongo_value
-        tiebreak_criteria = { field_name => mongo_value, :_id => { '$gt' => tiebreak_id } } if mongo_value && tiebreak_id
+        compare_direction = direction == 1 ? "$gt" : "$lt"
+        cursor_criteria = { field_name => { compare_direction => mongo_value } } if mongo_value
+        tiebreak_criteria = { field_name => mongo_value, :_id => { compare_direction => tiebreak_id } } if mongo_value && tiebreak_id
         (cursor_criteria || tiebreak_criteria) ? { '$or' => [ cursor_criteria, tiebreak_criteria].compact } : {}
       end
 

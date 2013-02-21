@@ -96,6 +96,13 @@ describe Mongoid::Criteria do
   context "with overlapping data" do
     before :each do
       3.times { Feed::Item.create! a_integer: 5 }
+      Feed::Item.first.update_attributes!(name: Array(1000).join('a'))
+    end
+    it "natural order is different from order by id" do
+      # natural order isn't necessarily going to be the same as _id order
+      # if a document is updated and grows in size, it may need to be relocated and
+      # thus cause the natural order to change
+      Feed::Item.order_by("$natural" => 1).to_a.should_not eq Feed::Item.order_by(_id: 1).to_a
     end
     [ { a_integer: 1 }, { a_integer: -1 }].each do |sort_order|
       it "scrolls by #{sort_order}" do
@@ -110,7 +117,7 @@ describe Mongoid::Criteria do
           records << record
         end
         records.size.should == 3
-        records.sort_by { |r| r.a_integer }.should eq Feed::Item.all.sort(a_integer: 1).to_a
+        records.should eq Feed::Item.all.sort(_id: sort_order[:a_integer]).to_a
       end
     end
   end

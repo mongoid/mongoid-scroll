@@ -1,3 +1,8 @@
+0.2.1 (3/21/2013)
+=================
+
+* Fix: scroll over a collection that has duplicate values while data is being modified in a way that causes a change in the natural sort order - [@dblock](https://github.com/dblock).
+
 0.2.0 (3/14/2013)
 =================
 
