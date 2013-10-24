@@ -1,7 +1,12 @@
 module Moped
   module Scrollable
 
-    def scroll(cursor = nil, options = { field_type: Moped::BSON::ObjectId }, &block)
+    def scroll(cursor = nil, options = nil, &block)
+      options = if Mongoid::Scroll.mongoid3?
+        { field_type: Moped::BSON::ObjectId }
+      else
+        { field_type: BSON::ObjectId }
+      end unless options
       query = Query.new(collection, operation.selector.dup)
       query.operation.skip = operation.skip
       query.operation.limit = operation.limit

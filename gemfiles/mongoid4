@@ -1,0 +1,12 @@
+source "http://rubygems.org"
+
+gem "mongoid", github: "mongoid/mongoid"
+
+gemspec path: '../'
+
+group :development, :test do
+  gem "rake"
+  gem "bundler"
+  gem "rspec"
+  gem "faker"
+end

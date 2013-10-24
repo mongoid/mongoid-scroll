@@ -43,7 +43,11 @@ module Mongoid
           id = parts[-1]
           value = parts[0...-1].join(":")
           @value = Mongoid::Scroll::Cursor.parse_field_value(field_type, field_name, value)
-          @tiebreak_id = Moped::BSON::ObjectId(id)
+          if Mongoid::Scroll.mongoid3?
+            @tiebreak_id = Moped::BSON::ObjectId(id)
+          else
+            @tiebreak_id = BSON::ObjectId.from_string(id)
+          end
         end
 
         class << self
@@ -60,7 +64,7 @@ module Mongoid
 
           def parse_field_value(field_type, field_name, value)
             case field_type.to_s
-            when "Moped::BSON::ObjectId" then value
+            when "BSON::ObjectId", "Moped::BSON::ObjectId" then value
             when "String" then value.to_s
             when "DateTime" then value.is_a?(DateTime) ? value : Time.at(value.to_i).to_datetime
             when "Time" then value.is_a?(Time) ? value : Time.at(value.to_i)
@@ -74,9 +78,9 @@ module Mongoid
 
           def transform_field_value(field_type, field_name, value)
             case field_type.to_s
-            when "Moped::BSON::ObjectId" then value
+            when "BSON::ObjectId", "Moped::BSON::ObjectId" then value
             when "String" then value.to_s
-            when "Date" then Time.utc_time(value.year, value.month, value.day).to_i
+            when "Date" then Time.utc(value.year, value.month, value.day).to_i
             when "DateTime", "Time" then value.to_i
             when "Float" then value.to_f
             when "Integer" then value.to_i

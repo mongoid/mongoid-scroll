@@ -2,6 +2,7 @@ module Feed
   class Item
     include Mongoid::Document
 
+    field :name, type: String
     field :a_integer, type: Integer
     field :a_string, type: String
     field :a_datetime, type: DateTime

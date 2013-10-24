@@ -3,3 +3,7 @@ services:
 
 rvm:
   - 1.9.3
+
+gemfile:
+  - gemfiles/mongoid3
+  - gemfiles/mongoid4
