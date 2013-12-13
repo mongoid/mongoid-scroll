@@ -6,7 +6,7 @@ Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `M
 Demo
 ----
 
-Check out [artsy.net](http://artsy.net) homepage. Scroll down.
+Check out [shows on artsy.net](http://artsy.net/shows). Keep scrolling down.
 
 There're also two code samples for Mongoid and Moped in [examples](examples). Run `bundle exec ruby examples/mongoid_scroll_feed.rb`.
 
