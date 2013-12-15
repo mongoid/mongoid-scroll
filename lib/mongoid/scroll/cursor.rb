@@ -1,7 +1,6 @@
 module Mongoid
   module Scroll
     class Cursor
-
       attr_accessor :value, :tiebreak_id, :field_type, :field_name, :direction
 
       def initialize(value = nil, options = {})
@@ -15,7 +14,7 @@ module Mongoid
         compare_direction = direction == 1 ? "$gt" : "$lt"
         cursor_criteria = { field_name => { compare_direction => mongo_value } } if mongo_value
         tiebreak_criteria = { field_name => mongo_value, :_id => { compare_direction => tiebreak_id } } if mongo_value && tiebreak_id
-        (cursor_criteria || tiebreak_criteria) ? { '$or' => [ cursor_criteria, tiebreak_criteria].compact } : {}
+        cursor_criteria || tiebreak_criteria ? { '$or' => [cursor_criteria, tiebreak_criteria].compact } : {}
       end
 
       class << self
@@ -29,7 +28,7 @@ module Mongoid
       end
 
       def to_s
-        tiebreak_id ? [ Mongoid::Scroll::Cursor.transform_field_value(field_type, field_name, value), tiebreak_id ].join(":") : nil
+        tiebreak_id ? [Mongoid::Scroll::Cursor.transform_field_value(field_type, field_name, value), tiebreak_id].join(":") : nil
       end
 
       private
@@ -38,7 +37,7 @@ module Mongoid
           return unless value
           parts = value.split(":")
           unless parts.length >= 2
-            raise Mongoid::Scroll::Errors::InvalidCursorError.new({ cursor: value })
+            raise Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value)
           end
           id = parts[-1]
           value = parts[0...-1].join(":")
@@ -51,12 +50,11 @@ module Mongoid
         end
 
         class << self
-
           def extract_field_options(options)
             if options && (field_name = options[:field_name]) && (field_type = options[:field_type])
-              [ field_type.to_s, field_name.to_s ]
+              [field_type.to_s, field_name.to_s]
             elsif options && (field = options[:field])
-              [ field.type.to_s, field.name.to_s ]
+              [field.type.to_s, field.name.to_s]
             else
               raise ArgumentError.new "Missing options[:field_name] and/or options[:field_type]."
             end
@@ -88,9 +86,7 @@ module Mongoid
               raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
             end
           end
-
         end
-
     end
   end
 end

@@ -7,4 +7,5 @@ group :development, :test do
   gem "bundler"
   gem "rspec"
   gem "faker"
+  gem "rubocop", "0.15.0"
 end

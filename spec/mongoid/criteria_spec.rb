@@ -15,7 +15,7 @@ describe Mongoid::Criteria do
     end
     it "raises Mongoid::Scroll::Errors::MultipleSortFieldsError" do
       expect { subject.scroll }.to raise_error Mongoid::Scroll::Errors::MultipleSortFieldsError,
-        /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
+                                               /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
     end
   end
   context "with no sort" do
@@ -82,8 +82,8 @@ describe Mongoid::Criteria do
           records.should eq Feed::Item.desc(field_name).limit(3).to_a
         end
         it "map" do
-          record = Feed::Item.desc(field_name).limit(3).scroll.map { |record, cursor| record }.last
-          cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: field_type, field_name: field_name })
+          record = Feed::Item.desc(field_name).limit(3).scroll.map { |r, _| r }.last
+          cursor = Mongoid::Scroll::Cursor.from_record(record,  field_type: field_type, field_name: field_name)
           cursor.should_not be_nil
           cursor.to_s.split(":").should == [
             Mongoid::Scroll::Cursor.transform_field_value(field_type, field_name, record.send(field_name)).to_s,
@@ -104,7 +104,7 @@ describe Mongoid::Criteria do
       # thus cause the natural order to change
       Feed::Item.order_by("$natural" => 1).to_a.should_not eq Feed::Item.order_by(_id: 1).to_a
     end
-    [ { a_integer: 1 }, { a_integer: -1 }].each do |sort_order|
+    [{ a_integer: 1 }, { a_integer: -1 }].each do |sort_order|
       it "scrolls by #{sort_order}" do
         records = []
         cursor = nil

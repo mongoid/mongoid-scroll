@@ -1,19 +1,18 @@
 module Moped
   module Scrollable
-
     def scroll(cursor = nil, options = nil, &block)
       options = if Mongoid::Scroll.mongoid3?
-        { field_type: Moped::BSON::ObjectId }
-      else
-        { field_type: BSON::ObjectId }
-      end unless options
+                  { field_type: Moped::BSON::ObjectId }
+                else
+                  { field_type: BSON::ObjectId }
+                end unless options
       query = Query.new(collection, operation.selector.dup)
       query.operation.skip = operation.skip
       query.operation.limit = operation.limit
       # we don't support scrolling over a criteria with multiple fields
       if query.operation.selector["$orderby"] && query.operation.selector["$orderby"].keys.size != 1
         raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: query.operation.selector["$orderby"])
-      elsif ! query.operation.selector.has_key?("$orderby") || query.operation.selector["$orderby"].empty?
+      elsif !query.operation.selector.has_key?("$orderby") || query.operation.selector["$orderby"].empty?
         # introduce a default sort order if there's none
         query.sort(_id: 1)
       end
@@ -34,6 +33,5 @@ module Moped
         query
       end
     end
-
   end
 end

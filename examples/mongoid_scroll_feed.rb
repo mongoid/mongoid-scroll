@@ -12,7 +12,7 @@ module Feed
     include Mongoid::Document
     field :title, type: String
     field :position, type: Integer
-    index({ position: 1, _id: 1 })
+    index(position: 1, _id: 1)
   end
 end
 
@@ -34,7 +34,7 @@ Feed::Item.create_indexes
 
 total_shown = 0
 next_cursor = nil
-while true
+loop do
   current_cursor = next_cursor
   next_cursor = nil
   Feed::Item.asc(:position).limit(scroll_by).scroll(current_cursor) do |item, cursor|

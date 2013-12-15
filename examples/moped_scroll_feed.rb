@@ -25,10 +25,10 @@ Moped.logger.level = Logger::DEBUG
 
 total_shown = 0
 next_cursor = nil
-while true
+loop do
   current_cursor = next_cursor
   next_cursor = nil
-  Mongoid.default_session['feed_items'].find.limit(scroll_by).sort(position: 1).scroll(current_cursor, { field_type: Integer, field_name: 'position' }) do |item, cursor|
+  Mongoid.default_session['feed_items'].find.limit(scroll_by).sort(position: 1).scroll(current_cursor,  field_type: Integer, field_name: 'position') do |item, cursor|
     puts "#{item['position']}: #{item['title']}"
     next_cursor = cursor
     total_shown += 1

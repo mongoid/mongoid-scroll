@@ -2,7 +2,6 @@ module Mongoid
   module Scroll
     module Errors
       class Base < StandardError
-
         # Problem occurred.
         attr_reader :problem
 
@@ -21,8 +20,8 @@ module Mongoid
           @summary = create_summary(key, attributes)
           @resolution = create_resolution(key, attributes)
 
-          "\nProblem:\n  #{@problem}"+
-          "\nSummary:\n  #{@summary}"+
+          "\nProblem:\n  #{@problem}" +
+          "\nSummary:\n  #{@summary}" +
           "\nResolution:\n  #{@resolution}"
         end
 
@@ -39,7 +38,7 @@ module Mongoid
           #
           # Returns a localized error message string.
           def translate(key, options)
-            ::I18n.translate("#{BASE_KEY}.#{key}", { :locale => :en }.merge(options)).strip
+            ::I18n.translate("#{BASE_KEY}.#{key}", { locale: :en }.merge(options)).strip
           end
 
           # Create the problem.
@@ -74,7 +73,6 @@ module Mongoid
           def create_resolution(key, attributes)
             translate("#{key}.resolution", attributes)
           end
-
       end
     end
   end

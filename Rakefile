@@ -20,5 +20,9 @@ RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = FileList['spec/**/*_spec.rb']
 end
 
-task :default => :spec
+task :spec
+require 'rubocop/rake_task'
+Rubocop::RakeTask.new(:rubocop)
+
+task default: [:rubocop, :spec]
 

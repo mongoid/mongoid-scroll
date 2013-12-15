@@ -15,7 +15,7 @@ describe Moped::Query do
     end
     it "raises Mongoid::Scroll::Errors::MultipleSortFieldsError" do
       expect { subject.scroll }.to raise_error Mongoid::Scroll::Errors::MultipleSortFieldsError,
-        /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
+                                               /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
     end
   end
   context "with no sort" do
@@ -52,7 +52,7 @@ describe Moped::Query do
       context field_type do
         it "scrolls all with a block" do
           records = []
-          Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(nil, { field_type: field_type }) do |record, next_cursor|
+          Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(nil,  field_type: field_type) do |record, next_cursor|
             records << record
           end
           records.size.should == 10
@@ -61,12 +61,12 @@ describe Moped::Query do
         it "scrolls all with a break" do
           records = []
           cursor = nil
-          Mongoid.default_session['feed_items'].find.sort(field_name => 1).limit(5).scroll(nil, { field_type: field_type }) do |record, next_cursor|
+          Mongoid.default_session['feed_items'].find.sort(field_name => 1).limit(5).scroll(nil,  field_type: field_type) do |record, next_cursor|
             records << record
             cursor = next_cursor
           end
           records.size.should == 5
-          Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(cursor, { field_type: field_type }) do |record, next_cursor|
+          Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(cursor,  field_type: field_type) do |record, next_cursor|
             records << record
             cursor = next_cursor
           end
@@ -75,17 +75,17 @@ describe Moped::Query do
         end
         it "scrolls in descending order" do
           records = []
-          Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).scroll(nil, { field_type: field_type, field_name: field_name }) do |record, next_cursor|
+          Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).scroll(nil,  field_type: field_type, field_name: field_name) do |record, next_cursor|
             records << record
           end
           records.size.should == 3
           records.should eq Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).to_a
         end
         it "map" do
-          record = Mongoid.default_session['feed_items'].find.limit(3).scroll(nil, { field_type: field_type, field_name: field_name }).map {
-            |record, cursor| record
+          record = Mongoid.default_session['feed_items'].find.limit(3).scroll(nil,  field_type: field_type, field_name: field_name).map {
+            |r, _| r
           }.last
-          cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: field_type, field_name: field_name })
+          cursor = Mongoid::Scroll::Cursor.from_record(record,  field_type: field_type, field_name: field_name)
           cursor.should_not be_nil
           cursor.to_s.split(":").should == [
             Mongoid::Scroll::Cursor.transform_field_value(field_type, field_name, record[field_name.to_s]).to_s,
@@ -106,7 +106,7 @@ describe Moped::Query do
       # thus cause the natural order to change
       Feed::Item.order_by("$natural" => 1).to_a.should_not eq Feed::Item.order_by(_id: 1).to_a
     end
-    [ { a_integer: 1 }, { a_integer: -1 }].each do |sort_order|
+    [{ a_integer: 1 }, { a_integer: -1 }].each do |sort_order|
       it "scrolls by #{sort_order}" do
         records = []
         cursor = nil

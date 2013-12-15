@@ -2,6 +2,7 @@ Next Release
 ------------
 
 * Compatibility with Mongoid 4.x - [@dblock](https://github.com/dblock).
+* Implemeneted Rubocop, Ruby linter - [@dblock](https://github.com/dblock).
 
 0.2.1 (3/21/2013)
 -----------------
