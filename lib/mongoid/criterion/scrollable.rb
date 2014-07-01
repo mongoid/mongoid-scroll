@@ -1,12 +1,12 @@
 module Mongoid
   module Criterion
     module Scrollable
-      def scroll(cursor = nil, &block)
+      def scroll(cursor = nil, &_block)
         criteria = self
         # we don't support scrolling over a criteria with multiple fields
         if criteria.options[:sort] && criteria.options[:sort].keys.size != 1
           raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options[:sort])
-        elsif !criteria.options.has_key?(:sort) || criteria.options[:sort].empty?
+        elsif !criteria.options.key?(:sort) || criteria.options[:sort].empty?
           # introduce a default sort order if there's none
           criteria = criteria.asc(:_id)
         end

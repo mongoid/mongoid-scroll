@@ -4,7 +4,7 @@ Bundler.setup(:default, :development)
 require 'mongoid-scroll'
 require 'faker'
 
-Mongoid.connect_to "mongoid_scroll_demo"
+Mongoid.connect_to 'mongoid_scroll_demo'
 Mongoid.purge!
 
 # total items to insert
@@ -14,7 +14,7 @@ scroll_by = 7
 
 # insert items with a position out-of-order
 rands = (0..total_items).to_a.sort { rand }[0..total_items]
-total_items.times do |i|
+total_items.times do
   Mongoid.default_session['feed_items'].insert(title: Faker::Lorem.sentence, position: rands.pop)
 end
 
@@ -36,7 +36,7 @@ loop do
   break unless next_cursor
   # destroy an item just for the heck of it, scroll is not affected
   item = Mongoid.default_session['feed_items'].find.sort(position: 1).first
-  Mongoid.default_session['feed_items'].find(_id: item["_id"]).remove
+  Mongoid.default_session['feed_items'].find(_id: item['_id']).remove
 end
 
 # this will be 20

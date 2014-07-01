@@ -1,32 +1,32 @@
 require 'spec_helper'
 
 describe Mongoid::Criteria do
-  context "scrollable" do
+  context 'scrollable' do
     subject do
       Feed::Item
     end
-    it ":scroll" do
+    it ':scroll' do
       subject.should.respond_to? :scroll
     end
   end
-  context "with multiple sort fields" do
+  context 'with multiple sort fields' do
     subject do
       Feed::Item.desc(:name).asc(:value)
     end
-    it "raises Mongoid::Scroll::Errors::MultipleSortFieldsError" do
+    it 'raises Mongoid::Scroll::Errors::MultipleSortFieldsError' do
       expect { subject.scroll }.to raise_error Mongoid::Scroll::Errors::MultipleSortFieldsError,
                                                /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
     end
   end
-  context "with no sort" do
+  context 'with no sort' do
     subject do
       Feed::Item.all
     end
-    it "adds a default sort by _id" do
-      subject.scroll.options[:sort].should == { "_id" => 1 }
+    it 'adds a default sort by _id' do
+      subject.scroll.options[:sort].should == { '_id' => 1 }
     end
   end
-  context "with data" do
+  context 'with data' do
     before :each do
       10.times do |i|
         Feed::Item.create!(
@@ -38,10 +38,10 @@ describe Mongoid::Criteria do
         )
       end
     end
-    context "default" do
-      it "scrolls all" do
+    context 'default' do
+      it 'scrolls all' do
         records = []
-        Feed::Item.all.scroll do |record, next_cursor|
+        Feed::Item.all.scroll do |record, _next_cursor|
           records << record
         end
         records.size.should == 10
@@ -50,15 +50,15 @@ describe Mongoid::Criteria do
     end
     { a_string: String, a_integer: Integer, a_date: Date, a_datetime: DateTime }.each_pair do |field_name, field_type|
       context field_type do
-        it "scrolls all with a block" do
+        it 'scrolls all with a block' do
           records = []
-          Feed::Item.asc(field_name).scroll do |record, next_cursor|
+          Feed::Item.asc(field_name).scroll do |record, _next_cursor|
             records << record
           end
           records.size.should == 10
           records.should eq Feed::Item.all.to_a
         end
-        it "scrolls all with a break" do
+        it 'scrolls all with a break' do
           records = []
           cursor = nil
           Feed::Item.asc(field_name).limit(5).scroll do |record, next_cursor|
@@ -73,19 +73,19 @@ describe Mongoid::Criteria do
           records.size.should == 10
           records.should eq Feed::Item.all.to_a
         end
-        it "scrolls in descending order" do
+        it 'scrolls in descending order' do
           records = []
-          Feed::Item.desc(field_name).limit(3).scroll do |record, next_cursor|
+          Feed::Item.desc(field_name).limit(3).scroll do |record, _next_cursor|
             records << record
           end
           records.size.should == 3
           records.should eq Feed::Item.desc(field_name).limit(3).to_a
         end
-        it "map" do
+        it 'map' do
           record = Feed::Item.desc(field_name).limit(3).scroll.map { |r, _| r }.last
           cursor = Mongoid::Scroll::Cursor.from_record(record,  field_type: field_type, field_name: field_name)
           cursor.should_not be_nil
-          cursor.to_s.split(":").should == [
+          cursor.to_s.split(':').should == [
             Mongoid::Scroll::Cursor.transform_field_value(field_type, field_name, record.send(field_name)).to_s,
             record.id.to_s
           ]
@@ -93,16 +93,16 @@ describe Mongoid::Criteria do
       end
     end
   end
-  context "with overlapping data" do
+  context 'with overlapping data' do
     before :each do
       3.times { Feed::Item.create! a_integer: 5 }
       Feed::Item.first.update_attributes!(name: Array(1000).join('a'))
     end
-    it "natural order is different from order by id" do
+    it 'natural order is different from order by id' do
       # natural order isn't necessarily going to be the same as _id order
       # if a document is updated and grows in size, it may need to be relocated and
       # thus cause the natural order to change
-      Feed::Item.order_by("$natural" => 1).to_a.should_not eq Feed::Item.order_by(_id: 1).to_a
+      Feed::Item.order_by('$natural' => 1).to_a.should_not eq Feed::Item.order_by(_id: 1).to_a
     end
     [{ a_integer: 1 }, { a_integer: -1 }].each do |sort_order|
       it "scrolls by #{sort_order}" do
@@ -113,7 +113,7 @@ describe Mongoid::Criteria do
           cursor = next_cursor
         end
         records.size.should == 2
-        Feed::Item.order_by(sort_order).scroll(cursor) do |record, next_cursor|
+        Feed::Item.order_by(sort_order).scroll(cursor) do |record, _next_cursor|
           records << record
         end
         records.size.should == 3

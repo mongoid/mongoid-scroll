@@ -4,7 +4,7 @@ Bundler.setup(:default, :development)
 require 'mongoid-scroll'
 require 'faker'
 
-Mongoid.connect_to "mongoid_scroll_demo"
+Mongoid.connect_to 'mongoid_scroll_demo'
 Mongoid.purge!
 
 module Feed
@@ -23,7 +23,7 @@ scroll_by = 7
 
 # insert items with a position out-of-order
 rands = (0..total_items).to_a.sort { rand }[0..total_items]
-total_items.times do |i|
+total_items.times do |_i|
   Feed::Item.create! title: Faker::Lorem.sentence, position: rands.pop
 end
 

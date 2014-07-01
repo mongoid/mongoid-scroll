@@ -3,7 +3,7 @@ module Mongoid
     module Errors
       class InvalidCursorError < Mongoid::Scroll::Errors::Base
         def initialize(opts = {})
-          super(compose_message("invalid_cursor", opts))
+          super(compose_message('invalid_cursor', opts))
         end
       end
     end
