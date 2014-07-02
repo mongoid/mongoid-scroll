@@ -6,7 +6,7 @@ describe Moped::Query do
       Mongoid.default_session['feed_items'].find
     end
     it ':scroll' do
-      subject.should.respond_to? :scroll
+      expect(subject).to respond_to(:scroll)
     end
   end
   context 'with multiple sort fields' do
@@ -23,7 +23,7 @@ describe Moped::Query do
       Mongoid.default_session['feed_items'].find
     end
     it 'adds a default sort by _id' do
-      subject.scroll.operation.selector['$orderby'].should == { _id: 1 }
+      expect(subject.scroll.operation.selector['$orderby']).to eq(_id: 1)
     end
   end
   context 'with data' do
@@ -44,8 +44,8 @@ describe Moped::Query do
         Mongoid.default_session['feed_items'].find.scroll do |record, _next_cursor|
           records << record
         end
-        records.size.should == 10
-        records.should eq Mongoid.default_session['feed_items'].find.to_a
+        expect(records.size).to eq 10
+        expect(records).to eq Mongoid.default_session['feed_items'].find.to_a
       end
     end
     { a_string: String, a_integer: Integer, a_date: Date, a_datetime: DateTime }.each_pair do |field_name, field_type|
@@ -55,8 +55,8 @@ describe Moped::Query do
           Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(nil,  field_type: field_type) do |record, _next_cursor|
             records << record
           end
-          records.size.should == 10
-          records.should eq Mongoid.default_session['feed_items'].find.to_a
+          expect(records.size).to eq 10
+          expect(records).to eq Mongoid.default_session['feed_items'].find.to_a
         end
         it 'scrolls all with a break' do
           records = []
@@ -65,29 +65,29 @@ describe Moped::Query do
             records << record
             cursor = next_cursor
           end
-          records.size.should == 5
+          expect(records.size).to eq 5
           Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(cursor,  field_type: field_type) do |record, next_cursor|
             records << record
             cursor = next_cursor
           end
-          records.size.should == 10
-          records.should eq Mongoid.default_session['feed_items'].find.to_a
+          expect(records.size).to eq 10
+          expect(records).to eq Mongoid.default_session['feed_items'].find.to_a
         end
         it 'scrolls in descending order' do
           records = []
           Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).scroll(nil,  field_type: field_type, field_name: field_name) do |record, _next_cursor|
             records << record
           end
-          records.size.should == 3
-          records.should eq Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).to_a
+          expect(records.size).to eq 3
+          expect(records).to eq Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).to_a
         end
         it 'map' do
           record = Mongoid.default_session['feed_items'].find.limit(3).scroll(nil,  field_type: field_type, field_name: field_name).map {
             |r, _| r
           }.last
           cursor = Mongoid::Scroll::Cursor.from_record(record,  field_type: field_type, field_name: field_name)
-          cursor.should_not be_nil
-          cursor.to_s.split(':').should == [
+          expect(cursor).to_not be nil
+          expect(cursor.to_s.split(':')).to eq [
             Mongoid::Scroll::Cursor.transform_field_value(field_type, field_name, record[field_name.to_s]).to_s,
             record['_id'].to_s
           ]
@@ -104,7 +104,7 @@ describe Moped::Query do
       # natural order isn't necessarily going to be the same as _id order
       # if a document is updated and grows in size, it may need to be relocated and
       # thus cause the natural order to change
-      Feed::Item.order_by('$natural' => 1).to_a.should_not eq Feed::Item.order_by(_id: 1).to_a
+      expect(Feed::Item.order_by('$natural' => 1).to_a).to_not eq Feed::Item.order_by(_id: 1).to_a
     end
     [{ a_integer: 1 }, { a_integer: -1 }].each do |sort_order|
       it "scrolls by #{sort_order}" do
@@ -114,12 +114,12 @@ describe Moped::Query do
           records << record
           cursor = next_cursor
         end
-        records.size.should == 2
+        expect(records.size).to eq 2
         Mongoid.default_session['feed_items'].find.sort(sort_order).scroll(cursor) do |record, _next_cursor|
           records << record
         end
-        records.size.should == 3
-        records.should eq Mongoid.default_session['feed_items'].find.sort(_id: sort_order[:a_integer]).to_a
+        expect(records.size).to eq 3
+        expect(records).to eq Mongoid.default_session['feed_items'].find.sort(_id: sort_order[:a_integer]).to_a
       end
     end
   end

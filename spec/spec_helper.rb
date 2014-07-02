@@ -3,6 +3,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'rubygems'
 require 'rspec'
+require 'rspec/its'
 require 'mongoid-scroll'
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each do |f|
