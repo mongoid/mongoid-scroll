@@ -65,7 +65,7 @@ module Mongoid
           when 'BSON::ObjectId', 'Moped::BSON::ObjectId' then value
           when 'String' then value.to_s
           when 'DateTime' then value.is_a?(DateTime) ? value : Time.at(value.to_i).to_datetime
-          when 'Time' then value.is_a?(Time) ? value : Time.at(value.to_i)
+          when 'Time' then value.is_a?(Time) ? value : Time.at(value.to_f)
           when 'Date' then value.is_a?(Date) ? value : Time.at(value.to_i).utc.to_date
           when 'Float' then value.to_f
           when 'Integer' then value.to_i
@@ -79,13 +79,20 @@ module Mongoid
           when 'BSON::ObjectId', 'Moped::BSON::ObjectId' then value
           when 'String' then value.to_s
           when 'Date' then Time.utc(value.year, value.month, value.day).to_i
-          when 'DateTime', 'Time' then value.to_i
+          when 'DateTime', 'Time' then add_msec_to_time(value)
           when 'Float' then value.to_f
           when 'Integer' then value.to_i
           else
             raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
           end
         end
+
+        def add_msec_to_time(value)
+          milliseconds = value.usec/1000
+          time_w_millsecs_string = value.to_i.to_s+"."+milliseconds.to_s
+          time_w_millsecs_string.to_f
+        end
+        
       end
     end
   end
