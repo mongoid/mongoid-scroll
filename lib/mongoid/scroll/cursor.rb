@@ -79,7 +79,7 @@ module Mongoid
           when 'BSON::ObjectId', 'Moped::BSON::ObjectId' then value
           when 'String' then value.to_s
           when 'Date' then Time.utc(value.year, value.month, value.day).to_i
-          when 'DateTime', 'Time' then value.to_i
+          when 'DateTime', 'Time' then value.utc.to_i
           when 'Float' then value.to_f
           when 'Integer' then value.to_i
           else

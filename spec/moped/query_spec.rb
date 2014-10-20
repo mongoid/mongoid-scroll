@@ -32,7 +32,7 @@ describe Moped::Query do
         Mongoid.default_session['feed_items'].insert(
           a_string: i.to_s,
           a_integer: i,
-          a_datetime: DateTime.mongoize(DateTime.new(2013, i + 1, 21, 1, 42, 3)),
+          a_datetime: DateTime.mongoize(DateTime.new(2013, i + 1, 21, 1, 42, 3, 'UTC')),
           a_date: Date.mongoize(Date.new(2013, i + 1, 21)),
           a_time: Time.mongoize(Time.at(Time.now.to_i + i))
         )
@@ -52,7 +52,7 @@ describe Moped::Query do
       context field_type do
         it 'scrolls all with a block' do
           records = []
-          Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(nil,  field_type: field_type) do |record, _next_cursor|
+          Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(nil, field_type: field_type) do |record, _next_cursor|
             records << record
           end
           expect(records.size).to eq 10
@@ -61,12 +61,12 @@ describe Moped::Query do
         it 'scrolls all with a break' do
           records = []
           cursor = nil
-          Mongoid.default_session['feed_items'].find.sort(field_name => 1).limit(5).scroll(nil,  field_type: field_type) do |record, next_cursor|
+          Mongoid.default_session['feed_items'].find.sort(field_name => 1).limit(5).scroll(nil, field_type: field_type) do |record, next_cursor|
             records << record
             cursor = next_cursor
           end
           expect(records.size).to eq 5
-          Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(cursor,  field_type: field_type) do |record, next_cursor|
+          Mongoid.default_session['feed_items'].find.sort(field_name => 1).scroll(cursor, field_type: field_type) do |record, next_cursor|
             records << record
             cursor = next_cursor
           end
@@ -75,17 +75,15 @@ describe Moped::Query do
         end
         it 'scrolls in descending order' do
           records = []
-          Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).scroll(nil,  field_type: field_type, field_name: field_name) do |record, _next_cursor|
+          Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).scroll(nil, field_type: field_type, field_name: field_name) do |record, _next_cursor|
             records << record
           end
           expect(records.size).to eq 3
           expect(records).to eq Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).to_a
         end
         it 'map' do
-          record = Mongoid.default_session['feed_items'].find.limit(3).scroll(nil,  field_type: field_type, field_name: field_name).map do
-            |r, _| r
-          end.last
-          cursor = Mongoid::Scroll::Cursor.from_record(record,  field_type: field_type, field_name: field_name)
+          record = Mongoid.default_session['feed_items'].find.limit(3).scroll(nil, field_type: field_type, field_name: field_name).map { |r| r }.last
+          cursor = Mongoid::Scroll::Cursor.from_record(record, field_type: field_type, field_name: field_name)
           expect(cursor).to_not be nil
           expect(cursor.to_s.split(':')).to eq [
             Mongoid::Scroll::Cursor.transform_field_value(field_type, field_name, record[field_name.to_s]).to_s,

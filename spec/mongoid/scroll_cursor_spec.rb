@@ -44,13 +44,13 @@ describe Mongoid::Scroll::Cursor do
     end
   end
   context 'a date/time field cursor' do
-    let(:feed_item) { Feed::Item.create!(a_datetime: DateTime.new(2013, 12, 21, 1, 42, 3)) }
+    let(:feed_item) { Feed::Item.create!(a_datetime: DateTime.new(2013, 12, 21, 1, 42, 3, 'UTC')) }
     subject do
-      Mongoid::Scroll::Cursor.new "#{feed_item.a_datetime.to_i}:#{feed_item.id}", field_name: 'a_datetime', field_type: DateTime
+      Mongoid::Scroll::Cursor.new "#{feed_item.a_datetime.utc.to_i}:#{feed_item.id}", field_name: 'a_datetime', field_type: DateTime
     end
     its(:value) { should eq feed_item.a_datetime }
     its(:tiebreak_id) { should eq feed_item.id }
-    its(:to_s) { should eq "#{feed_item.a_datetime.to_i}:#{feed_item.id}" }
+    its(:to_s) { should eq "#{feed_item.a_datetime.utc.to_i}:#{feed_item.id}" }
     its(:criteria) do
       should eq('$or' => [
         { 'a_datetime' => { '$gt' => feed_item.a_datetime } },

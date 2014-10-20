@@ -27,7 +27,7 @@ describe Mongoid::Criteria do
         Feed::Item.create!(
           a_string: i.to_s,
           a_integer: i,
-          a_datetime: DateTime.new(2013, i + 1, 21, 1, 42, 3),
+          a_datetime: DateTime.new(2013, i + 1, 21, 1, 42, 3, 'UTC'),
           a_date: Date.new(2013, i + 1, 21),
           a_time: Time.at(Time.now.to_i + i)
         )
@@ -77,8 +77,9 @@ describe Mongoid::Criteria do
           expect(records).to eq Feed::Item.desc(field_name).limit(3).to_a
         end
         it 'map' do
-          record = Feed::Item.desc(field_name).limit(3).scroll.map { |r, _| r }.last
-          cursor = Mongoid::Scroll::Cursor.from_record(record,  field_type: field_type, field_name: field_name)
+          record = Feed::Item.desc(field_name).limit(3).scroll.map { |r| r }.last
+          expect(record).to_not be nil
+          cursor = Mongoid::Scroll::Cursor.from_record(record, field_type: field_type, field_name: field_name)
           expect(cursor).to_not be nil
           expect(cursor.to_s.split(':')).to eq [
             Mongoid::Scroll::Cursor.transform_field_value(field_type, field_name, record.send(field_name)).to_s,
