@@ -1,4 +1,4 @@
-source "http://rubygems.org"
+source 'http://rubygems.org'
 
 gemspec
 
@@ -12,10 +12,10 @@ else
 end
 
 group :development, :test do
-  gem "rake"
-  gem "bundler"
-  gem "rspec", "~> 3.0"
-  gem "rspec-its"
-  gem "faker"
-  gem "rubocop", "0.24.0"
+  gem 'rake'
+  gem 'bundler'
+  gem 'rspec', '~> 3.0'
+  gem 'rspec-its'
+  gem 'faker'
+  gem 'rubocop', '0.26.1'
 end

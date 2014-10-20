@@ -82,9 +82,9 @@ describe Moped::Query do
           expect(records).to eq Mongoid.default_session['feed_items'].find.sort(field_name => -1).limit(3).to_a
         end
         it 'map' do
-          record = Mongoid.default_session['feed_items'].find.limit(3).scroll(nil,  field_type: field_type, field_name: field_name).map {
+          record = Mongoid.default_session['feed_items'].find.limit(3).scroll(nil,  field_type: field_type, field_name: field_name).map do
             |r, _| r
-          }.last
+          end.last
           cursor = Mongoid::Scroll::Cursor.from_record(record,  field_type: field_type, field_name: field_name)
           expect(cursor).to_not be nil
           expect(cursor.to_s.split(':')).to eq [

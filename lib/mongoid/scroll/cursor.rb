@@ -37,7 +37,7 @@ module Mongoid
         return unless value
         parts = value.split(':')
         unless parts.length >= 2
-          raise Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value)
+          fail Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value)
         end
         id = parts[-1]
         value = parts[0...-1].join(':')
@@ -56,7 +56,7 @@ module Mongoid
           elsif options && (field = options[:field])
             [field.type.to_s, field.name.to_s]
           else
-            raise ArgumentError.new 'Missing options[:field_name] and/or options[:field_type].'
+            fail ArgumentError.new 'Missing options[:field_name] and/or options[:field_type].'
           end
         end
 
@@ -70,7 +70,7 @@ module Mongoid
           when 'Float' then value.to_f
           when 'Integer' then value.to_i
           else
-            raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
+            fail Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
           end
         end
 
@@ -83,7 +83,7 @@ module Mongoid
           when 'Float' then value.to_f
           when 'Integer' then value.to_i
           else
-            raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
+            fail Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
           end
         end
       end
