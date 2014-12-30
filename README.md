@@ -1,5 +1,11 @@
-Mongoid::Scroll [![Build Status](https://travis-ci.org/dblock/mongoid-scroll.png?branch=master)](https://travis-ci.org/dblock/mongoid-scroll)
+Mongoid::Scroll
 ===============
+
+[![Gem Version](http://img.shields.io/gem/v/mongoid-scroll.svg)](http://badge.fury.io/rb/mongoid-scroll)
+[![Build Status](http://img.shields.io/travis/dblock/mongoid-scroll.svg)](https://travis-ci.org/dblock/mongoid-scroll)
+[![Dependency Status](https://gemnasium.com/dblock/mongoid-scroll.svg)](https://gemnasium.com/dblock/mongoid-scroll)
+[![Code Climate](https://codeclimate.com/github/dblock/mongoid-scroll.svg)](https://codeclimate.com/github/dblock/mongoid-scroll)
+
 
 Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `Moped::Query`.
 
