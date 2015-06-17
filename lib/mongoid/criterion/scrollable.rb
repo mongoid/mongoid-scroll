@@ -20,7 +20,7 @@ module Mongoid
         # scroll
         if block_given?
           #FIXME: I've taken out 'order_by(_id: scroll_direction)' after where... in order to avoid more fields on index (not necessary).
-          criteria.where(cursor.criteria).each do |record|
+          criteria.where(cursor.criteria).order_by(_id: scroll_direction).each do |record|
             yield record, Mongoid::Scroll::Cursor.from_record(record, cursor_options)
           end
         else
