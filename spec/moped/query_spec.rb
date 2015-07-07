@@ -121,4 +121,4 @@ describe Moped::Query do
       end
     end
   end
-end
+end if Object.const_defined?(:Moped)

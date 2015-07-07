@@ -1,6 +1,7 @@
 0.3.1 (Next)
 ------------
 
+* Compatibility with Mongoid 5.x beta - [@dblock](https://github.com/dblock).
 * Your contribution here.
 
 

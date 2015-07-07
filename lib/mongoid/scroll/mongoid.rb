@@ -1,7 +1,7 @@
 module Mongoid
   module Scroll
     def self.mongoid3?
-      ::Mongoid.const_defined? :Observer
+      Mongoid::VERSION =~ /^3\./
     end
   end
 end

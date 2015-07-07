@@ -11,6 +11,7 @@ rvm:
 env:
   - MONGOID_VERSION=3
   - MONGOID_VERSION=4
+  - MONGOID_VERSION=5.0.0.beta
 
 language: ruby
 

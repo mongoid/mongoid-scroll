@@ -9,6 +9,11 @@ Mongoid::Scroll
 
 Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `Moped::Query`.
 
+Compatibility
+-------------
+
+This gem supports Mongoid 3, 4 and 5 beta.
+
 Demo
 ----
 

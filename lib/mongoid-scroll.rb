@@ -8,8 +8,8 @@ require 'mongoid/scroll/mongoid'
 require 'mongoid/scroll/errors'
 require 'mongoid/scroll/cursor'
 
-require 'moped/scrollable'
+require 'moped/scrollable' if Object.const_defined?(:Moped)
 require 'mongoid/criterion/scrollable'
 
-Moped::Query.send(:include, Moped::Scrollable)
+Moped::Query.send(:include, Moped::Scrollable) if Object.const_defined?(:Moped)
 Mongoid::Criteria.send(:include, Mongoid::Criterion::Scrollable)
