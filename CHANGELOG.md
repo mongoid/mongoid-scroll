@@ -2,6 +2,7 @@
 ------------
 
 * Compatibility with Mongoid 5.x beta - [@dblock](https://github.com/dblock).
+* [#4](https://github.com/dblock/mongoid-scroll/pull/4): Fix: support chaining `$or` criteria - [@sweir27](https://github.com/sweir27).
 * Your contribution here.
 
 
