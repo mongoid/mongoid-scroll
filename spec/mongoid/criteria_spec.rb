@@ -89,6 +89,48 @@ describe Mongoid::Criteria do
       end
     end
   end
+  context 'with logic in initial criteria' do
+    before :each do
+      3.times do |i|
+        Feed::Item.create!(
+          name: "Feed Item #{i}",
+          a_string: i.to_s,
+          a_integer: i,
+          a_datetime: DateTime.new(2015, i + 1, 21, 1, 42, 3, 'UTC'),
+          a_date: Date.new(2016, i + 1, 21),
+          a_time: Time.new(2015, i + 1, 22, 1, 2, 3)
+        )
+      end
+      Feed::Item.create!(
+        name: 'Feed Item 3',
+        a_string: '3',
+        a_integer: 3,
+        a_datetime: DateTime.new(2015, 3, 2, 1, 2, 3),
+        a_date: Date.new(2012, 2, 3),
+        a_time: Time.new(2014, 2, 2, 1, 2, 3)
+      )
+    end
+    it 'respects original criteria with OR logic' do
+      criteria = Feed::Item.where(
+        '$or' => [{ :a_time.gt => Time.new(2015, 7, 22, 1, 2, 3) }, { :a_time.lte => Time.new(2015, 7, 22, 1, 2, 3), :a_date.gte => Date.new(2015, 7, 30) }]
+      ).asc(:a_time)
+      records = []
+      cursor = nil
+      criteria.limit(2).scroll do |record, next_cursor|
+        records << record
+        cursor = next_cursor
+      end
+      expect(records.size).to eq 2
+      expect(records.map(&:name)).to eq ['Feed Item 0', 'Feed Item 1']
+      records = []
+      criteria.limit(2).scroll(cursor) do |record, next_cursor|
+        records << record
+        cursor = next_cursor
+      end
+      expect(records.size).to eq 1
+      expect(records.map(&:name)).to eq ['Feed Item 2']
+    end
+  end
   context 'with overlapping data' do
     before :each do
       3.times { Feed::Item.create! a_integer: 5 }

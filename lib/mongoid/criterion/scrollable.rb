@@ -19,7 +19,9 @@ module Mongoid
         cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
         # scroll
         if block_given?
-          criteria.where(cursor.criteria).order_by(_id: scroll_direction).each do |record|
+          combo_criteria = criteria.klass.and(criteria.selector, cursor.criteria)
+          combo_criteria.options = criteria.options
+          combo_criteria.order_by(_id: scroll_direction).each do |record|
             yield record, Mongoid::Scroll::Cursor.from_record(record, cursor_options)
           end
         else

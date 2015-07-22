@@ -2,6 +2,7 @@
 ------------
 
 * Compatibility with Mongoid 5.x beta - [@dblock](https://github.com/dblock).
+* Adds support for chaining $or criteria - [@sweir27](https://github.com/sweir27).
 * Your contribution here.
 
 
