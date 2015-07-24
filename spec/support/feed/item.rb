@@ -9,5 +9,7 @@ module Feed
     field :a_date, type: Date
     field :a_time, type: Time
     field :a_array, type: Array
+
+    embeds_many :embedded_items
   end
 end

@@ -131,6 +131,21 @@ describe Mongoid::Criteria do
       expect(records.map(&:name)).to eq ['Feed Item 2']
     end
   end
+  context 'with embeddable objects' do
+    before do
+      @item = Feed::Item.create! a_integer: 1, name: 'item'
+      @embedded_item = Feed::EmbeddedItem.create! name: 'embedded', item: @item
+    end
+    it 'respects embedded queries' do
+      records = []
+      criteria = @item.embedded_items.limit(2)
+      criteria.scroll do |record, _next_cursor|
+        records << record
+      end
+      expect(records.size).to eq 1
+      expect(records.map(&:name)).to eq ['embedded']
+    end
+  end
   context 'with overlapping data' do
     before :each do
       3.times { Feed::Item.create! a_integer: 5 }
