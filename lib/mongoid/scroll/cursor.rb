@@ -14,7 +14,9 @@ module Mongoid
         compare_direction = direction == 1 ? '$gt' : '$lt'
         cursor_criteria = { field_name => { compare_direction => mongo_value } } if mongo_value
         tiebreak_criteria = { field_name => mongo_value, :_id => { compare_direction => tiebreak_id } } if mongo_value && tiebreak_id
-        cursor_criteria || tiebreak_criteria ? { '$or' => [cursor_criteria, tiebreak_criteria].compact } : {}
+        cursor_selector = Origin::Selector.new
+        cursor_selector.merge!('$or' => [cursor_criteria, tiebreak_criteria].compact) if cursor_criteria || tiebreak_criteria
+        cursor_selector.__evolve_object_id__
       end
 
       class << self
