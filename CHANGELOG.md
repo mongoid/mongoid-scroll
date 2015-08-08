@@ -1,5 +1,10 @@
+0.3.2 (8/8/2015)
+----------------
+
+* [#7](https://github.com/dblock/mongoid-scroll/pull/7): Fix: pre-merge cursor criteria fields - [@sweir27](https://github.com/sweir27).
+
 0.3.1 (7/27/2015)
-------------
+-----------------
 
 * Compatibility with Mongoid 5.x beta - [@dblock](https://github.com/dblock).
 * [#4](https://github.com/dblock/mongoid-scroll/pull/4): Fix: support chaining `$or` criteria - [@sweir27](https://github.com/sweir27).

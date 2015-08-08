@@ -17,5 +17,5 @@ group :development, :test do
   gem 'rspec', '~> 3.0'
   gem 'rspec-its'
   gem 'faker'
-  gem 'rubocop', '0.32.1'
+  gem 'rubocop', '0.33.0'
 end
