@@ -17,14 +17,14 @@ describe Mongoid::Scroll::Cursor do
   end
   context 'an id field cursor' do
     let(:feed_item) { Feed::Item.create!(a_string: 'astring') }
-    field_type = Mongoid::Scroll.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
+    field_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
     subject do
       Mongoid::Scroll::Cursor.new "#{feed_item.id}:#{feed_item.id}", field_name: '_id', field_type: field_type, direction: 1
     end
     its(:value) { should eq feed_item.id.to_s }
     its(:tiebreak_id) { should eq feed_item.id }
     its(:criteria) do
-      if Mongoid::Scroll.mongoid3?
+      if Mongoid::Compatibility::Version.mongoid3?
         should eq('$or' => [
           { '_id' => { '$gt' => Moped::BSON::ObjectId("#{feed_item.id}") } }
         ])

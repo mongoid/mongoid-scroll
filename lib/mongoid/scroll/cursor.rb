@@ -44,7 +44,7 @@ module Mongoid
         id = parts[-1]
         value = parts[0...-1].join(':')
         @value = Mongoid::Scroll::Cursor.parse_field_value(field_type, field_name, value)
-        if Mongoid::Scroll.mongoid3?
+        if Mongoid::Compatibility::Version.mongoid3?
           @tiebreak_id = Moped::BSON::ObjectId(id)
         else
           @tiebreak_id = BSON::ObjectId.from_string(id)

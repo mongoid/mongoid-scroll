@@ -134,7 +134,7 @@ describe Mongoid::Criteria do
       criteria = Feed::Item.where(:a_time.gt => Time.new(2013, 7, 22, 1, 2, 3))
       feed_item_1 = Feed::Item.where(name: 'Feed Item 1').first
       cursor_input = "#{feed_item_1.id}:#{feed_item_1.id}"
-      field_type = Mongoid::Scroll.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
+      field_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
       cursor_options = { field_type: field_type, field_name: '_id', direction: 1 }
       cursor = Mongoid::Scroll::Cursor.new(cursor_input, cursor_options)
       records = []

@@ -1,7 +1,7 @@
 module Moped
   module Scrollable
     def scroll(cursor = nil, options = nil, &_block)
-      options = if Mongoid::Scroll.mongoid3?
+      options = if Mongoid::Compatibility::Version.mongoid3?
                   { field_type: Moped::BSON::ObjectId }
                 else
                   { field_type: BSON::ObjectId }
