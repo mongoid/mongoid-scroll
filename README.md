@@ -12,7 +12,7 @@ Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `M
 Compatibility
 -------------
 
-This gem supports Mongoid 3, 4 and 5.
+This gem supports Mongoid 3, 4 and 5, Moped and Mongo-Ruby-Driver.
 
 Demo
 ----
@@ -85,13 +85,34 @@ Feed::Item.desc(:position).scroll(saved_cursor) do |record, next_cursor|
 end
 ```
 
-### Moped
+### Moped (Mongoid 3 and 4)
 
-Scroll and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
+Scroll a `Moped::Query` and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
 
 ```ruby
 saved_cursor = nil
 session[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
+  # each record, one-by-one
+  saved_cursor = next_cursor
+end
+```
+
+Resume iterating using the previously saved cursor.
+
+```ruby
+session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
+  # each record, one-by-one
+  saved_cursor = next_cursor
+end
+```
+
+### Mongo-Ruby-Driver (Mongoid 5)
+
+Scroll a `Mongo::Collection::View` and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
+
+```ruby
+saved_cursor = nil
+client[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
   # each record, one-by-one
   saved_cursor = next_cursor
 end
@@ -166,4 +187,4 @@ Copyright and License
 
 MIT License, see [LICENSE](http://github.com/dblock/mongoid-scroll/raw/master/LICENSE.md) for details.
 
-(c) 2013 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)
+(c) 2013-2015 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)

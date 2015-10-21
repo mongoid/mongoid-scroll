@@ -1,12 +1,13 @@
 0.3.4 (Next)
 ------------
 
+* Added support for [mongo-ruby-driver](https://github.com/mongodb/mongo-ruby-driver), `Mongo::Collection::View`- [@dblock](https://github.com/dblock).
 * Your contribution here.
 
 0.3.3 (2015/09/17)
 ------------------
 
-* Officially compatible with Mongoid 5 - [@dblock](https://github.com/dblock).
+* Compatibility with Mongoid 5 - [@dblock](https://github.com/dblock).
 
 0.3.2 (2015/8/8)
 ----------------

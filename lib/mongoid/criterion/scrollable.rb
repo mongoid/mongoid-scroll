@@ -31,3 +31,5 @@ module Mongoid
     end
   end
 end
+
+Mongoid::Criteria.send(:include, Mongoid::Criterion::Scrollable)

@@ -4,10 +4,13 @@ Bundler.setup(:default, :development)
 require 'mongoid-scroll'
 require 'faker'
 
+fail 'No Mongo Ruby Driver' unless Object.const_defined?(:Mongo)
+
+Mongo::Logger.logger = Logger.new($stdout)
+Mongo::Logger.logger.level = Logger::INFO
+
 Mongoid.connect_to 'mongoid_scroll_demo'
 Mongoid.purge!
-
-fail 'No Moped' unless Object.const_defined?(:Moped)
 
 # total items to insert
 total_items = 20
@@ -17,28 +20,25 @@ scroll_by = 7
 # insert items with a position out-of-order
 rands = (0..total_items).to_a.sort { rand }[0..total_items]
 total_items.times do
-  Mongoid.default_session['feed_items'].insert(title: Faker::Lorem.sentence, position: rands.pop)
+  Mongoid.default_client['feed_items'].insert_one(title: Faker::Lorem.sentence, position: rands.pop)
 end
 
-Mongoid.default_session['feed_items'].indexes.create(position: 1, _id: 1)
-
-Moped.logger = Logger.new($stdout)
-Moped.logger.level = Logger::DEBUG
+Mongoid.default_client['feed_items'].indexes.create_one(position: 1, _id: 1)
 
 total_shown = 0
 next_cursor = nil
 loop do
   current_cursor = next_cursor
   next_cursor = nil
-  Mongoid.default_session['feed_items'].find.limit(scroll_by).sort(position: 1).scroll(current_cursor, field_type: Integer, field_name: 'position') do |item, cursor|
+  Mongoid.default_client['feed_items'].find.limit(scroll_by).sort(position: 1).scroll(current_cursor, field_type: Integer, field_name: 'position') do |item, cursor|
     puts "#{item['position']}: #{item['title']}"
     next_cursor = cursor
     total_shown += 1
   end
   break unless next_cursor
   # destroy an item just for the heck of it, scroll is not affected
-  item = Mongoid.default_session['feed_items'].find.sort(position: 1).first
-  Mongoid.default_session['feed_items'].find(_id: item['_id']).remove
+  item = Mongoid.default_client['feed_items'].find.sort(position: 1).first
+  Mongoid.default_client['feed_items'].find(_id: item['_id']).delete_one
 end
 
 # this will be 20
