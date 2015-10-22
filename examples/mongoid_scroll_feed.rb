@@ -4,6 +4,14 @@ Bundler.setup(:default, :development)
 require 'mongoid-scroll'
 require 'faker'
 
+if defined?(Moped)
+  Moped.logger = Logger.new($stdout)
+  Moped.logger.level = Logger::DEBUG
+else
+  Mongoid.logger.level = Logger::INFO
+  Mongo::Logger.logger.level = Logger::INFO if Mongoid::Compatibility::Version.mongoid5?
+end
+
 Mongoid.connect_to 'mongoid_scroll_demo'
 Mongoid.purge!
 
@@ -26,9 +34,6 @@ rands = (0..total_items).to_a.sort { rand }[0..total_items]
 total_items.times do |_i|
   Feed::Item.create! title: Faker::Lorem.sentence, position: rands.pop
 end
-
-Moped.logger = Logger.new($stdout)
-Moped.logger.level = Logger::DEBUG
 
 Feed::Item.create_indexes
 
