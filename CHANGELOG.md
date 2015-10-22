@@ -1,8 +1,7 @@
-0.3.4 (Next)
-------------
+0.3.4 (2015/10/22)
+------------------
 
 * Added support for [mongo-ruby-driver](https://github.com/mongodb/mongo-ruby-driver), `Mongo::Collection::View`- [@dblock](https://github.com/dblock).
-* Your contribution here.
 
 0.3.3 (2015/09/17)
 ------------------
