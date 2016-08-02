@@ -12,7 +12,7 @@ bundle install
 rake
 ```
 
-Check that the last build succeeded in [Travis CI](https://travis-ci.org/dblock/mongoid-scroll) for all supported platforms.
+Check that the last build succeeded in [Travis CI](https://travis-ci.org/mongoid/mongoid-scroll) for all supported platforms.
 
 Increment the version, modify [lib/mongoid/scroll/version.rb](lib/mongoid/scroll/version.rb).
 

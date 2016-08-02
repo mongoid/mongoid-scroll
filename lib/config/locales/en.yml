@@ -18,5 +18,5 @@ en:
           unsupported_field_type:
             message: "Unsupported field type."
             summary: "The type of the field '%{field}' is not supported: %{type}."
-            resolution: "Please open a feature request in https://github.com/dblock/mongoid-scroll."
+            resolution: "Please open a feature request in https://github.com/mongoid/mongoid-scroll."
 

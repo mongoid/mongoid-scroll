@@ -16,14 +16,14 @@
 0.3.2 (2015/8/8)
 ----------------
 
-* [#7](https://github.com/dblock/mongoid-scroll/pull/7): Fix: pre-merge cursor criteria fields - [@sweir27](https://github.com/sweir27).
+* [#7](https://github.com/mongoid/mongoid-scroll/pull/7): Fix: pre-merge cursor criteria fields - [@sweir27](https://github.com/sweir27).
 
 0.3.1 (2015/7/27)
 -----------------
 
 * Compatibility with Mongoid 5.x beta - [@dblock](https://github.com/dblock).
-* [#4](https://github.com/dblock/mongoid-scroll/pull/4): Fix: support chaining `$or` criteria - [@sweir27](https://github.com/sweir27).
-* [#5](https://github.com/dblock/mongoid-scroll/pull/5): Fix: embeddable objects now returned in pagination - [@sweir27](https://github.com/sweir27).
+* [#4](https://github.com/mongoid/mongoid-scroll/pull/4): Fix: support chaining `$or` criteria - [@sweir27](https://github.com/sweir27).
+* [#5](https://github.com/mongoid/mongoid-scroll/pull/5): Fix: embeddable objects now returned in pagination - [@sweir27](https://github.com/sweir27).
 
 0.3.0 (2014/1/7)
 ----------------

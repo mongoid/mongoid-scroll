@@ -2,9 +2,9 @@ Mongoid::Scroll
 ===============
 
 [![Gem Version](https://badge.fury.io/rb/mongoid-scroll.svg)](https://badge.fury.io/rb/mongoid-scroll)
-[![Build Status](https://travis-ci.org/dblock/mongoid-scroll.svg?branch=master)](https://travis-ci.org/dblock/mongoid-scroll)
-[![Dependency Status](https://gemnasium.com/dblock/mongoid-scroll.svg)](https://gemnasium.com/dblock/mongoid-scroll)
-[![Code Climate](https://codeclimate.com/github/dblock/mongoid-scroll.svg)](https://codeclimate.com/github/dblock/mongoid-scroll)
+[![Build Status](https://travis-ci.org/mongoid/mongoid-scroll.svg?branch=master)](https://travis-ci.org/mongoid/mongoid-scroll)
+[![Dependency Status](https://gemnasium.com/mongoid/mongoid-scroll.svg)](https://gemnasium.com/mongoid/mongoid-scroll)
+[![Code Climate](https://codeclimate.com/github/mongoid/mongoid-scroll.svg)](https://codeclimate.com/github/mongoid/mongoid-scroll)
 
 Mongoid extension that enables infinite scrolling for `Mongoid::Criteria`, `Moped::Query` and `Mongo::Collection::View`.
 
@@ -184,6 +184,6 @@ Fork the project. Make your feature addition or bug fix with tests. Send a pull 
 Copyright and License
 ---------------------
 
-MIT License, see [LICENSE](http://github.com/dblock/mongoid-scroll/raw/master/LICENSE.md) for details.
+MIT License, see [LICENSE](http://github.com/mongoid/mongoid-scroll/raw/master/LICENSE.md) for details.
 
 (c) 2013-2015 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)
