@@ -3,7 +3,7 @@ module Mongo
     def scroll(cursor = nil, options = nil, &_block)
       view = self
       # we don't support scrolling over a view with multiple fields
-      fail Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: view.sort) if view.sort && view.sort.keys.size != 1
+      raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: view.sort) if view.sort && view.sort.keys.size != 1
       # scroll field and direction
       scroll_field = view.sort ? view.sort.keys.first : :_id
       scroll_direction = view.sort ? view.sort.values.first.to_i : 1
@@ -17,7 +17,8 @@ module Mongo
         view.selector.merge(cursor.criteria),
         sort: (view.sort || {}).merge(_id: scroll_direction),
         skip: skip,
-        limit: limit)
+        limit: limit
+      )
       # scroll
       if block_given?
         view.each do |record|

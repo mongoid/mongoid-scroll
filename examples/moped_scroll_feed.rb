@@ -7,7 +7,7 @@ require 'faker'
 Mongoid.connect_to 'mongoid_scroll_demo'
 Mongoid.purge!
 
-fail 'No Moped' unless Object.const_defined?(:Moped)
+raise 'No Moped' unless Object.const_defined?(:Moped)
 
 # total items to insert
 total_items = 20
