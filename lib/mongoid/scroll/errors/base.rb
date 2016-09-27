@@ -27,7 +27,7 @@ module Mongoid
 
         private
 
-        BASE_KEY = 'mongoid.scroll.errors.messages' #:nodoc:
+        BASE_KEY = 'mongoid.scroll.errors.messages'.freeze #:nodoc:
 
         # Given the key of the specific error and the options hash, translate the
         # message.

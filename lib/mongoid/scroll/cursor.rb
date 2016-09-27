@@ -19,7 +19,7 @@ module Mongoid
                           else
                             Origin::Selector.new
                           end
-        cursor_selector.merge!('$or' => [cursor_criteria, tiebreak_criteria].compact) if cursor_criteria || tiebreak_criteria
+        cursor_selector['$or'] = [cursor_criteria, tiebreak_criteria].compact if cursor_criteria || tiebreak_criteria
         cursor_selector.__evolve_object_id__
       end
 
@@ -43,16 +43,16 @@ module Mongoid
         return unless value
         parts = value.split(':')
         unless parts.length >= 2
-          fail Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value)
+          raise Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value)
         end
         id = parts[-1]
         value = parts[0...-1].join(':')
         @value = Mongoid::Scroll::Cursor.parse_field_value(field_type, field_name, value)
-        if Mongoid::Compatibility::Version.mongoid3?
-          @tiebreak_id = Moped::BSON::ObjectId(id)
-        else
-          @tiebreak_id = BSON::ObjectId.from_string(id)
-        end
+        @tiebreak_id = if Mongoid::Compatibility::Version.mongoid3?
+                         Moped::BSON::ObjectId(id)
+                       else
+                         BSON::ObjectId.from_string(id)
+                       end
       end
 
       class << self
@@ -62,7 +62,7 @@ module Mongoid
           elsif options && (field = options[:field])
             [field.type.to_s, field.name.to_s]
           else
-            fail ArgumentError.new 'Missing options[:field_name] and/or options[:field_type].'
+            raise ArgumentError.new 'Missing options[:field_name] and/or options[:field_type].'
           end
         end
 
@@ -76,7 +76,7 @@ module Mongoid
           when 'Float' then value.to_f
           when 'Integer' then value.to_i
           else
-            fail Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
+            raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
           end
         end
 
@@ -89,7 +89,7 @@ module Mongoid
           when 'Float' then value.to_f
           when 'Integer' then value.to_i
           else
-            fail Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
+            raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
           end
         end
       end

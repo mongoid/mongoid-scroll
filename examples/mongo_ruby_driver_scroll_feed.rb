@@ -4,7 +4,7 @@ Bundler.setup(:default, :development)
 require 'mongoid-scroll'
 require 'faker'
 
-fail 'No Mongo Ruby Driver' unless Object.const_defined?(:Mongo)
+raise 'No Mongo Ruby Driver' unless Object.const_defined?(:Mongo)
 
 Mongo::Logger.logger = Logger.new($stdout)
 Mongo::Logger.logger.level = Logger::INFO

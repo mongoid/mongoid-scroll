@@ -10,7 +10,7 @@ module Moped
       query.operation.limit = operation.limit
       # we don't support scrolling over a criteria with multiple fields
       if query.operation.selector['$orderby'] && query.operation.selector['$orderby'].keys.size != 1
-        fail Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: query.operation.selector['$orderby'])
+        raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: query.operation.selector['$orderby'])
       elsif !query.operation.selector.key?('$orderby') || query.operation.selector['$orderby'].empty?
         # introduce a default sort order if there's none
         query.sort(_id: 1)
