@@ -24,4 +24,5 @@ group :development, :test do
   gem 'rspec-its'
   gem 'faker'
   gem 'rubocop', '0.33.0'
+  gem 'mongoid-danger', '~> 0.1.0', require: false
 end
