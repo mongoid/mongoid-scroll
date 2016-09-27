@@ -1,9 +1,8 @@
-0.3.5 (Next)
-------------
+0.3.5 (2016/09/27)
+------------------
 
 * [#11](https://github.com/mongoid/mongoid-scroll/pull/11): Compatibility with Mongoid 6 - [@dblock](https://github.com/dblock).
 * [#12](https://github.com/mongoid/mongoid-scroll/pull/12): Added Danger, PR linter - [@dblock](https://github.com/dblock).
-* Your contribution here.
 
 0.3.4 (2015/10/22)
 ------------------
