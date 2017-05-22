@@ -1,7 +1,7 @@
 Releasing Mongoid::Scroll
 =========================
 
-There're no particular rules about when to release mongoid-scroll. Release bug fixes frequenty, features not so frequently and breaking API changes rarely.
+There're no particular rules about when to release mongoid-scroll. Release bug fixes frequently, features not so frequently and breaking API changes rarely.
 
 ### Release
 
@@ -60,7 +60,7 @@ Next Release
 
 Increment the minor version, modify [lib/mongoid-scroll/version.rb](lib/mongoid-scroll/version.rb).
 
-Comit your changes.
+Commit your changes.
 
 ```
 git add CHANGELOG.md lib/mongoid-scroll/version.rb
