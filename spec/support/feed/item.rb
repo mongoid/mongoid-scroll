@@ -11,5 +11,6 @@ module Feed
     field :a_array, type: Array
 
     embeds_many :embedded_items
+    belongs_to :publisher, optional: true
   end
 end

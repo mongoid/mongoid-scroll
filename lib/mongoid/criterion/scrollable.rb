@@ -15,7 +15,7 @@ module Mongoid
         scroll_direction = criteria.options[:sort].values.first.to_i
         # scroll cursor from the parameter, with value and tiebreak_id
         field = criteria.klass.fields[scroll_field.to_s]
-        cursor_options = { field_type: field.type, field_name: scroll_field, direction: scroll_direction }
+        cursor_options = { field_type: type_from_field(field), field_name: scroll_field, direction: scroll_direction }
         cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
         # scroll
         if block_given?
@@ -27,6 +27,10 @@ module Mongoid
         else
           criteria
         end
+      end
+
+      def type_from_field(field)
+        field.foreign_key? && field.object_id_field? ? BSON::ObjectId : field.type
       end
     end
   end
