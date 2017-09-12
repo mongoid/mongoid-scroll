@@ -26,3 +26,5 @@ matrix:
         - bundle exec danger
 
 bundler_args: --without development
+
+dist: precise

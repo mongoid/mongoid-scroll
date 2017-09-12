@@ -11,6 +11,8 @@ module Feed
     field :a_array, type: Array
 
     embeds_many :embedded_items
-    belongs_to :publisher, optional: true
+
+    publisher_options = Mongoid::Compatibility::Version.mongoid6? ? { optional: true } : {}
+    belongs_to :publisher, publisher_options
   end
 end
