@@ -4,6 +4,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rubygems'
 require 'rspec'
 require 'rspec/its'
+require 'database_cleaner'
 require 'mongoid-scroll'
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each do |f|
@@ -20,6 +21,6 @@ RSpec.configure do |config|
     Mongo::Logger.logger.level = Logger::INFO if Mongoid::Compatibility::Version.mongoid5? || Mongoid::Compatibility::Version.mongoid6?
   end
   config.before :each do
-    Mongoid.purge!
+    DatabaseCleaner.clean
   end
 end

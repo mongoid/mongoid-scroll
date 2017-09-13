@@ -23,8 +23,9 @@ group :development, :test do
   gem 'rake'
   gem 'bundler'
   gem 'rspec', '~> 3.0'
-  gem 'rspec-its'
+  gem 'rspec-its', require: 'rspec/its'
   gem 'faker'
   gem 'rubocop', '0.43.0'
   gem 'mongoid-danger', '~> 0.1.0', require: false
+  gem 'database_cleaner'
 end
