@@ -27,4 +27,9 @@ matrix:
 
 bundler_args: --without development
 
-dist: precise
+addons:
+  apt:
+    sources:
+      - mongodb-3.2-precise
+    packages:
+      - mongodb-org-server
