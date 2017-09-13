@@ -124,7 +124,7 @@ describe Mongoid::Scroll::Cursor do
     end
   end
   context 'an array field cursor' do
-    let(:feed_item) { Feed::Item.create!(a_array: %w(x y)) }
+    let(:feed_item) { Feed::Item.create!(a_array: %w[x y]) }
     it 'is not supported' do
       expect do
         Mongoid::Scroll::Cursor.from_record feed_item, field_name: 'a_array', field_type: Array
