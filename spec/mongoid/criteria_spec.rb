@@ -13,6 +13,7 @@ describe Mongoid::Criteria do
                                                /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
     end
   end
+
   context 'with no sort' do
     subject do
       Feed::Item.all
@@ -43,6 +44,15 @@ describe Mongoid::Criteria do
         expect(records).to eq Feed::Item.all.to_a
       end
     end
+
+    context 'with a foreign key' do
+      it 'sorts by object id' do
+        records = []
+        Feed::Item.asc('publisher_id').scroll { |r, _| records << r }
+        expect(records).not_to be_empty
+      end
+    end
+
     { a_string: String, a_integer: Integer, a_date: Date, a_datetime: DateTime }.each_pair do |field_name, field_type|
       context field_type do
         it 'scrolls all with a block' do

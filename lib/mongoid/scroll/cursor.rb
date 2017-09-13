@@ -14,7 +14,7 @@ module Mongoid
         compare_direction = direction == 1 ? '$gt' : '$lt'
         cursor_criteria = { field_name => { compare_direction => mongo_value } } if mongo_value
         tiebreak_criteria = { field_name => mongo_value, :_id => { compare_direction => tiebreak_id } } if mongo_value && tiebreak_id
-        cursor_selector = if Mongoid::Compatibility::Version.mongoid6?
+        cursor_selector = if Mongoid::Compatibility::Version.mongoid6? || Mongoid::Compatibility::Version.mongoid7?
                             Mongoid::Criteria::Queryable::Selector.new
                           else
                             Origin::Selector.new
