@@ -30,7 +30,8 @@ module Mongoid
       end
 
       def type_from_field(field)
-        field.foreign_key? && field.object_id_field? ? BSON::ObjectId : field.type
+        bson_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
+        field.foreign_key? && field.object_id_field? ? bson_type : field.type
       end
     end
   end

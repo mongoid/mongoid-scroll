@@ -10,9 +10,10 @@ module Feed
     field :a_time, type: Time
     field :a_array, type: Array
 
-    embeds_many :embedded_items
+    embeds_many :embedded_items, class_name: 'Feed::EmbeddedItem'
 
-    publisher_options = Mongoid::Compatibility::Version.mongoid6? ? { optional: true } : {}
+    publisher_options = { class_name: 'Feed::Publisher' }
+    publisher_options[:optional] = true if Mongoid::Compatibility::Version.mongoid6? || Mongoid::Compatibility::Version.mongoid7?
     belongs_to :publisher, publisher_options
   end
 end
