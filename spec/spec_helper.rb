@@ -17,7 +17,7 @@ end
 RSpec.configure do |config|
   config.before :all do
     Mongoid.logger.level = Logger::INFO
-    Mongo::Logger.logger.level = Logger::INFO if Mongoid::Compatibility::Version.mongoid5?
+    Mongo::Logger.logger.level = Logger::INFO if Mongoid::Compatibility::Version.mongoid5? || Mongoid::Compatibility::Version.mongoid6?
   end
   config.before :each do
     Mongoid.purge!
