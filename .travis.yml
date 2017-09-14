@@ -30,6 +30,6 @@ bundler_args: --without development
 addons:
   apt:
     sources:
-      - mongodb-3.2-precise
+      - mongodb-3.4-precise
     packages:
       - mongodb-org-server
