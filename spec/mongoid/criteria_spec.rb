@@ -170,7 +170,7 @@ describe Mongoid::Criteria do
       expect(records.map(&:name)).to eq ['embedded']
     end
   end
-  context 'with overlapping data' do
+  context 'with overlapping data', if: MongoDB.mmapv1? do
     before :each do
       3.times { Feed::Item.create! a_integer: 5 }
       Feed::Item.first.update_attributes!(name: Array(1000).join('a'))

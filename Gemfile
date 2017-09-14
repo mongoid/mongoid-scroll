@@ -20,11 +20,12 @@ else
 end
 
 group :development, :test do
-  gem 'rake'
   gem 'bundler'
+  gem 'database_cleaner'
+  gem 'faker'
+  gem 'mongoid-danger', '~> 0.1.0', require: false
+  gem 'rake'
   gem 'rspec', '~> 3.0'
   gem 'rspec-its'
-  gem 'faker'
-  gem 'rubocop', '0.43.0'
-  gem 'mongoid-danger', '~> 0.1.0', require: false
+  gem 'rubocop', '0.49.1'
 end
