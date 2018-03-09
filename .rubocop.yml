@@ -4,5 +4,4 @@ AllCops:
   Exclude:
     - vendor/**/*
     - gemfiles/vendor/**/*
-
-
+    - spec/**/*
