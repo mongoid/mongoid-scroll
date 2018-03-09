@@ -85,11 +85,8 @@ describe Mongoid::Criteria do
             last_record = record
             cursor = next_cursor
           end
-          first_item = Feed::Item.asc(field_name).first
           sixth_item = Feed::Item.asc(field_name).to_a[5]
           from_item = Feed::Item.asc(field_name).scroll(cursor).to_a.first
-          expect(from_item).not_to eq last_record
-          expect(from_item).not_to eq first_item
           expect(from_item).to eq sixth_item
         end
         it 'scrolls in descending order' do
