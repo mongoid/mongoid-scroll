@@ -1,5 +1,6 @@
 ### 0.3.6 (Next)
 
+* [#18](https://github.com/mongoid/mongoid-scroll/pull/18): Fix mongoid scroll without block returning wrong criteria - [@asgerb](https://github.com/asgerb).
 * [#15](https://github.com/mongoid/mongoid-scroll/pull/15): Use MongoDB 3.4 in testing and fix tests w/ WiredTiger storage engine - [@dblock](https://github.com/dblock).
 * [#14](https://github.com/mongoid/mongoid-scroll/pull/14): Allow scrolling by foreign key - [@joeyAghion](https://github.com/joeyAghion).
 * Your contribution here.
