@@ -78,6 +78,17 @@ describe Mongoid::Criteria do
           expect(records.size).to eq 10
           expect(records).to eq Feed::Item.all.to_a
         end
+        it 'scrolls from a cursor' do
+          last_record = nil
+          cursor = nil
+          Feed::Item.asc(field_name).limit(5).scroll do |record, next_cursor|
+            last_record = record
+            cursor = next_cursor
+          end
+          sixth_item = Feed::Item.asc(field_name).to_a[5]
+          from_item = Feed::Item.asc(field_name).scroll(cursor).to_a.first
+          expect(from_item).to eq sixth_item
+        end
         it 'scrolls in descending order' do
           records = []
           Feed::Item.desc(field_name).limit(3).scroll do |record, _next_cursor|

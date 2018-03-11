@@ -17,15 +17,15 @@ module Mongoid
         field = criteria.klass.fields[scroll_field.to_s]
         cursor_options = { field_type: type_from_field(field), field_name: scroll_field, direction: scroll_direction }
         cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
+        cursor_criteria = criteria.dup
+        cursor_criteria.selector = { '$and' => [criteria.selector, cursor.criteria] }
         # scroll
         if block_given?
-          cursor_criteria = criteria.dup
-          cursor_criteria.selector = { '$and' => [criteria.selector, cursor.criteria] }
           cursor_criteria.order_by(_id: scroll_direction).each do |record|
             yield record, Mongoid::Scroll::Cursor.from_record(record, cursor_options)
           end
         else
-          criteria
+          cursor_criteria
         end
       end
 
