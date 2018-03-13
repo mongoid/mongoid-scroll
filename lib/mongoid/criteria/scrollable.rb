@@ -44,7 +44,11 @@ module Mongoid
       end
 
       def build_cursor_options(criteria)
-        { field_type: scroll_field_type(criteria), field_name: scroll_field(criteria), direction: scroll_direction(criteria) }
+        {
+          field_type: scroll_field_type(criteria),
+          field_name: scroll_field(criteria),
+          direction: scroll_direction(criteria)
+        }
       end
 
       def new_cursor(cursor, cursor_options)
