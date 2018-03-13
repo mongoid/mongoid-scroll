@@ -21,11 +21,6 @@ module Mongoid
         end
       end
 
-      def type_from_field(field)
-        bson_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
-        field.foreign_key? && field.object_id_field? ? bson_type : field.type
-      end
-
       private
       def multiple_sort_fields?
         options.sort && options.sort.keys.size != 1
@@ -55,6 +50,11 @@ module Mongoid
 
       def raise_multiple_sort_fields_error
         raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options[:sort])
+      end
+
+      def type_from_field(field)
+        bson_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
+        field.foreign_key? && field.object_id_field? ? bson_type : field.type
       end
     end
   end
