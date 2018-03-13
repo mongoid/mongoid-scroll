@@ -18,6 +18,7 @@ module Mongoid
       end
 
       private
+
       def raise_multiple_sort_fields_error
         raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options[:sort])
       end
@@ -52,7 +53,7 @@ module Mongoid
 
       def build_cursor_criteria(criteria, cursor)
         cursor_criteria = criteria.dup
-        cursor_criteria.selector = { '$and' => [ criteria.selector, cursor.criteria ] }
+        cursor_criteria.selector = { '$and' => [criteria.selector, cursor.criteria] }
         cursor_criteria
       end
 
