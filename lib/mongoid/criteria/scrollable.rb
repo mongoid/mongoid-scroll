@@ -2,11 +2,9 @@ module Mongoid
   class Criteria
     module Scrollable
       def scroll(cursor = nil, &_block)
+        raise_multiple_sort_fields_error if multiple_sort_fields?
         criteria = self
-        # we don't support scrolling over a criteria with multiple fields
-        if criteria.options[:sort] && criteria.options[:sort].keys.size != 1
-          raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options[:sort])
-        elsif !criteria.options.key?(:sort) || criteria.options[:sort].empty?
+        if !criteria.options.key?(:sort) || criteria.options[:sort].empty?
           # introduce a default sort order if there's none
           criteria = criteria.asc(:_id)
         end
@@ -32,6 +30,15 @@ module Mongoid
       def type_from_field(field)
         bson_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
         field.foreign_key? && field.object_id_field? ? bson_type : field.type
+      end
+
+      private
+      def multiple_sort_fields?
+        options.sort && options.sort.keys.size != 1
+      end
+
+      def raise_multiple_sort_fields_error
+        raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options[:sort])
       end
     end
   end
