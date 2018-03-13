@@ -43,9 +43,7 @@ module Mongoid
       end
 
       def build_cursor_options(criteria)
-        scroll_field = scroll_field(criteria)
-        field = criteria.klass.fields[scroll_field.to_s]
-        { field_type: type_from_field(field), field_name: scroll_field, direction: scroll_direction(criteria) }
+        { field_type: scroll_field_type(criteria), field_name: scroll_field(criteria), direction: scroll_direction(criteria) }
       end
 
       def new_cursor(cursor, cursor_options)
@@ -62,9 +60,14 @@ module Mongoid
         Mongoid::Scroll::Cursor.from_record(record, cursor_options)
       end
 
-      def type_from_field(field)
-        bson_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
+      def scroll_field_type(criteria)
+        scroll_field = scroll_field(criteria)
+        field = criteria.klass.fields[scroll_field.to_s]
         field.foreign_key? && field.object_id_field? ? bson_type : field.type
+      end
+
+      def bson_type
+        Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
       end
     end
   end
