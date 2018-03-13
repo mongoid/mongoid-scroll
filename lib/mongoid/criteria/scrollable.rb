@@ -5,7 +5,6 @@ module Mongoid
         raise_multiple_sort_fields_error if multiple_sort_fields?
         criteria = dup
         criteria.merge!(default_sort) if no_sort_option?
-        scroll_direction = scroll_direction(criteria)
         # scroll cursor from the parameter, with value and tiebreak_id
         cursor_options = build_cursor_options(criteria)
         cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
@@ -13,7 +12,7 @@ module Mongoid
         cursor_criteria.selector = { '$and' => [criteria.selector, cursor.criteria] }
         # scroll
         if block_given?
-          cursor_criteria.order_by(_id: scroll_direction).each do |record|
+          cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
             yield record, Mongoid::Scroll::Cursor.from_record(record, cursor_options)
           end
         else
