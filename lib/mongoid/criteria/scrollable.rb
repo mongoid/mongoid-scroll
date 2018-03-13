@@ -7,8 +7,7 @@ module Mongoid
         criteria.merge!(default_sort) if no_sort_option?
         cursor_options = build_cursor_options(criteria)
         cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : new_cursor(cursor, cursor_options)
-        cursor_criteria = criteria.dup
-        cursor_criteria.selector = { '$and' => [criteria.selector, cursor.criteria] }
+        cursor_criteria = build_cursor_criteria(criteria, cursor)
         # scroll
         if block_given?
           cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
@@ -52,6 +51,12 @@ module Mongoid
 
       def new_cursor(cursor, cursor_options)
         Mongoid::Scroll::Cursor.new(cursor, cursor_options)
+      end
+
+      def build_cursor_criteria(criteria, cursor)
+        cursor_criteria = criteria.dup
+        cursor_criteria.selector = { '$and' => [ criteria.selector, cursor.criteria ] }
+        cursor_criteria
       end
 
       def type_from_field(field)
