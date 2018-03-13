@@ -8,7 +8,6 @@ module Mongoid
         cursor_options = build_cursor_options(criteria)
         cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : new_cursor(cursor, cursor_options)
         cursor_criteria = build_cursor_criteria(criteria, cursor)
-        # scroll
         if block_given?
           cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
             yield record, Mongoid::Scroll::Cursor.from_record(record, cursor_options)
