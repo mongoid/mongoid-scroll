@@ -20,7 +20,7 @@ module Mongoid
       private
 
       def raise_multiple_sort_fields_error
-        raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options[:sort])
+        raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options.sort)
       end
 
       def multiple_sort_fields?
