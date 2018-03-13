@@ -22,6 +22,10 @@ module Mongoid
       end
 
       private
+      def raise_multiple_sort_fields_error
+        raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options[:sort])
+      end
+
       def multiple_sort_fields?
         options.sort && options.sort.keys.size != 1
       end
@@ -46,10 +50,6 @@ module Mongoid
         scroll_field = scroll_field(criteria)
         field = criteria.klass.fields[scroll_field.to_s]
         { field_type: type_from_field(field), field_name: scroll_field, direction: scroll_direction(criteria) }
-      end
-
-      def raise_multiple_sort_fields_error
-        raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options[:sort])
       end
 
       def type_from_field(field)
