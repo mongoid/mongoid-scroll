@@ -5,9 +5,8 @@ module Mongoid
         raise_multiple_sort_fields_error if multiple_sort_fields?
         criteria = dup
         criteria.merge!(default_sort) if no_sort_option?
-        # scroll field and direction
-        scroll_field = criteria.options[:sort].keys.first
-        scroll_direction = criteria.options[:sort].values.first.to_i
+        scroll_field = scroll_field(criteria)
+        scroll_direction = scroll_direction(criteria)
         # scroll cursor from the parameter, with value and tiebreak_id
         field = criteria.klass.fields[scroll_field.to_s]
         cursor_options = { field_type: type_from_field(field), field_name: scroll_field, direction: scroll_direction }
@@ -40,6 +39,14 @@ module Mongoid
 
       def default_sort
         asc(:_id)
+      end
+
+      def scroll_field(criteria)
+        criteria.options.sort.keys.first
+      end
+
+      def scroll_direction(criteria)
+        criteria.options.sort.values.first.to_i
       end
 
       def raise_multiple_sort_fields_error
