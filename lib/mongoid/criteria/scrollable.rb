@@ -4,10 +4,7 @@ module Mongoid
       def scroll(cursor = nil, &_block)
         raise_multiple_sort_fields_error if multiple_sort_fields?
         criteria = self
-        if !criteria.options.key?(:sort) || criteria.options[:sort].empty?
-          # introduce a default sort order if there's none
-          criteria = criteria.asc(:_id)
-        end
+        criteria = criteria.asc(:_id) if no_sort_option?
         # scroll field and direction
         scroll_field = criteria.options[:sort].keys.first
         scroll_direction = criteria.options[:sort].values.first.to_i
@@ -35,6 +32,10 @@ module Mongoid
       private
       def multiple_sort_fields?
         options.sort && options.sort.keys.size != 1
+      end
+
+      def no_sort_option?
+        options.sort.blank? || options.sort.empty?
       end
 
       def raise_multiple_sort_fields_error
