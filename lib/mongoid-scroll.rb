@@ -9,4 +9,4 @@ require 'mongoid/scroll/errors'
 require 'mongoid/scroll/cursor'
 require 'moped/scrollable' if Object.const_defined?(:Moped)
 require 'mongo/scrollable' if Object.const_defined?(:Mongo)
-require 'mongoid/criterion/scrollable'
+require 'mongoid/criteria/scrollable'

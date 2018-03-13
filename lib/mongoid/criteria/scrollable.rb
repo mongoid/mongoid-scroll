@@ -1,5 +1,5 @@
 module Mongoid
-  module Criterion
+  class Criteria
     module Scrollable
       def scroll(cursor = nil, &_block)
         criteria = self
@@ -37,4 +37,4 @@ module Mongoid
   end
 end
 
-Mongoid::Criteria.send(:include, Mongoid::Criterion::Scrollable)
+Mongoid::Criteria.send(:include, Mongoid::Criteria::Scrollable)
