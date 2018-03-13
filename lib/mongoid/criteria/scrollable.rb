@@ -3,8 +3,8 @@ module Mongoid
     module Scrollable
       def scroll(cursor = nil, &_block)
         raise_multiple_sort_fields_error if multiple_sort_fields?
-        criteria = self
-        criteria = criteria.asc(:_id) if no_sort_option?
+        criteria = dup
+        criteria.merge!(default_sort) if no_sort_option?
         # scroll field and direction
         scroll_field = criteria.options[:sort].keys.first
         scroll_direction = criteria.options[:sort].values.first.to_i
@@ -36,6 +36,10 @@ module Mongoid
 
       def no_sort_option?
         options.sort.blank? || options.sort.empty?
+      end
+
+      def default_sort
+        asc(:_id)
       end
 
       def raise_multiple_sort_fields_error
