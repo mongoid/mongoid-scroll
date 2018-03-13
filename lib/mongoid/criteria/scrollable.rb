@@ -10,7 +10,7 @@ module Mongoid
         cursor_criteria = build_cursor_criteria(criteria, cursor)
         if block_given?
           cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
-            yield record, Mongoid::Scroll::Cursor.from_record(record, cursor_options)
+            yield record, cursor_from_record(record, cursor_options)
           end
         else
           cursor_criteria
@@ -56,6 +56,10 @@ module Mongoid
         cursor_criteria = criteria.dup
         cursor_criteria.selector = { '$and' => [ criteria.selector, cursor.criteria ] }
         cursor_criteria
+      end
+
+      def cursor_from_record(record, cursor_options)
+        Mongoid::Scroll::Cursor.from_record(record, cursor_options)
       end
 
       def type_from_field(field)
