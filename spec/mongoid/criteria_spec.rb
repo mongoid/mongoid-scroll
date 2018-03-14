@@ -43,6 +43,20 @@ describe Mongoid::Criteria do
         expect(records.size).to eq 10
         expect(records).to eq Feed::Item.all.to_a
       end
+      it 'does not change original criteria' do
+        criteria = Feed::Item.where(:a_time.gt => Time.new(2013, 7, 22, 1, 2, 3))
+        original_criteria = criteria.dup
+        criteria.limit(2).scroll
+        expect(criteria).to eq original_criteria
+        cursor = nil
+        criteria.limit(2).scroll(cursor) do |_record, next_cursor|
+          cursor = next_cursor
+        end
+        criteria.scroll(cursor) do |_record, next_cursor|
+          cursor = next_cursor
+        end
+        expect(criteria).to eq original_criteria
+      end
     end
 
     context 'with a foreign key' do
