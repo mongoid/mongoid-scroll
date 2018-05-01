@@ -51,7 +51,7 @@ Pushed mongoid-scroll 0.4.0 to rubygems.org.
 Add the next release to [CHANGELOG.md](CHANGELOG.md).
 
 ```
-### Next Release
+### 0.4.1 (Next)
 
 * Your contribution here.
 ```
