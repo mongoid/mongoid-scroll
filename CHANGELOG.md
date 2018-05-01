@@ -1,3 +1,7 @@
+### 0.3.7 (Next)
+
+* Your contribution here.
+
 ### 0.3.6 (2018/05/01)
 
 * [#18](https://github.com/mongoid/mongoid-scroll/pull/18): Fix mongoid scroll without block returning wrong criteria - [@asgerb](https://github.com/asgerb).
