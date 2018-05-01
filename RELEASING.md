@@ -22,11 +22,10 @@ Increment the version, modify [lib/mongoid/scroll/version.rb](lib/mongoid/scroll
 Change "Next Release" in [CHANGELOG.md](CHANGELOG.md) to the new version.
 
 ```
-0.4.0 (2014-01-27)
-==================
+### 0.4.0 (2018/12/24)
 ```
 
-Remove the line with "Your contribution here.", since there will be no more contributions to this release.
+Remove the line with "* Your contribution here.", since there will be no more contributions to this release.
 
 Commit your changes.
 
@@ -52,8 +51,7 @@ Pushed mongoid-scroll 0.4.0 to rubygems.org.
 Add the next release to [CHANGELOG.md](CHANGELOG.md).
 
 ```
-Next Release
-============
+### Next Release
 
 * Your contribution here.
 ```
