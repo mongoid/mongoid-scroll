@@ -16,8 +16,8 @@ Check that the last build succeeded in [Travis CI](https://travis-ci.org/mongoid
 
 Increment the version, modify [lib/mongoid/scroll/version.rb](lib/mongoid/scroll/version.rb).
 
-*  Increment the third number if the release has bug fixes and/or very minor features, only (eg. change `0.5.1` to `0.5.2`).
-*  Increment the second number if the release contains major features or breaking API changes (eg. change `0.5.1` to `0.4.0`).
+*  Increment the third number if the release has bug fixes and/or very minor features, only (eg. change `0.4.1` to `0.4.2`).
+*  Increment the second number if the release contains major features or breaking API changes (eg. change `0.4.1` to `0.5.0`).
 
 Change "Next Release" in [CHANGELOG.md](CHANGELOG.md) to the new version.
 
