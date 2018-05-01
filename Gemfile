@@ -3,20 +3,13 @@ source 'http://rubygems.org'
 gemspec
 
 case version = ENV['MONGOID_VERSION'] || '~> 7.0'
-when 'HEAD'
-  gem 'mongoid', github: 'mongodb/mongoid'
-when /7/
-  gem 'mongoid', '~> 7.0'
-when /6/
-  gem 'mongoid', '~> 6.0'
-when /5/
-  gem 'mongoid', '~> 5.0'
-when /4/
-  gem 'mongoid', '~> 4.0'
-when /3/
-  gem 'mongoid', '~> 3.1'
-else
-  gem 'mongoid', version
+when 'HEAD' then gem 'mongoid', github: 'mongodb/mongoid'
+when /7/    then gem 'mongoid', '~> 7.0'
+when /6/    then gem 'mongoid', '~> 6.0'
+when /5/    then gem 'mongoid', '~> 5.0'
+when /4/    then gem 'mongoid', '~> 4.0'
+when /3/    then gem 'mongoid', '~> 3.1'
+else             gem 'mongoid', version
 end
 
 group :development, :test do
