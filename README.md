@@ -11,7 +11,7 @@ Mongoid extension that enables infinite scrolling for `Mongoid::Criteria`, `Mope
 Compatibility
 -------------
 
-This gem supports Mongoid 3, 4, 5, 6, Moped and Mongo-Ruby-Driver.
+This gem supports Mongoid 3, 4, 5, 6, 7, Moped and Mongo-Ruby-Driver.
 
 Demo
 ----
