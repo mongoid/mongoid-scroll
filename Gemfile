@@ -14,7 +14,7 @@ end
 
 group :development, :test do
   gem 'bundler'
-  gem 'database_cleaner'
+  gem 'database_cleaner', '~> 1.8.5'
   gem 'faker'
   gem 'mongoid-danger', '~> 0.1.0', require: false
   gem 'rake'
