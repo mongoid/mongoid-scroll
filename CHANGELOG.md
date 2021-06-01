@@ -1,3 +1,7 @@
+### 0.3.8 (Next)
+
+* Your contribution here.
+
 ### 0.3.7 (2021/06/01)
 
 * [#22](https://github.com/mongoid/mongoid-scroll/pull/22): Compatibility with Mongoid 7 - [@asgerb](https://github.com/asgerb).
