@@ -12,6 +12,7 @@ jobs:
           - { ruby: '2.6', mongodb: '4.4', mongoid: '5' }
           - { ruby: '2.7', mongodb: '4.4', mongoid: '6' }
           - { ruby: '2.7', mongodb: '4.4', mongoid: '7' }
+          - { ruby: '3.0', mongodb: '4.4', mongoid: '6' }
           - { ruby: '3.0', mongodb: '4.4', mongoid: '7' }
     name: test (ruby=${{ matrix.entry.ruby }}, mongodb=${{ matrix.entry.mongodb }}), mongoid=${{ matrix.entry.mongoid }})
     env:
