@@ -1,5 +1,6 @@
 ### 0.3.8 (Next)
 
+* [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Compatibility with Ruby 3. Remove Travis. Use Github for CI - [@leamotta](https://github.com/leamotta)
 * Your contribution here.
 
 ### 0.3.7 (2021/06/01)
