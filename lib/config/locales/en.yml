@@ -19,4 +19,7 @@ en:
             message: "Unsupported field type."
             summary: "The type of the field '%{field}' is not supported: %{type}."
             resolution: "Please open a feature request in https://github.com/mongoid/mongoid-scroll."
-
+          invalid_base64:
+            message: "The Base64 string supplied is invalid."
+            summary: "The Base64 string supplied is invalid: %{str}."
+            resolution: "Base64 strings must follow RFC 4648."
