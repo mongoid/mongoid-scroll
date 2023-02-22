@@ -40,7 +40,7 @@ module Mongoid
         end
 
         def from_base64(str)
-          config_hash = JSON.parse(Base64.strict_decode64(str))
+          config_hash = ::JSON.parse(::Base64.strict_decode64(str))
           new(config_hash['value'], field_type: config_hash['field_type'], field_name: config_hash['field_name'], direction: config_hash['direction'])
         rescue ArgumentError
           raise Mongoid::Scroll::Errors::InvalidBase64Error.new(str: str)
