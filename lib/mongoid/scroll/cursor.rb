@@ -1,3 +1,6 @@
+require 'base64'
+require 'json'
+
 module Mongoid
   module Scroll
     class Cursor
