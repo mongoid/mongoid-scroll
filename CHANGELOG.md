@@ -1,5 +1,6 @@
 ### 0.3.8 (Next)
 
+* [#28](https://github.com/mongoid/mongoid-scroll/pull/28): Add cursor Base64 serialization - [@FabienChaynes](https://github.com/FabienChaynes).
 * [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Compatibility with Ruby 3 - [@leamotta](https://github.com/leamotta).
 * [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Replace Travis CI with GHA - [@leamotta](https://github.com/leamotta).
 * Your contribution here.
