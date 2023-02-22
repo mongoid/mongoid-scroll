@@ -23,6 +23,10 @@ module Mongoid
         cursor_selector.__evolve_object_id__
       end
 
+      def to_base64
+        Base64.strict_encode64({ value: to_s, field_type: field_type, field_name: field_name, direction: direction }.to_json)
+      end
+
       class << self
         def from_record(record, options)
           cursor = Mongoid::Scroll::Cursor.new(nil, options)
@@ -30,6 +34,11 @@ module Mongoid
           cursor.value = Mongoid::Scroll::Cursor.parse_field_value(cursor.field_type, cursor.field_name, value)
           cursor.tiebreak_id = record['_id']
           cursor
+        end
+
+        def from_base64(str)
+          config_hash = JSON.parse(Base64.strict_decode64(str))
+          new(config_hash['value'], field_type: config_hash['field_type'], field_name: config_hash['field_name'], direction: config_hash['direction'])
         end
       end
 
