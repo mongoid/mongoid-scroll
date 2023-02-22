@@ -3,7 +3,7 @@ require 'json'
 
 module Mongoid
   module Scroll
-    # Allows to serializer/deserialize the cursor using RFC 4648
+    # Allows to serialize/deserialize the cursor using RFC 4648
     class Base64EncodedCursor < Cursor
       def to_s
         Base64.strict_encode64({ value: super, field_type: field_type, field_name: field_name, direction: direction }.to_json)
