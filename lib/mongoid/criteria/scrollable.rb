@@ -6,7 +6,13 @@ module Mongoid
         criteria = dup
         criteria.merge!(default_sort) if no_sort_option?
         cursor_options = build_cursor_options(criteria)
-        cursor = cursor.is_a?(cursor_class) ? cursor : new_cursor(cursor, cursor_options, cursor_class)
+        cursor = if cursor.is_a?(cursor_class)
+                   current_cursor_options = { field_type: cursor.field_type, field_name: cursor.field_name, direction: cursor.direction }
+                   raise Exception.new("Cursor not following the original sort: #{[cursor_options, current_cursor_options]}") if cursor_options != current_cursor_options # TODO: Add custom exception
+                   cursor
+                 else
+                   new_cursor(cursor, cursor_options, cursor_class)
+                 end
         cursor_criteria = build_cursor_criteria(criteria, cursor)
         if block_given?
           cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
@@ -68,11 +74,11 @@ module Mongoid
       def scroll_field_type(criteria)
         scroll_field = scroll_field(criteria)
         field = criteria.klass.fields[scroll_field.to_s]
-        field.foreign_key? && field.object_id_field? ? bson_type : field.type
+        field.foreign_key? && field.object_id_field? ? bson_type : field.type.to_s
       end
 
       def bson_type
-        Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
+        Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId.to_s : BSON::ObjectId.to_s
       end
     end
   end
