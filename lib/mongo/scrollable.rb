@@ -1,6 +1,6 @@
 module Mongo
   module Scrollable
-    def scroll(cursor = nil, options = nil, &_block)
+    def scroll(cursor = nil, options = nil, cursor_class = Mongoid::Scroll::Cursor, &_block)
       view = self
       # we don't support scrolling over a view with multiple fields
       raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: view.sort) if view.sort && view.sort.keys.size != 1
@@ -10,7 +10,7 @@ module Mongo
       # scroll cursor from the parameter, with value and tiebreak_id
       options = { field_type: BSON::ObjectId } unless options
       cursor_options = { field_name: scroll_field, direction: scroll_direction }.merge(options)
-      cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
+      cursor = cursor.is_a?(cursor_class) ? cursor : cursor_class.new(cursor, cursor_options)
       # make a view
       view = Mongo::Collection::View.new(
         view.collection,
@@ -22,7 +22,7 @@ module Mongo
       # scroll
       if block_given?
         view.each do |record|
-          yield record, Mongoid::Scroll::Cursor.from_record(record, cursor_options)
+          yield record, cursor_class.from_record(record, cursor_options)
         end
       else
         view

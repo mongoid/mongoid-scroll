@@ -1,6 +1,6 @@
 module Moped
   module Scrollable
-    def scroll(cursor = nil, options = nil, &_block)
+    def scroll(cursor = nil, options = nil, cursor_class = Mongoid::Scroll::Cursor, &_block)
       unless options
         bson_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
         options = { field_type: bson_type }
@@ -20,13 +20,13 @@ module Moped
       scroll_direction = query.operation.selector['$orderby'].values.first.to_i
       # scroll cursor from the parameter, with value and tiebreak_id
       cursor_options = { field_name: scroll_field, field_type: options[:field_type], direction: scroll_direction }
-      cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
+      cursor = cursor.is_a?(cursor_class) ? cursor : cursor_class.new(cursor, cursor_options)
       query.operation.selector['$query'] = query.operation.selector['$query'].merge(cursor.criteria)
       query.operation.selector['$orderby'] = query.operation.selector['$orderby'].merge(_id: scroll_direction)
       # scroll
       if block_given?
         query.each do |record|
-          yield record, Mongoid::Scroll::Cursor.from_record(record, cursor_options)
+          yield record, cursor_class.from_record(record, cursor_options)
         end
       else
         query

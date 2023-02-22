@@ -1,16 +1,16 @@
 module Mongoid
   class Criteria
     module Scrollable
-      def scroll(cursor = nil, &_block)
+      def scroll(cursor = nil, cursor_class = Mongoid::Scroll::Cursor, &_block)
         raise_multiple_sort_fields_error if multiple_sort_fields?
         criteria = dup
         criteria.merge!(default_sort) if no_sort_option?
         cursor_options = build_cursor_options(criteria)
-        cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : new_cursor(cursor, cursor_options)
+        cursor = cursor.is_a?(cursor_class) ? cursor : new_cursor(cursor, cursor_options, cursor_class)
         cursor_criteria = build_cursor_criteria(criteria, cursor)
         if block_given?
           cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
-            yield record, cursor_from_record(record, cursor_options)
+            yield record, cursor_from_record(record, cursor_options, cursor_class)
           end
         else
           cursor_criteria
@@ -51,8 +51,8 @@ module Mongoid
         }
       end
 
-      def new_cursor(cursor, cursor_options)
-        Mongoid::Scroll::Cursor.new(cursor, cursor_options)
+      def new_cursor(cursor, cursor_options, cursor_class)
+        cursor_class.new(cursor, cursor_options)
       end
 
       def build_cursor_criteria(criteria, cursor)
@@ -61,8 +61,8 @@ module Mongoid
         cursor_criteria
       end
 
-      def cursor_from_record(record, cursor_options)
-        Mongoid::Scroll::Cursor.from_record(record, cursor_options)
+      def cursor_from_record(record, cursor_options, cursor_class)
+        cursor_class.from_record(record, cursor_options)
       end
 
       def scroll_field_type(criteria)
