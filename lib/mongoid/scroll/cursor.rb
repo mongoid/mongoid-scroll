@@ -23,6 +23,14 @@ module Mongoid
         cursor_selector.__evolve_object_id__
       end
 
+      def sort_options
+        {
+          field_type: field_type,
+          field_name: field_name,
+          direction: direction
+        }
+      end
+
       class << self
         def from_record(record, options)
           cursor = Mongoid::Scroll::Cursor.new(nil, options)

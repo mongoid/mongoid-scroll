@@ -7,6 +7,7 @@ module Mongoid
         criteria.merge!(default_sort) if no_sort_option?
         cursor_options = build_cursor_options(criteria)
         cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : new_cursor(cursor, cursor_options)
+        raise_different_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
         cursor_criteria = build_cursor_criteria(criteria, cursor)
         if block_given?
           cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
@@ -23,12 +24,21 @@ module Mongoid
         raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options.sort)
       end
 
+      def raise_different_sort_fields_error!(cursor, criteria_cursor_options)
+        diff = cursor.sort_options.reject { |k, v| criteria_cursor_options[k] == v }
+        raise Mongoid::Scroll::Errors::DifferentSortFieldsError.new(diff: diff)
+      end
+
       def multiple_sort_fields?
         options.sort && options.sort.keys.size != 1
       end
 
       def no_sort_option?
         options.sort.blank? || options.sort.empty?
+      end
+
+      def different_sort_fields?(cursor, criteria_cursor_options)
+        criteria_cursor_options != cursor.sort_options
       end
 
       def default_sort
@@ -68,7 +78,7 @@ module Mongoid
       def scroll_field_type(criteria)
         scroll_field = scroll_field(criteria)
         field = criteria.klass.fields[scroll_field.to_s]
-        field.foreign_key? && field.object_id_field? ? bson_type : field.type
+        field.foreign_key? && field.object_id_field? ? bson_type.to_s : field.type.to_s
       end
 
       def bson_type

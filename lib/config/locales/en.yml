@@ -7,6 +7,10 @@ en:
             message: "Scrolling over a criteria with multiple fields is not supported."
             summary: "You're attempting to scroll over data with a sort order that includes multiple fields: %{sort}."
             resolution: "Simplify the sort order to a single field."
+          different_sort_fields:
+            message: "Specifying different sort fields than the original sort is not supported."
+            summary: "You're attempting to scroll over data with a sort order that differs between the cursor and the original criteria: %{diff}."
+            resolution: "Don't update the cursor sort options."
           invalid_cursor:
             message: "The cursor supplied is invalid."
             summary: "The cursor supplied is invalid: %{cursor}."
