@@ -1,4 +1,4 @@
-### 0.3.8 (Next)
+### 1.0.0 (Next)
 
 * [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Compatibility with Ruby 3 - [@leamotta](https://github.com/leamotta).
 * [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Replace Travis CI with GHA - [@leamotta](https://github.com/leamotta).
