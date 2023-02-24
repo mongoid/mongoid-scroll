@@ -19,6 +19,18 @@ if Object.const_defined?(:Mongo)
                                                  /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
       end
     end
+    context 'with different sort fields between the cursor and the criteria' do
+      subject do
+        Mongoid.default_client['feed_items'].find.sort(name: -1)
+      end
+
+      it 'raises Mongoid::Scroll::Errors::MismatchedSortFieldsError' do
+        record = Feed::Item.create!
+        cursor = Mongoid::Scroll::Cursor.from_record(record, field: record.fields['a_string'])
+        error_string = /You're attempting to scroll over data with a sort order that differs between the cursor and the original criteria: field_name, direction./
+        expect { subject.scroll(cursor, field_type: String) }.to raise_error Mongoid::Scroll::Errors::MismatchedSortFieldsError, error_string
+      end
+    end
     context 'with no sort' do
       subject do
         Mongoid.default_client['feed_items'].find
