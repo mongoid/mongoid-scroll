@@ -38,6 +38,8 @@ module Mongoid
       end
 
       def different_sort_fields?(cursor, criteria_cursor_options)
+        criteria_cursor_options[:field_type] = criteria_cursor_options[:field_type].to_s
+        criteria_cursor_options[:field_name] = criteria_cursor_options[:field_name].to_s
         criteria_cursor_options != cursor.sort_options
       end
 
@@ -78,7 +80,7 @@ module Mongoid
       def scroll_field_type(criteria)
         scroll_field = scroll_field(criteria)
         field = criteria.klass.fields[scroll_field.to_s]
-        field.foreign_key? && field.object_id_field? ? bson_type.to_s : field.type.to_s
+        field.foreign_key? && field.object_id_field? ? bson_type : field.type
       end
 
       def bson_type
