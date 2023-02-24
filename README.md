@@ -176,6 +176,14 @@ You can also a `field_name` and `field_type` instead of a Mongoid field.
 cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: "position" })
 ```
 
+When the `include_current` option is set to `true`, the cursor will include the record it points to:
+
+```ruby
+record = Feed::Item.desc(:position).limit(3).last
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields["position"], include_current: true })
+Feed::Item.asc(:position).limit(1).scroll(cursor).first # record
+```
+
 Contributing
 ------------
 
