@@ -19,8 +19,9 @@ module Moped
       scroll_field = query.operation.selector['$orderby'].keys.first
       scroll_direction = query.operation.selector['$orderby'].values.first.to_i
       # scroll cursor from the parameter, with value and tiebreak_id
-      cursor_options = { field_name: scroll_field, field_type: options[:field_type], direction: scroll_direction }
+      cursor_options = { field_name: scroll_field.to_s, field_type: options[:field_type].to_s, direction: scroll_direction }
       cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
+      raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
       query.operation.selector['$query'] = query.operation.selector['$query'].merge(cursor.criteria)
       query.operation.selector['$orderby'] = query.operation.selector['$orderby'].merge(_id: scroll_direction)
       # scroll
@@ -31,6 +32,17 @@ module Moped
       else
         query
       end
+    end
+
+    private
+
+    def raise_mismatched_sort_fields_error!(cursor, criteria_cursor_options)
+      diff = cursor.sort_options.reject { |k, v| criteria_cursor_options[k] == v }
+      raise Mongoid::Scroll::Errors::MismatchedSortFieldsError.new(diff: diff)
+    end
+
+    def different_sort_fields?(cursor, criteria_cursor_options)
+      criteria_cursor_options != cursor.sort_options
     end
   end
 end

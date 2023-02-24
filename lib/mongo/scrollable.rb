@@ -11,6 +11,7 @@ module Mongo
       options = { field_type: BSON::ObjectId } unless options
       cursor_options = { field_name: scroll_field, direction: scroll_direction }.merge(options)
       cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
+      raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
       # make a view
       view = Mongo::Collection::View.new(
         view.collection,
@@ -27,6 +28,19 @@ module Mongo
       else
         view
       end
+    end
+
+    private
+
+    def raise_mismatched_sort_fields_error!(cursor, criteria_cursor_options)
+      diff = cursor.sort_options.reject { |k, v| criteria_cursor_options[k] == v }
+      raise Mongoid::Scroll::Errors::MismatchedSortFieldsError.new(diff: diff)
+    end
+
+    def different_sort_fields?(cursor, criteria_cursor_options)
+      criteria_cursor_options[:field_type] = criteria_cursor_options[:field_type].to_s
+      criteria_cursor_options[:field_name] = criteria_cursor_options[:field_name].to_s
+      criteria_cursor_options != cursor.sort_options
     end
   end
 end
