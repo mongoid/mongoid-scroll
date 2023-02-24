@@ -1,6 +1,8 @@
 module Mongoid
   class Criteria
     module Scrollable
+      include Mongoid::Criteria::Scrollable::Fields
+
       def scroll(cursor = nil, &_block)
         raise_multiple_sort_fields_error if multiple_sort_fields?
         criteria = dup
@@ -24,23 +26,12 @@ module Mongoid
         raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options.sort)
       end
 
-      def raise_mismatched_sort_fields_error!(cursor, criteria_cursor_options)
-        diff = cursor.sort_options.reject { |k, v| criteria_cursor_options[k] == v }
-        raise Mongoid::Scroll::Errors::MismatchedSortFieldsError.new(diff: diff)
-      end
-
       def multiple_sort_fields?
         options.sort && options.sort.keys.size != 1
       end
 
       def no_sort_option?
         options.sort.blank? || options.sort.empty?
-      end
-
-      def different_sort_fields?(cursor, criteria_cursor_options)
-        criteria_cursor_options[:field_type] = criteria_cursor_options[:field_type].to_s
-        criteria_cursor_options[:field_name] = criteria_cursor_options[:field_name].to_s
-        criteria_cursor_options != cursor.sort_options
       end
 
       def default_sort
