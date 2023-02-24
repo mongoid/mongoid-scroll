@@ -19,11 +19,11 @@ describe Mongoid::Criteria do
       Feed::Item.desc(:name)
     end
 
-    it 'raises Mongoid::Scroll::Errors::DifferentSortFieldsError' do
+    it 'raises Mongoid::Scroll::Errors::MismatchedSortFieldsError' do
       record = Feed::Item.create!
       cursor = Mongoid::Scroll::Cursor.from_record(record, field: record.fields['a_string'])
       error_string = /You're attempting to scroll over data with a sort order that differs between the cursor and the original criteria: field_name, direction./
-      expect { subject.scroll(cursor) }.to raise_error Mongoid::Scroll::Errors::DifferentSortFieldsError, error_string
+      expect { subject.scroll(cursor) }.to raise_error Mongoid::Scroll::Errors::MismatchedSortFieldsError, error_string
     end
   end
 

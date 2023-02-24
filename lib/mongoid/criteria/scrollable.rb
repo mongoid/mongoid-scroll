@@ -7,7 +7,7 @@ module Mongoid
         criteria.merge!(default_sort) if no_sort_option?
         cursor_options = build_cursor_options(criteria)
         cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : new_cursor(cursor, cursor_options)
-        raise_different_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
+        raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
         cursor_criteria = build_cursor_criteria(criteria, cursor)
         if block_given?
           cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
@@ -24,9 +24,9 @@ module Mongoid
         raise Mongoid::Scroll::Errors::MultipleSortFieldsError.new(sort: criteria.options.sort)
       end
 
-      def raise_different_sort_fields_error!(cursor, criteria_cursor_options)
+      def raise_mismatched_sort_fields_error!(cursor, criteria_cursor_options)
         diff = cursor.sort_options.reject { |k, v| criteria_cursor_options[k] == v }
-        raise Mongoid::Scroll::Errors::DifferentSortFieldsError.new(diff: diff)
+        raise Mongoid::Scroll::Errors::MismatchedSortFieldsError.new(diff: diff)
       end
 
       def multiple_sort_fields?
