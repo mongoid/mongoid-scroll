@@ -184,6 +184,13 @@ cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields[
 Feed::Item.asc(:position).limit(1).scroll(cursor).first # record
 ```
 
+If the `field_name`, `field_type` or `direction` options you specify when creating the cursor are different from the original criteria, a `Mongoid::Scroll::Errors::MismatchedSortFieldsError` will be raised.
+
+```ruby
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: "position" })
+Feed::Item.desc(:created_at).scroll(cursor) # Raises a Mongoid::Scroll::Errors::MismatchedSortFieldsError
+```
+
 Contributing
 ------------
 

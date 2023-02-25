@@ -1,5 +1,5 @@
 module Mongoid
   module Scroll
-    VERSION = '0.3.8'.freeze
+    VERSION = '1.0.0'.freeze
   end
 end

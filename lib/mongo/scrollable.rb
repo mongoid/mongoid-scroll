@@ -1,5 +1,7 @@
 module Mongo
   module Scrollable
+    include Mongoid::Criteria::Scrollable::Fields
+
     def scroll(cursor = nil, options = nil, &_block)
       view = self
       # we don't support scrolling over a view with multiple fields
@@ -11,6 +13,7 @@ module Mongo
       options = { field_type: BSON::ObjectId } unless options
       cursor_options = { field_name: scroll_field, direction: scroll_direction }.merge(options)
       cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : Mongoid::Scroll::Cursor.new(cursor, cursor_options)
+      raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
       # make a view
       view = Mongo::Collection::View.new(
         view.collection,

@@ -1,8 +1,9 @@
-### 0.3.8 (Next)
+### 1.0.0 (Next)
 
 * [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Compatibility with Ruby 3 - [@leamotta](https://github.com/leamotta).
 * [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Replace Travis CI with GHA - [@leamotta](https://github.com/leamotta).
 * [#29](https://github.com/mongoid/mongoid-scroll/pull/29): Add ability to include the current record to the cursor - [@FabienChaynes](https://github.com/FabienChaynes).
+* [#30](https://github.com/mongoid/mongoid-scroll/pull/30): Prevent discrepancy between the original sort and the cursor sort - [@FabienChaynes](https://github.com/FabienChaynes).
 * Your contribution here.
 
 ### 0.3.7 (2021/06/01)

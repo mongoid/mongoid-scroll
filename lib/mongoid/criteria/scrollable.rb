@@ -1,12 +1,15 @@
 module Mongoid
   class Criteria
     module Scrollable
+      include Mongoid::Criteria::Scrollable::Fields
+
       def scroll(cursor = nil, &_block)
         raise_multiple_sort_fields_error if multiple_sort_fields?
         criteria = dup
         criteria.merge!(default_sort) if no_sort_option?
         cursor_options = build_cursor_options(criteria)
         cursor = cursor.is_a?(Mongoid::Scroll::Cursor) ? cursor : new_cursor(cursor, cursor_options)
+        raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
         cursor_criteria = build_cursor_criteria(criteria, cursor)
         if block_given?
           cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
