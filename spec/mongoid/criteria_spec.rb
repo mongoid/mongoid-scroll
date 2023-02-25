@@ -103,6 +103,18 @@ describe Mongoid::Criteria do
           from_item = Feed::Item.asc(field_name).scroll(cursor).to_a.first
           expect(from_item).to eq sixth_item
         end
+        it 'includes the current record when Mongoid::Scroll::Cursor#include_current is true' do
+          last_record = nil
+          cursor = nil
+          Feed::Item.asc(field_name).limit(5).scroll do |record, next_cursor|
+            last_record = record
+            cursor = next_cursor
+          end
+          fifth_item = last_record
+          cursor.include_current = true
+          from_item = Feed::Item.asc(field_name).scroll(cursor).to_a.first
+          expect(from_item).to eq fifth_item
+        end
         it 'scrolls in descending order' do
           records = []
           Feed::Item.desc(field_name).limit(3).scroll do |record, _next_cursor|
@@ -221,6 +233,18 @@ describe Mongoid::Criteria do
         expect(records.size).to eq 3
         expect(records).to eq Feed::Item.all.sort(_id: sort_order[:a_integer]).to_a
       end
+    end
+  end
+  context 'with several records having the same value' do
+    before :each do
+      3.times { Feed::Item.create! a_integer: 5 }
+    end
+    it 'returns records from the current one when Mongoid::Scroll::Cursor#include_current is true' do
+      _first_item, second_item, third_item = Feed::Item.asc(:a_integer).to_a
+      cursor = Mongoid::Scroll::Cursor.from_record(second_item, field: Feed::Item.fields['a_integer'])
+      cursor.include_current = true
+      items = Feed::Item.asc(:a_integer).limit(2).scroll(cursor).to_a
+      expect(items).to eq([second_item, third_item])
     end
   end
 end

@@ -138,4 +138,25 @@ describe Mongoid::Scroll::Cursor do
       end.to raise_error ArgumentError
     end
   end
+  context 'a cursor with include_current set to true' do
+    let(:feed_item) { Feed::Item.create!(a_string: 'astring') }
+    subject do
+      Mongoid::Scroll::Cursor.new "#{feed_item.a_string}:#{feed_item.id}", field_name: 'a_string', field_type: String, include_current: true
+    end
+    its(:value) { should eq 'astring' }
+    its(:tiebreak_id) { should eq feed_item.id }
+    its(:criteria) do
+      if Mongoid::Compatibility::Version.mongoid3?
+        should eq('$or' => [
+                    { 'a_string' => { '$gt' => 'astring' } },
+                    { '_id' => { '$gte' => Moped::BSON::ObjectId(feed_item.id.to_s) }, 'a_string' => 'astring' }
+                  ])
+      else
+        should eq('$or' => [
+                    { 'a_string' => { '$gt' => 'astring' } },
+                    { '_id' => { '$gte' => BSON::ObjectId(feed_item.id.to_s) }, 'a_string' => 'astring' }
+                  ])
+      end
+    end
+  end
 end

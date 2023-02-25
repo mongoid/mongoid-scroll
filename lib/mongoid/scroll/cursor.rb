@@ -1,19 +1,19 @@
 module Mongoid
   module Scroll
     class Cursor
-      attr_accessor :value, :tiebreak_id, :field_type, :field_name, :direction
+      attr_accessor :value, :tiebreak_id, :field_type, :field_name, :direction, :include_current
 
       def initialize(value = nil, options = {})
         @field_type, @field_name = Mongoid::Scroll::Cursor.extract_field_options(options)
         @direction = options[:direction] || 1
+        @include_current = options[:include_current] || false
         parse(value)
       end
 
       def criteria
         mongo_value = value.class.mongoize(value) if value
-        compare_direction = direction == 1 ? '$gt' : '$lt'
         cursor_criteria = { field_name => { compare_direction => mongo_value } } if mongo_value
-        tiebreak_criteria = { field_name => mongo_value, :_id => { compare_direction => tiebreak_id } } if mongo_value && tiebreak_id
+        tiebreak_criteria = { field_name => mongo_value, :_id => { tiebreak_compare_direction => tiebreak_id } } if mongo_value && tiebreak_id
         cursor_selector = if Mongoid::Compatibility::Version.mongoid6? || Mongoid::Compatibility::Version.mongoid7?
                             Mongoid::Criteria::Queryable::Selector.new
                           else
@@ -38,6 +38,23 @@ module Mongoid
       end
 
       private
+
+      def compare_direction
+        direction == 1 ? '$gt' : '$lt'
+      end
+
+      def tiebreak_compare_direction
+        if include_current
+          case compare_direction
+          when '$gt'
+            '$gte'
+          when '$lt'
+            '$lte'
+          end
+        else
+          compare_direction
+        end
+      end
 
       def parse(value)
         return unless value
