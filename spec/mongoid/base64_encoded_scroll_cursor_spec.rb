@@ -10,9 +10,9 @@ describe Mongoid::Scroll::Base64EncodedCursor do
     its(:value) { should be_nil }
     its(:criteria) { should eq({}) }
     its(:to_s) { should eq(base64_string) }
-    describe '.deserialize' do
+    describe '.parse' do
       it 'is properly decoded' do
-        cursor = described_class.deserialize(base64_string)
+        cursor = described_class.parse(base64_string)
         expect(cursor.tiebreak_id).to be_nil
         expect(cursor.value).to be_nil
         expect(cursor.criteria).to eq({})
