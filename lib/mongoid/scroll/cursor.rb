@@ -4,7 +4,7 @@ module Mongoid
       attr_accessor :value, :tiebreak_id, :field_type, :field_name, :direction, :include_current
 
       def initialize(value = nil, options = {})
-        @field_type, @field_name = Mongoid::Scroll::Cursor.extract_field_options(options)
+        @field_type, @field_name = self.class.extract_field_options(options)
         @direction = options[:direction] || 1
         @include_current = options[:include_current] || false
         parse(value)
@@ -33,7 +33,7 @@ module Mongoid
 
       class << self
         def from_record(record, options)
-          cursor = Mongoid::Scroll::Cursor.new(nil, options)
+          cursor = new(nil, options)
           value = record.respond_to?(cursor.field_name) ? record.send(cursor.field_name) : record[cursor.field_name]
           cursor.value = Mongoid::Scroll::Cursor.parse_field_value(cursor.field_type, cursor.field_name, value)
           cursor.tiebreak_id = record['_id']
@@ -86,7 +86,7 @@ module Mongoid
             [field_type.to_s, field_name.to_s]
           elsif options && (field = options[:field])
             [field.type.to_s, field.name.to_s]
-          else
+          elsif self == Mongoid::Scroll::Cursor
             raise ArgumentError.new 'Missing options[:field_name] and/or options[:field_type].'
           end
         end
