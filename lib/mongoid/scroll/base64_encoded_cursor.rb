@@ -27,7 +27,11 @@ module Mongoid
       def parse(value)
         return unless value
 
-        config_hash = ::JSON.parse(::Base64.strict_decode64(value))
+        begin
+          config_hash = ::JSON.parse(::Base64.strict_decode64(value))
+        rescue
+          raise Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value)
+        end
         @field_type = config_hash['field_type']
         @field_name = config_hash['field_name']
         @direction = config_hash['direction']

@@ -56,4 +56,14 @@ describe Mongoid::Scroll::Base64EncodedCursor do
       end
     end
   end
+
+  context 'an invalid cursor' do
+    it 'raises a Mongoid::Scroll::Errors::InvalidCursorError with an invalid Base64 string' do
+      expect { described_class.new 'invalid' }.to raise_error Mongoid::Scroll::Errors::InvalidCursorError, /The cursor supplied is invalid: invalid./
+    end
+
+    it 'raises a Mongoid::Scroll::Errors::InvalidCursorError with an invalid JSON string' do
+      expect { described_class.new 'aW52YWxpZA==' }.to raise_error Mongoid::Scroll::Errors::InvalidCursorError, /The cursor supplied is invalid: aW52YWxpZA==./
+    end
+  end
 end
