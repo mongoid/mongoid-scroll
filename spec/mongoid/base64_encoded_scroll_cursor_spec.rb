@@ -25,8 +25,7 @@ describe Mongoid::Scroll::Base64EncodedCursor do
 
   context 'a string field cursor' do
     let(:base64_string) { 'eyJ2YWx1ZSI6ImFzdHJpbmc6NjQwMjBjYzA4OWIyNTQ0ZTIzYTdkNmRjIiwiZmllbGRfdHlwZSI6IlN0cmluZyIsImZpZWxkX25hbWUiOiJhX3N0cmluZyIsImRpcmVjdGlvbiI6MSwiaW5jbHVkZV9jdXJyZW50IjpmYWxzZX0=' }
-    let(:id) { Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId('64020cc089b2544e23a7d6dc') : BSON::ObjectId.from_string('64020cc089b2544e23a7d6dc') }
-    let(:feed_item) { Feed::Item.create!(id: id, a_string: 'astring') }
+    let(:feed_item) { Feed::Item.create!(id: '64020cc089b2544e23a7d6dc', a_string: 'astring') }
     let(:criteria) do
       {
         '$or' => [
