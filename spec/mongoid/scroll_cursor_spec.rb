@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe Mongoid::Scroll::Cursor do
+  []
   context 'an empty cursor' do
     subject do
       Mongoid::Scroll::Cursor.new nil, field_name: 'a_string', field_type: String

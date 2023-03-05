@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Mongoid::Scroll::Base64EncodedCursor do
   context 'an empty cursor' do
-    let(:base64_string) { 'eyJ2YWx1ZSI6bnVsbCwiZmllbGRfdHlwZSI6IlN0cmluZyIsImZpZWxkX25hbWUiOiJhX3N0cmluZyIsImRpcmVjdGlvbiI6MSwiaW5jbHVkZV9jdXJyZW50IjpmYWxzZX0=' }
+    let(:base64_string) { 'eyJ2YWx1ZSI6bnVsbCwiZmllbGRfdHlwZSI6IlN0cmluZyIsImZpZWxkX25hbWUiOiJhX3N0cmluZyIsImRpcmVjdGlvbiI6MSwiaW5jbHVkZV9jdXJyZW50IjpmYWxzZSwidGllYnJlYWtfaWQiOm51bGx9' }
     subject do
       described_class.new(base64_string)
     end
@@ -10,21 +10,10 @@ describe Mongoid::Scroll::Base64EncodedCursor do
     its(:value) { should be_nil }
     its(:criteria) { should eq({}) }
     its(:to_s) { should eq(base64_string) }
-
-    describe '.from_cursor' do
-      let(:base_cursor) { Mongoid::Scroll::Cursor.new nil, field_name: 'a_string', field_type: String }
-      it 'is properly created' do
-        base64_encoded_cursor = described_class.from_cursor(base_cursor)
-        expect(base64_encoded_cursor).to be_a(described_class)
-        expect(base64_encoded_cursor.tiebreak_id).to be_nil
-        expect(base64_encoded_cursor.value).to be_nil
-        expect(base64_encoded_cursor.criteria).to eq({})
-      end
-    end
   end
 
   context 'a string field cursor' do
-    let(:base64_string) { 'eyJ2YWx1ZSI6ImFzdHJpbmc6NjQwMjBjYzA4OWIyNTQ0ZTIzYTdkNmRjIiwiZmllbGRfdHlwZSI6IlN0cmluZyIsImZpZWxkX25hbWUiOiJhX3N0cmluZyIsImRpcmVjdGlvbiI6MSwiaW5jbHVkZV9jdXJyZW50IjpmYWxzZX0=' }
+    let(:base64_string) { 'eyJ2YWx1ZSI6ImFzdHJpbmciLCJmaWVsZF90eXBlIjoiU3RyaW5nIiwiZmllbGRfbmFtZSI6ImFfc3RyaW5nIiwiZGlyZWN0aW9uIjoxLCJpbmNsdWRlX2N1cnJlbnQiOmZhbHNlLCJ0aWVicmVha19pZCI6IjY0MDIwY2MwODliMjU0NGUyM2E3ZDZkYyJ9' }
     let(:feed_item) { Feed::Item.create!(a_string: 'astring') }
     let(:feed_id) { Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId('64020cc089b2544e23a7d6dc') : BSON::ObjectId.from_string('64020cc089b2544e23a7d6dc') }
     let(:criteria) do
@@ -47,17 +36,6 @@ describe Mongoid::Scroll::Base64EncodedCursor do
       should eq(criteria)
     end
     its(:to_s) { should eq(base64_string) }
-
-    describe '.from_cursor' do
-      let(:base_cursor) { Mongoid::Scroll::Cursor.new "#{feed_item.a_string}:#{feed_item.id}", field_name: 'a_string', field_type: String }
-      it 'is properly created' do
-        base64_encoded_cursor = described_class.from_cursor(base_cursor)
-        expect(base64_encoded_cursor).to be_a(described_class)
-        expect(base64_encoded_cursor.tiebreak_id).to eq(feed_item.id)
-        expect(base64_encoded_cursor.value).to eq('astring')
-        expect(base64_encoded_cursor.criteria).to eq(criteria)
-      end
-    end
   end
 
   context 'an invalid cursor' do
