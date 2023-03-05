@@ -191,6 +191,29 @@ cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, fie
 Feed::Item.desc(:created_at).scroll(cursor) # Raises a Mongoid::Scroll::Errors::MismatchedSortFieldsError
 ```
 
+### Base64 encoded cursors
+
+`Mongoid::Scroll::Base64EncodedCursor` can be used to generate a Base64 encoded string (using RFC 4648) containing all the information needed to rebuild a cursor.
+
+A `Mongoid::Scroll::Cursor` can be mutated into a `Mongoid::Scroll::Base64EncodedCursor` by using the `Mongoid::Scroll::Base64EncodedCursor.from_cursor` method:
+
+```ruby
+saved_cursor = nil
+Feed::Item.desc(:position).limit(5).scroll do |record, next_cursor|
+  # each record, one-by-one
+  saved_cursor = next_cursor
+end
+base64_cursor = Mongoid::Scroll::Base64EncodedCursor.from_cursor(saved_cursor)
+```
+
+The `Mongoid::Scroll::Base64EncodedCursor#to_s` method will return the cursor encoded as a Base64 string, which you'll be able to use subsequently to rebuild the cursor using `Mongoid::Scroll::Base64EncodedCursor.new`. In this case, you won't have to pass the `:field`, `:field_type` or `:field_name` options:
+
+```ruby
+base64_cursor = Mongoid::Scroll::Base64EncodedCursor.from_cursor(saved_cursor)
+base64_string = base64_cursor.to_s
+Mongoid::Scroll::Base64EncodedCursor.new(base64_string)
+```
+
 Contributing
 ------------
 
