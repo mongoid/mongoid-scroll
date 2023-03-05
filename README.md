@@ -1,5 +1,4 @@
-Mongoid::Scroll
-===============
+# Mongoid::Scroll
 
 [![Gem Version](https://badge.fury.io/rb/mongoid-scroll.svg)](https://badge.fury.io/rb/mongoid-scroll)
 [![Build Status](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml/badge.svg)](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml)
@@ -8,20 +7,17 @@ Mongoid::Scroll
 
 Mongoid extension that enables infinite scrolling for `Mongoid::Criteria`, `Moped::Query` and `Mongo::Collection::View`.
 
-Compatibility
--------------
+## Compatibility
 
 This gem supports Mongoid 3, 4, 5, 6, 7, Moped and Mongo-Ruby-Driver.
 
-Demo
-----
+## Demo
 
 Check out [shows on artsy.net](http://artsy.net/shows). Keep scrolling down.
 
 There're also two code samples for Mongoid and Moped in [examples](examples). Run `bundle exec ruby examples/mongoid_scroll_feed.rb`.
 
-The Problem
------------
+## The Problem
 
 Traditional pagination does not work when data changes between paginated requests, which makes it unsuitable for infinite scroll behaviors.
 
@@ -30,8 +26,7 @@ Traditional pagination does not work when data changes between paginated request
 
 The solution implemented by the `scroll` extension paginates data using a cursor, giving you the ability to restart pagination where you left it off. This is a non-trivial problem when combined with sorting over non-unique record fields, such as timestamps.
 
-Installation
-------------
+## Installation
 
 Add the gem to your Gemfile and run `bundle install`.
 
@@ -39,8 +34,7 @@ Add the gem to your Gemfile and run `bundle install`.
 gem 'mongoid-scroll'
 ```
 
-Usage
------
+## Usage
 
 ### Mongoid
 
@@ -126,8 +120,7 @@ session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_cursor, { fie
 end
 ```
 
-Indexes and Performance
------------------------
+## Indexes and Performance
 
 A query without a cursor is identical to a query without a scroll.
 
@@ -159,8 +152,7 @@ module Feed
 end
 ```
 
-Cursors
--------
+## Cursors
 
 You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. A cursor points at the last record of the previous iteration and unlike MongoDB cursors will not expire.
 
@@ -191,18 +183,24 @@ cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, fie
 Feed::Item.desc(:created_at).scroll(cursor) # Raises a Mongoid::Scroll::Errors::MismatchedSortFieldsError
 ```
 
-### Base64 encoded cursors
+### Cursor Encoding
+
+#### Base64
 
 `Mongoid::Scroll::Base64EncodedCursor` can be used instead of `Mongoid::Scroll::Cursor` to generate a base64-encoded string (using RFC 4648) containing all the information needed to rebuild a cursor.
 
-Contributing
-------------
+```ruby
+Feed::Item.desc(:position).limit(5).scroll(Mongoid::Scroll::Base64EncodedCursor) do |record, next_cursor|
+   # next_cursor is of type Mongoid::Scroll::Base64EncodedCursor
+end
+```
+
+## Contributing
 
 Fork the project. Make your feature addition or bug fix with tests. Send a pull request. Bonus points for topic branches.
 
-Copyright and License
----------------------
+## Copyright and License
 
 MIT License, see [LICENSE](http://github.com/mongoid/mongoid-scroll/raw/master/LICENSE.md) for details.
 
-(c) 2013-2015 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)
+(c) 2013-2023 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)
