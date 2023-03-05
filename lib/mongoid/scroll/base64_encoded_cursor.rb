@@ -19,7 +19,13 @@ module Mongoid
       end
 
       def to_s
-        Base64.strict_encode64({ value: super, field_type: field_type, field_name: field_name, direction: direction, include_current: include_current }.to_json)
+        Base64.strict_encode64({
+          value: super,
+          field_type: field_type,
+          field_name: field_name,
+          direction: direction,
+          include_current: include_current
+        }.to_json)
       end
 
       private
