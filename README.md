@@ -179,7 +179,7 @@ Feed::Item.desc(:created_at).scroll(cursor) # Raises a Mongoid::Scroll::Errors::
 
 ### Standard Cursor
 
-The `Mongoid::Scroll::Base64EncodedCursor` encodes a value and a tiebreak ID separated by `:`, and does not include other options, such as scroll direction. Take extra care not to pass a cursor into a scroll with different options. 
+The `Mongoid::Scroll::Cursor` encodes a value and a tiebreak ID separated by `:`, and does not include other options, such as scroll direction. Take extra care not to pass a cursor into a scroll with different options. 
 
 ### Base64 Encoded Cursor
 

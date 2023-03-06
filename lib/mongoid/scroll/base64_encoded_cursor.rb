@@ -13,8 +13,8 @@ module Mongoid
           rescue
             raise Mongoid::Scroll::Errors::InvalidBase64CursorError.new(cursor: value)
           end
-          super parsed['value'], {
-            field_type: parsed['field_type'],
+          super BaseCursor.parse_field_value(parsed['field_type'], parsed['field_name'], parsed['value']), {
+            field_type: BaseCursor.parse_field_type(parsed['field_type'], parsed['field_name']),
             field_name: parsed['field_name'],
             direction: parsed['direction'],
             include_current: parsed['include_current'],
@@ -27,8 +27,8 @@ module Mongoid
 
       def to_s
         Base64.strict_encode64({
-          value: value,
-          field_type: field_type,
+          value: BaseCursor.transform_field_value(field_type, field_name, value),
+          field_type: field_type.to_s,
           field_name: field_name,
           direction: direction,
           include_current: include_current,

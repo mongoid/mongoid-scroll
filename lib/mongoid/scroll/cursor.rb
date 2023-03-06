@@ -9,7 +9,7 @@ module Mongoid
           unless parts && parts.length >= 2
             raise Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value)
           end
-          value = Mongoid::Scroll::Cursor.parse_field_value(
+          value = Mongoid::Scroll::BaseCursor.parse_field_value(
             options[:field_type],
             options[:field_name],
             parts[0...-1].join(':')
@@ -29,37 +29,6 @@ module Mongoid
             value
           ), tiebreak_id
         ].join(':') : nil
-      end
-
-      private
-
-      class << self
-        def parse_field_value(field_type, field_name, value)
-          case field_type.to_s
-          when 'BSON::ObjectId', 'Moped::BSON::ObjectId' then value
-          when 'String' then value.to_s
-          when 'DateTime' then value.is_a?(DateTime) ? value : Time.at(value.to_i).to_datetime
-          when 'Time' then value.is_a?(Time) ? value : Time.at(value.to_i)
-          when 'Date' then value.is_a?(Date) ? value : Time.at(value.to_i).utc.to_date
-          when 'Float' then value.to_f
-          when 'Integer' then value.to_i
-          else
-            raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
-          end
-        end
-
-        def transform_field_value(field_type, field_name, value)
-          case field_type.to_s
-          when 'BSON::ObjectId', 'Moped::BSON::ObjectId' then value
-          when 'String' then value.to_s
-          when 'Date' then Time.utc(value.year, value.month, value.day).to_i
-          when 'DateTime', 'Time' then value.utc.to_i
-          when 'Float' then value.to_f
-          when 'Integer' then value.to_i
-          else
-            raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
-          end
-        end
       end
     end
   end

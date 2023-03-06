@@ -20,7 +20,7 @@ describe Mongoid::Scroll::Cursor do
     subject do
       Mongoid::Scroll::Cursor.new "#{feed_item.id}:#{feed_item.id}", field_name: '_id', field_type: BSON::ObjectId, direction: 1
     end
-    its(:value) { should eq feed_item.id.to_s }
+    its(:value) { should eq feed_item.id }
     its(:tiebreak_id) { should eq feed_item.id }
     its(:criteria) do
       should eq('$or' => [

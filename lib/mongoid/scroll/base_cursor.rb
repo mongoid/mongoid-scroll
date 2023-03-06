@@ -38,10 +38,55 @@ module Mongoid
       end
 
       class << self
+        def parse_field_type(field_type, field_name)
+          case field_type.to_s
+          when 'BSON::ObjectId' then BSON::ObjectId
+          when 'String' then String
+          when 'DateTime' then DateTime
+          when 'Time' then Time
+          when 'Date' then Date
+          when 'Float' then Float
+          when 'Integer' then Integer
+          else
+            raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
+          end
+        end
+
+        def parse_field_value(field_type, field_name, value)
+          return nil unless value
+
+          case field_type.to_s
+          when 'BSON::ObjectId' then BSON::ObjectId.from_string(value)
+          when 'String' then value.to_s
+          when 'DateTime' then value.is_a?(DateTime) ? value : Time.at(value.to_i).to_datetime
+          when 'Time' then value.is_a?(Time) ? value : Time.at(value.to_i)
+          when 'Date' then value.is_a?(Date) ? value : Time.at(value.to_i).utc.to_date
+          when 'Float' then value.to_f
+          when 'Integer' then value.to_i
+          else
+            raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
+          end
+        end
+
+        def transform_field_value(field_type, field_name, value)
+          return nil unless value
+
+          case field_type.to_s
+          when 'BSON::ObjectId' then value.to_s
+          when 'String' then value.to_s
+          when 'Date' then Time.utc(value.year, value.month, value.day).to_i
+          when 'DateTime', 'Time' then value.utc.to_i
+          when 'Float' then value.to_f
+          when 'Integer' then value.to_i
+          else
+            raise Mongoid::Scroll::Errors::UnsupportedFieldTypeError.new(field: field_name, type: field_type)
+          end
+        end
+
         def from_record(record, options)
           cursor = new(nil, options)
           record_value = record.respond_to?(cursor.field_name) ? record.send(cursor.field_name) : record[cursor.field_name]
-          cursor.value = Mongoid::Scroll::Cursor.parse_field_value(cursor.field_type, cursor.field_name, record_value)
+          cursor.value = Mongoid::Scroll::BaseCursor.parse_field_value(cursor.field_type, cursor.field_name, record_value)
           cursor.tiebreak_id = record['_id']
           cursor
         end
