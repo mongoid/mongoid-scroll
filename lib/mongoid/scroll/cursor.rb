@@ -2,7 +2,8 @@ module Mongoid
   module Scroll
     class Cursor < BaseCursor
       def initialize(value = nil, options = {})
-        options = Mongoid::Scroll::Cursor.extract_field_options(options)
+        options = BaseCursor.extract_field_options(options)
+        raise ArgumentError.new 'Missing options[:field_name] and/or options[:field_type].' unless options
         if value
           parts = value.split(':') if value
           unless parts && parts.length >= 2
@@ -13,20 +14,10 @@ module Mongoid
             options[:field_name],
             parts[0...-1].join(':')
           )
-          options[:tiebreak_id] = string_to_id(parts[-1])
+          options[:tiebreak_id] = BSON::ObjectId.from_string(parts[-1])
           super value, options
         else
           super nil, options
-        end
-      end
-
-      class << self
-        def from_record(record, options)
-          cursor = new(nil, options)
-          record_value = record.respond_to?(cursor.field_name) ? record.send(cursor.field_name) : record[cursor.field_name]
-          cursor.value = Mongoid::Scroll::Cursor.parse_field_value(cursor.field_type, cursor.field_name, record_value)
-          cursor.tiebreak_id = record['_id']
-          cursor
         end
       end
 
@@ -43,26 +34,6 @@ module Mongoid
       private
 
       class << self
-        def extract_field_options(options)
-          if options && (field_name = options[:field_name]) && (field_type = options[:field_type])
-            {
-              field_type: field_type.to_s,
-              field_name: field_name.to_s,
-              direction: options[:direction] || 1,
-              include_current: options[:include_current] || false
-            }
-          elsif options && (field = options[:field])
-            {
-              field_type: field.type.to_s,
-              field_name: field.name.to_s,
-              direction: options[:direction] || 1,
-              include_current: options[:include_current] || false
-            }
-          elsif self == Mongoid::Scroll::Cursor
-            raise ArgumentError.new 'Missing options[:field_name] and/or options[:field_type].'
-          end
-        end
-
         def parse_field_value(field_type, field_name, value)
           case field_type.to_s
           when 'BSON::ObjectId', 'Moped::BSON::ObjectId' then value

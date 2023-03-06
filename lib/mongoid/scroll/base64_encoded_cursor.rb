@@ -6,18 +6,19 @@ module Mongoid
     # Allows to serializer/deserialize the cursor using RFC 4648
     class Base64EncodedCursor < BaseCursor
       def initialize(value, options = {})
+        options = BaseCursor.extract_field_options(options)
         if value
           begin
             parsed = ::JSON.parse(::Base64.strict_decode64(value))
           rescue
-            raise Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value)
+            raise Mongoid::Scroll::Errors::InvalidBase64CursorError.new(cursor: value)
           end
           super parsed['value'], {
             field_type: parsed['field_type'],
             field_name: parsed['field_name'],
             direction: parsed['direction'],
             include_current: parsed['include_current'],
-            tiebreak_id: string_to_id(parsed['tiebreak_id'])
+            tiebreak_id: parsed['tiebreak_id'] && !parsed['tiebreak_id'].empty? ? BSON::ObjectId.from_string(parsed['tiebreak_id']) : nil
           }
         else
           super nil, options

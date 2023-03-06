@@ -17,22 +17,15 @@ describe Mongoid::Scroll::Cursor do
   end
   context 'an id field cursor' do
     let(:feed_item) { Feed::Item.create!(a_string: 'astring') }
-    field_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
     subject do
-      Mongoid::Scroll::Cursor.new "#{feed_item.id}:#{feed_item.id}", field_name: '_id', field_type: field_type, direction: 1
+      Mongoid::Scroll::Cursor.new "#{feed_item.id}:#{feed_item.id}", field_name: '_id', field_type: BSON::ObjectId, direction: 1
     end
     its(:value) { should eq feed_item.id.to_s }
     its(:tiebreak_id) { should eq feed_item.id }
     its(:criteria) do
-      if Mongoid::Compatibility::Version.mongoid3?
-        should eq('$or' => [
-                    { '_id' => { '$gt' => Moped::BSON::ObjectId(feed_item.id.to_s) } }
-                  ])
-      else
-        should eq('$or' => [
-                    { '_id' => { '$gt' => BSON::ObjectId(feed_item.id.to_s) } }
-                  ])
-      end
+      should eq('$or' => [
+                  { '_id' => { '$gt' => BSON::ObjectId(feed_item.id.to_s) } }
+                ])
     end
   end
   context 'a string field cursor' do
@@ -146,17 +139,10 @@ describe Mongoid::Scroll::Cursor do
     its(:value) { should eq 'astring' }
     its(:tiebreak_id) { should eq feed_item.id }
     its(:criteria) do
-      if Mongoid::Compatibility::Version.mongoid3?
-        should eq('$or' => [
-                    { 'a_string' => { '$gt' => 'astring' } },
-                    { '_id' => { '$gte' => Moped::BSON::ObjectId(feed_item.id.to_s) }, 'a_string' => 'astring' }
-                  ])
-      else
-        should eq('$or' => [
-                    { 'a_string' => { '$gt' => 'astring' } },
-                    { '_id' => { '$gte' => BSON::ObjectId(feed_item.id.to_s) }, 'a_string' => 'astring' }
-                  ])
-      end
+      should eq('$or' => [
+                  { 'a_string' => { '$gt' => 'astring' } },
+                  { '_id' => { '$gte' => BSON::ObjectId(feed_item.id.to_s) }, 'a_string' => 'astring' }
+                ])
     end
   end
 end

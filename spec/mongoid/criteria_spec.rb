@@ -23,7 +23,7 @@ describe Mongoid::Criteria do
 
         it 'raises Mongoid::Scroll::Errors::MismatchedSortFieldsError' do
           record = Feed::Item.create!
-          cursor = Mongoid::Scroll::Cursor.from_record(record, field: record.fields['a_string'])
+          cursor = cursor_type.from_record(record, field: record.fields['a_string'])
           error_string = /You're attempting to scroll over data with a sort order that differs between the cursor and the original criteria: field_name, direction./
           expect { subject.scroll(cursor) }.to raise_error Mongoid::Scroll::Errors::MismatchedSortFieldsError, error_string
         end
@@ -141,12 +141,10 @@ describe Mongoid::Criteria do
             it 'map' do
               record = Feed::Item.desc(field_name).limit(3).scroll(cursor_type).map { |r| r }.last
               expect(record).to_not be nil
-              cursor = Mongoid::Scroll::Cursor.from_record(record, field_type: field_type, field_name: field_name)
+              cursor = cursor_type.from_record(record, field_type: field_type, field_name: field_name)
               expect(cursor).to_not be nil
-              expect(cursor.to_s.split(':')).to eq [
-                Mongoid::Scroll::Cursor.transform_field_value(field_type, field_name, record.send(field_name)).to_s,
-                record.id.to_s
-              ]
+              expect(cursor.tiebreak_id).to eq record.id
+              expect(cursor.value).to eq record.send(field_name)
             end
           end
         end
@@ -192,13 +190,12 @@ describe Mongoid::Criteria do
           expect(records.size).to eq 1
           expect(records.map(&:name)).to eq ['Feed Item 2']
         end
-        it 'merges cursor criteria when no sort field is given' do
+        it 'merges cursor criteria when no sort field is given', if: cursor_type == Mongoid::Scroll::Cursor do
           criteria = Feed::Item.where(:a_time.gt => Time.new(2013, 7, 22, 1, 2, 3))
           feed_item = Feed::Item.where(name: 'Feed Item 1').first
           cursor_input = "#{feed_item.id}:#{feed_item.id}"
-          field_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
-          cursor_options = { field_type: field_type, field_name: '_id', direction: 1 }
-          cursor = Mongoid::Scroll::Cursor.new(cursor_input, cursor_options)
+          cursor_options = { field_type: BSON::ObjectId, field_name: '_id', direction: 1 }
+          cursor = cursor_type.new(cursor_input, cursor_options)
           records = []
           criteria.limit(2).scroll(cursor) do |record, next_cursor|
             records << record

@@ -15,7 +15,7 @@ describe Mongoid::Scroll::Base64EncodedCursor do
   context 'a string field cursor' do
     let(:base64_string) { 'eyJ2YWx1ZSI6ImFzdHJpbmciLCJmaWVsZF90eXBlIjoiU3RyaW5nIiwiZmllbGRfbmFtZSI6ImFfc3RyaW5nIiwiZGlyZWN0aW9uIjoxLCJpbmNsdWRlX2N1cnJlbnQiOmZhbHNlLCJ0aWVicmVha19pZCI6IjY0MDIwY2MwODliMjU0NGUyM2E3ZDZkYyJ9' }
     let(:feed_item) { Feed::Item.create!(a_string: 'astring') }
-    let(:feed_id) { Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId('64020cc089b2544e23a7d6dc') : BSON::ObjectId.from_string('64020cc089b2544e23a7d6dc') }
+    let(:feed_id) { BSON::ObjectId.from_string('64020cc089b2544e23a7d6dc') }
     let(:criteria) do
       {
         '$or' => [
@@ -39,12 +39,12 @@ describe Mongoid::Scroll::Base64EncodedCursor do
   end
 
   context 'an invalid cursor' do
-    it 'raises a Mongoid::Scroll::Errors::InvalidCursorError with an invalid Base64 string' do
-      expect { described_class.new 'invalid' }.to raise_error Mongoid::Scroll::Errors::InvalidCursorError, /The cursor supplied is invalid: invalid./
+    it 'raises a Mongoid::Scroll::Errors::InvalidBase64CursorError with an invalid Base64 string' do
+      expect { described_class.new 'invalid' }.to raise_error Mongoid::Scroll::Errors::InvalidBase64CursorError, /The cursor supplied is invalid: invalid./
     end
 
-    it 'raises a Mongoid::Scroll::Errors::InvalidCursorError with an invalid JSON string' do
-      expect { described_class.new 'aW52YWxpZA==' }.to raise_error Mongoid::Scroll::Errors::InvalidCursorError, /The cursor supplied is invalid: aW52YWxpZA==./
+    it 'raises a Mongoid::Scroll::Errors::InvalidBase64CursorError with an invalid JSON string' do
+      expect { described_class.new 'aW52YWxpZA==' }.to raise_error Mongoid::Scroll::Errors::InvalidBase64CursorError, /The cursor supplied is invalid: aW52YWxpZA==./
     end
   end
 end

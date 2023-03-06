@@ -4,14 +4,8 @@ Bundler.setup(:default, :development)
 require 'mongoid-scroll'
 require 'faker'
 
-if defined?(Moped)
-  Moped.logger = Logger.new($stdout)
-  Moped.logger.level = Logger::DEBUG
-else
-  Mongoid.logger.level = Logger::INFO
-  Mongo::Logger.logger.level = Logger::INFO if Mongoid::Compatibility::Version.mongoid5?
-end
-
+Mongoid.logger.level = Logger::INFO
+Mongo::Logger.logger.level = Logger::INFO if Mongoid::Compatibility::Version.mongoid5?
 Mongoid.connect_to 'mongoid_scroll_demo'
 Mongoid.purge!
 

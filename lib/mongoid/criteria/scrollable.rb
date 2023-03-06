@@ -2,11 +2,10 @@ module Mongoid
   class Criteria
     module Scrollable
       include Mongoid::Criteria::Scrollable::Fields
+      include Mongoid::Criteria::Scrollable::Cursors
 
       def scroll(cursor_or_type = nil, &_block)
-        cursor = cursor_or_type.is_a?(Class) ? nil : cursor_or_type
-        cursor_type = cursor.class if cursor.is_a?(Mongoid::Scroll::BaseCursor)
-        cursor_type ||= Mongoid::Scroll::Cursor
+        cursor, cursor_type = cursor_and_type(cursor_or_type)
         raise_multiple_sort_fields_error if multiple_sort_fields?
         criteria = dup
         criteria.merge!(default_sort) if no_sort_option?
@@ -74,11 +73,7 @@ module Mongoid
       def scroll_field_type(criteria)
         scroll_field = scroll_field(criteria)
         field = criteria.klass.fields[scroll_field.to_s]
-        field.foreign_key? && field.object_id_field? ? bson_type : field.type
-      end
-
-      def bson_type
-        Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
+        field.foreign_key? && field.object_id_field? ? BSON::ObjectId : field.type
       end
     end
   end

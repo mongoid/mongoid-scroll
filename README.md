@@ -1,3 +1,18 @@
+- [Mongoid::Scroll](#mongoidscroll)
+  - [Compatibility](#compatibility)
+  - [Demo](#demo)
+  - [The Problem](#the-problem)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Mongoid](#mongoid)
+    - [Mongo-Ruby-Driver (Mongoid 5)](#mongo-ruby-driver-mongoid-5)
+  - [Indexes and Performance](#indexes-and-performance)
+  - [Cursors](#cursors)
+    - [Standard Cursor](#standard-cursor)
+    - [Base64 Encoded Cursor](#base64-encoded-cursor)
+  - [Contributing](#contributing)
+  - [Copyright and License](#copyright-and-license)
+
 # Mongoid::Scroll
 
 [![Gem Version](https://badge.fury.io/rb/mongoid-scroll.svg)](https://badge.fury.io/rb/mongoid-scroll)
@@ -5,17 +20,17 @@
 [![Dependency Status](https://gemnasium.com/mongoid/mongoid-scroll.svg)](https://gemnasium.com/mongoid/mongoid-scroll)
 [![Code Climate](https://codeclimate.com/github/mongoid/mongoid-scroll.svg)](https://codeclimate.com/github/mongoid/mongoid-scroll)
 
-Mongoid extension that enables infinite scrolling for `Mongoid::Criteria`, `Moped::Query` and `Mongo::Collection::View`.
+Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `Mongo::Collection::View`.
 
 ## Compatibility
 
-This gem supports Mongoid 3, 4, 5, 6, 7, Moped and Mongo-Ruby-Driver.
+This gem supports Mongoid 5, 6, and 7.
 
 ## Demo
 
 Check out [shows on artsy.net](http://artsy.net/shows). Keep scrolling down.
 
-There're also two code samples for Mongoid and Moped in [examples](examples). Run `bundle exec ruby examples/mongoid_scroll_feed.rb`.
+There're also two code samples for Mongoid in [examples](examples). Run `bundle exec ruby examples/mongoid_scroll_feed.rb`.
 
 ## The Problem
 
@@ -75,27 +90,6 @@ The iteration finishes when no more records are available. You can also finish i
 ```ruby
 Feed::Item.desc(:position).scroll(saved_cursor) do |record, next_cursor|
   # each record, one-by-one
-end
-```
-
-### Moped (Mongoid 3 and 4)
-
-Scroll a `Moped::Query` and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
-
-```ruby
-saved_cursor = nil
-session[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
-  # each record, one-by-one
-  saved_cursor = next_cursor
-end
-```
-
-Resume iterating using the previously saved cursor.
-
-```ruby
-session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
-  # each record, one-by-one
-  saved_cursor = next_cursor
 end
 ```
 
@@ -183,11 +177,13 @@ cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, fie
 Feed::Item.desc(:created_at).scroll(cursor) # Raises a Mongoid::Scroll::Errors::MismatchedSortFieldsError
 ```
 
-### Cursor Encoding
+### Standard Cursor
 
-#### Base64
+The `Mongoid::Scroll::Base64EncodedCursor` encodes a value and a tiebreak ID separated by `:`, and does not include other options, such as scroll direction. Take extra care not to pass a cursor into a scroll with different options. 
 
-`Mongoid::Scroll::Base64EncodedCursor` can be used instead of `Mongoid::Scroll::Cursor` to generate a base64-encoded string (using RFC 4648) containing all the information needed to rebuild a cursor.
+### Base64 Encoded Cursor
+
+The `Mongoid::Scroll::Base64EncodedCursor` can be used instead of `Mongoid::Scroll::Cursor` to generate a base64-encoded string (using RFC 4648) containing all the information needed to rebuild a cursor.
 
 ```ruby
 Feed::Item.desc(:position).limit(5).scroll(Mongoid::Scroll::Base64EncodedCursor) do |record, next_cursor|

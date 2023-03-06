@@ -10,6 +10,6 @@ require 'mongoid/scroll/base_cursor'
 require 'mongoid/scroll/cursor'
 require 'mongoid/scroll/base64_encoded_cursor'
 require 'mongoid/criteria/scrollable/fields'
-require 'moped/scrollable' if Object.const_defined?(:Moped)
+require 'mongoid/criteria/scrollable/cursors'
 require 'mongo/scrollable' if Object.const_defined?(:Mongo)
 require 'mongoid/criteria/scrollable'

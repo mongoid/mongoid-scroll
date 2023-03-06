@@ -37,6 +37,34 @@ module Mongoid
         raise NotImplementedError.new(:to_s)
       end
 
+      class << self
+        def from_record(record, options)
+          cursor = new(nil, options)
+          record_value = record.respond_to?(cursor.field_name) ? record.send(cursor.field_name) : record[cursor.field_name]
+          cursor.value = Mongoid::Scroll::Cursor.parse_field_value(cursor.field_type, cursor.field_name, record_value)
+          cursor.tiebreak_id = record['_id']
+          cursor
+        end
+
+        def extract_field_options(options)
+          if options && (field_name = options[:field_name]) && (field_type = options[:field_type])
+            {
+              field_type: field_type.to_s,
+              field_name: field_name.to_s,
+              direction: options[:direction] || 1,
+              include_current: options[:include_current] || false
+            }
+          elsif options && (field = options[:field])
+            {
+              field_type: field.type.to_s,
+              field_name: field.name.to_s,
+              direction: options[:direction] || 1,
+              include_current: options[:include_current] || false
+            }
+          end
+        end
+      end
+
       private
 
       def compare_direction
@@ -58,15 +86,6 @@ module Mongoid
 
       def parse(_value)
         raise NotImplementedError.new(:parse)
-      end
-
-      def string_to_id(value)
-        return unless value && !value.empty?
-        if Mongoid::Compatibility::Version.mongoid3?
-          Moped::BSON::ObjectId(value)
-        else
-          BSON::ObjectId.from_string(value)
-        end
       end
     end
   end
