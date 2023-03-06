@@ -24,7 +24,7 @@ Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `M
 
 ## Compatibility
 
-This gem supports Mongoid 5, 6, and 7.
+This gem supports Mongoid 5, 6, 7 and 8.
 
 ## Demo
 
