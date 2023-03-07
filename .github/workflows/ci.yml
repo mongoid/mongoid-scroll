@@ -8,10 +8,16 @@ jobs:
       matrix:
         entry:
           - { ruby: '2.6', mongodb: '4.4', mongoid: '5' }
+          - { ruby: '3.2', mongodb: '6.0', mongoid: '5' }
           - { ruby: '2.7', mongodb: '4.4', mongoid: '6' }
           - { ruby: '2.7', mongodb: '4.4', mongoid: '7' }
           - { ruby: '3.0', mongodb: '4.4', mongoid: '6' }
           - { ruby: '3.0', mongodb: '4.4', mongoid: '7' }
+          - { ruby: '3.2', mongodb: '5.0', mongoid: '7' }
+          - { ruby: '3.2', mongodb: '6.0', mongoid: '7' }
+          - { ruby: '3.1', mongodb: '4.4', mongoid: '8' }
+          - { ruby: '3.2', mongodb: '5.0', mongoid: '8' }
+          - { ruby: '3.2', mongodb: '6.0', mongoid: '8' }
     name: test (ruby=${{ matrix.entry.ruby }}, mongodb=${{ matrix.entry.mongodb }}), mongoid=${{ matrix.entry.mongoid }})
     env:
       MONGOID_VERSION: ${{ matrix.entry.mongoid }}

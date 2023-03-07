@@ -6,6 +6,7 @@
 * [#30](https://github.com/mongoid/mongoid-scroll/pull/30): Prevent discrepancy between the original sort and the cursor sort - [@FabienChaynes](https://github.com/FabienChaynes).
 * [#32](https://github.com/mongoid/mongoid-scroll/pull/32): Add Base64 serialization for cursors - [@FabienChaynes](https://github.com/FabienChaynes).
 * [#33](https://github.com/mongoid/mongoid-scroll/pull/33): Removed support for Mongoid 3, 4 and Moped - [@dblock](https://github.com/dblock).
+* [#34](https://github.com/mongoid/mongoid-scroll/pull/34): Added support for Mongoid 8 - [@dblock](https://github.com/dblock).
 * Your contribution here.
 
 ### 0.3.7 (2021/06/01)
