@@ -13,7 +13,7 @@ module Feed
     embeds_many :embedded_items, class_name: 'Feed::EmbeddedItem'
 
     publisher_options = { class_name: 'Feed::Publisher' }
-    publisher_options[:optional] = true if Mongoid::Compatibility::Version.mongoid6? || Mongoid::Compatibility::Version.mongoid7?
+    publisher_options[:optional] = true if Mongoid::Compatibility::Version.mongoid6_or_newer?
     belongs_to :publisher, publisher_options
   end
 end
