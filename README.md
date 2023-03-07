@@ -1,27 +1,38 @@
-Mongoid::Scroll
-===============
+- [Mongoid::Scroll](#mongoidscroll)
+  - [Compatibility](#compatibility)
+  - [Demo](#demo)
+  - [The Problem](#the-problem)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Mongoid](#mongoid)
+    - [Mongo-Ruby-Driver (Mongoid 5)](#mongo-ruby-driver-mongoid-5)
+  - [Indexes and Performance](#indexes-and-performance)
+  - [Cursors](#cursors)
+    - [Standard Cursor](#standard-cursor)
+    - [Base64 Encoded Cursor](#base64-encoded-cursor)
+  - [Contributing](#contributing)
+  - [Copyright and License](#copyright-and-license)
+
+# Mongoid::Scroll
 
 [![Gem Version](https://badge.fury.io/rb/mongoid-scroll.svg)](https://badge.fury.io/rb/mongoid-scroll)
 [![Build Status](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml/badge.svg)](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml)
 [![Dependency Status](https://gemnasium.com/mongoid/mongoid-scroll.svg)](https://gemnasium.com/mongoid/mongoid-scroll)
 [![Code Climate](https://codeclimate.com/github/mongoid/mongoid-scroll.svg)](https://codeclimate.com/github/mongoid/mongoid-scroll)
 
-Mongoid extension that enables infinite scrolling for `Mongoid::Criteria`, `Moped::Query` and `Mongo::Collection::View`.
+Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `Mongo::Collection::View`.
 
-Compatibility
--------------
+## Compatibility
 
-This gem supports Mongoid 3, 4, 5, 6, 7, Moped and Mongo-Ruby-Driver.
+This gem supports Mongoid 5, 6, and 7.
 
-Demo
-----
+## Demo
 
 Check out [shows on artsy.net](http://artsy.net/shows). Keep scrolling down.
 
-There're also two code samples for Mongoid and Moped in [examples](examples). Run `bundle exec ruby examples/mongoid_scroll_feed.rb`.
+There're also two code samples for Mongoid in [examples](examples). Run `bundle exec ruby examples/mongoid_scroll_feed.rb`.
 
-The Problem
------------
+## The Problem
 
 Traditional pagination does not work when data changes between paginated requests, which makes it unsuitable for infinite scroll behaviors.
 
@@ -30,8 +41,7 @@ Traditional pagination does not work when data changes between paginated request
 
 The solution implemented by the `scroll` extension paginates data using a cursor, giving you the ability to restart pagination where you left it off. This is a non-trivial problem when combined with sorting over non-unique record fields, such as timestamps.
 
-Installation
-------------
+## Installation
 
 Add the gem to your Gemfile and run `bundle install`.
 
@@ -39,8 +49,7 @@ Add the gem to your Gemfile and run `bundle install`.
 gem 'mongoid-scroll'
 ```
 
-Usage
------
+## Usage
 
 ### Mongoid
 
@@ -84,27 +93,6 @@ Feed::Item.desc(:position).scroll(saved_cursor) do |record, next_cursor|
 end
 ```
 
-### Moped (Mongoid 3 and 4)
-
-Scroll a `Moped::Query` and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
-
-```ruby
-saved_cursor = nil
-session[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
-  # each record, one-by-one
-  saved_cursor = next_cursor
-end
-```
-
-Resume iterating using the previously saved cursor.
-
-```ruby
-session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
-  # each record, one-by-one
-  saved_cursor = next_cursor
-end
-```
-
 ### Mongo-Ruby-Driver (Mongoid 5)
 
 Scroll a `Mongo::Collection::View` and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
@@ -126,8 +114,7 @@ session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_cursor, { fie
 end
 ```
 
-Indexes and Performance
------------------------
+## Indexes and Performance
 
 A query without a cursor is identical to a query without a scroll.
 
@@ -159,8 +146,7 @@ module Feed
 end
 ```
 
-Cursors
--------
+## Cursors
 
 You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. A cursor points at the last record of the previous iteration and unlike MongoDB cursors will not expire.
 
@@ -191,37 +177,26 @@ cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, fie
 Feed::Item.desc(:created_at).scroll(cursor) # Raises a Mongoid::Scroll::Errors::MismatchedSortFieldsError
 ```
 
-### Base64 encoded cursors
+### Standard Cursor
 
-`Mongoid::Scroll::Base64EncodedCursor` can be used to generate a Base64 encoded string (using RFC 4648) containing all the information needed to rebuild a cursor.
+The `Mongoid::Scroll::Cursor` encodes a value and a tiebreak ID separated by `:`, and does not include other options, such as scroll direction. Take extra care not to pass a cursor into a scroll with different options. 
 
-A `Mongoid::Scroll::Cursor` can be mutated into a `Mongoid::Scroll::Base64EncodedCursor` by using the `Mongoid::Scroll::Base64EncodedCursor.from_cursor` method:
+### Base64 Encoded Cursor
+
+The `Mongoid::Scroll::Base64EncodedCursor` can be used instead of `Mongoid::Scroll::Cursor` to generate a base64-encoded string (using RFC 4648) containing all the information needed to rebuild a cursor.
 
 ```ruby
-saved_cursor = nil
-Feed::Item.desc(:position).limit(5).scroll do |record, next_cursor|
-  # each record, one-by-one
-  saved_cursor = next_cursor
+Feed::Item.desc(:position).limit(5).scroll(Mongoid::Scroll::Base64EncodedCursor) do |record, next_cursor|
+   # next_cursor is of type Mongoid::Scroll::Base64EncodedCursor
 end
-base64_cursor = Mongoid::Scroll::Base64EncodedCursor.from_cursor(saved_cursor)
 ```
 
-The `Mongoid::Scroll::Base64EncodedCursor#to_s` method will return the cursor encoded as a Base64 string, which you'll be able to use subsequently to rebuild the cursor using `Mongoid::Scroll::Base64EncodedCursor.new`. In this case, you won't have to pass the `:field`, `:field_type` or `:field_name` options:
-
-```ruby
-base64_cursor = Mongoid::Scroll::Base64EncodedCursor.from_cursor(saved_cursor)
-base64_string = base64_cursor.to_s
-Mongoid::Scroll::Base64EncodedCursor.new(base64_string)
-```
-
-Contributing
-------------
+## Contributing
 
 Fork the project. Make your feature addition or bug fix with tests. Send a pull request. Bonus points for topic branches.
 
-Copyright and License
----------------------
+## Copyright and License
 
 MIT License, see [LICENSE](http://github.com/mongoid/mongoid-scroll/raw/master/LICENSE.md) for details.
 
-(c) 2013-2015 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)
+(c) 2013-2023 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)

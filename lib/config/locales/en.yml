@@ -15,6 +15,10 @@ en:
             message: "The cursor supplied is invalid."
             summary: "The cursor supplied is invalid: %{cursor}."
             resolution: "Cursors must be in the form 'value:tiebreak_id'."
+          invalid_base64_cursor:
+            message: "The cursor supplied is invalid."
+            summary: "The cursor supplied is invalid: %{cursor}."
+            resolution: "Cursors must be a base64-encoded string."
           no_such_field:
             message: "Invalid field."
             summary: "The field supplied in the cursor does not exist: %{field}."

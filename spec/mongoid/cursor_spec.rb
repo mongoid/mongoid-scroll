@@ -17,22 +17,15 @@ describe Mongoid::Scroll::Cursor do
   end
   context 'an id field cursor' do
     let(:feed_item) { Feed::Item.create!(a_string: 'astring') }
-    field_type = Mongoid::Compatibility::Version.mongoid3? ? Moped::BSON::ObjectId : BSON::ObjectId
     subject do
-      Mongoid::Scroll::Cursor.new "#{feed_item.id}:#{feed_item.id}", field_name: '_id', field_type: field_type, direction: 1
+      Mongoid::Scroll::Cursor.new "#{feed_item.id}:#{feed_item.id}", field_name: '_id', field_type: BSON::ObjectId, direction: 1
     end
-    its(:value) { should eq feed_item.id.to_s }
+    its(:value) { should eq feed_item.id }
     its(:tiebreak_id) { should eq feed_item.id }
     its(:criteria) do
-      if Mongoid::Compatibility::Version.mongoid3?
-        should eq('$or' => [
-                    { '_id' => { '$gt' => Moped::BSON::ObjectId(feed_item.id.to_s) } }
-                  ])
-      else
-        should eq('$or' => [
-                    { '_id' => { '$gt' => BSON::ObjectId(feed_item.id.to_s) } }
-                  ])
-      end
+      should eq('$or' => [
+                  { '_id' => { '$gt' => BSON::ObjectId(feed_item.id.to_s) } }
+                ])
     end
   end
   context 'a string field cursor' do
@@ -146,16 +139,38 @@ describe Mongoid::Scroll::Cursor do
     its(:value) { should eq 'astring' }
     its(:tiebreak_id) { should eq feed_item.id }
     its(:criteria) do
-      if Mongoid::Compatibility::Version.mongoid3?
-        should eq('$or' => [
-                    { 'a_string' => { '$gt' => 'astring' } },
-                    { '_id' => { '$gte' => Moped::BSON::ObjectId(feed_item.id.to_s) }, 'a_string' => 'astring' }
-                  ])
-      else
-        should eq('$or' => [
-                    { 'a_string' => { '$gt' => 'astring' } },
-                    { '_id' => { '$gte' => BSON::ObjectId(feed_item.id.to_s) }, 'a_string' => 'astring' }
-                  ])
+      should eq('$or' => [
+                  { 'a_string' => { '$gt' => 'astring' } },
+                  { '_id' => { '$gte' => BSON::ObjectId(feed_item.id.to_s) }, 'a_string' => 'astring' }
+                ])
+    end
+  end
+  context 'criteria' do
+    context 'with data' do
+      before :each do
+        3.times do |i|
+          Feed::Item.create!(
+            name: "Feed Item #{i}",
+            a_time: Time.new(2015, i + 1, 22, 1, 2, 3)
+          )
+        end
+        Feed::Item.create!(
+          name: 'Feed Item 3',
+          a_time: Time.new(2014, 2, 2, 1, 2, 3)
+        )
+      end
+      it 'merges cursor criteria when no sort field is given' do
+        criteria = Feed::Item.where(:a_time.gt => Time.new(2013, 7, 22, 1, 2, 3))
+        feed_item = Feed::Item.where(name: 'Feed Item 1').first
+        cursor_input = "#{feed_item.id}:#{feed_item.id}"
+        cursor_options = { field_type: BSON::ObjectId, field_name: '_id', direction: 1 }
+        cursor = Mongoid::Scroll::Cursor.new(cursor_input, cursor_options)
+        records = []
+        criteria.limit(2).scroll(cursor) do |record, next_cursor|
+          records << record
+          cursor = next_cursor
+        end
+        expect(records.size).to eq 2
       end
     end
   end
