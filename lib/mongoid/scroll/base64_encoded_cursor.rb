@@ -14,7 +14,7 @@ module Mongoid
             raise Mongoid::Scroll::Errors::InvalidBase64CursorError.new(cursor: value)
           end
           super BaseCursor.parse_field_value(parsed['field_type'], parsed['field_name'], parsed['value']), {
-            field_type: BaseCursor.parse_field_type(parsed['field_type'], parsed['field_name']),
+            field_type: parsed['field_type'],
             field_name: parsed['field_name'],
             direction: parsed['direction'],
             include_current: parsed['include_current'],

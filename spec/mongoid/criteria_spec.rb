@@ -11,16 +11,15 @@ describe Mongoid::Criteria do
           expect(subject).to respond_to(:scroll)
         end
         it 'raises Mongoid::Scroll::Errors::MultipleSortFieldsError' do
-          expect { subject.scroll(cursor_type) }.to raise_error Mongoid::Scroll::Errors::MultipleSortFieldsError,
-                                                                /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
+          expect do
+            subject.scroll(cursor_type)
+          end.to raise_error Mongoid::Scroll::Errors::MultipleSortFieldsError, /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
         end
       end
-
       context 'with different sort fields between the cursor and the criteria' do
         subject do
           Feed::Item.desc(:name)
         end
-
         it 'raises Mongoid::Scroll::Errors::MismatchedSortFieldsError' do
           record = Feed::Item.create!
           cursor = cursor_type.from_record(record, field: record.fields['a_string'])
@@ -28,7 +27,6 @@ describe Mongoid::Criteria do
           expect { subject.scroll(cursor) }.to raise_error Mongoid::Scroll::Errors::MismatchedSortFieldsError, error_string
         end
       end
-
       context 'with no sort' do
         subject do
           Feed::Item.all
@@ -41,6 +39,7 @@ describe Mongoid::Criteria do
         before :each do
           10.times do |i|
             Feed::Item.create!(
+              name: i.to_s,
               a_string: i.to_s,
               a_integer: i,
               a_datetime: DateTime.new(2013, i + 1, 21, 1, 42, 3, 'UTC'),
@@ -73,7 +72,6 @@ describe Mongoid::Criteria do
             expect(criteria).to eq original_criteria
           end
         end
-
         context 'with a foreign key' do
           it 'sorts by object id' do
             records = []
@@ -81,7 +79,6 @@ describe Mongoid::Criteria do
             expect(records).not_to be_empty
           end
         end
-
         { a_string: String, a_integer: Integer, a_date: Date, a_datetime: DateTime }.each_pair do |field_name, field_type|
           context field_type do
             it 'scrolls all with a block' do
@@ -145,6 +142,23 @@ describe Mongoid::Criteria do
               expect(cursor).to_not be nil
               expect(cursor.tiebreak_id).to eq record.id
               expect(cursor.value).to eq record.send(field_name)
+            end
+            it 'can be reused' do
+              ids = Feed::Item.asc(field_name).limit(2).map(&:id)
+              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, cursor|
+                cursor.include_current = true
+                expect(Feed::Item.asc(field_name).limit(2).scroll(cursor).pluck(:id)).to eq ids
+                break
+              end
+            end
+            it 'can be re-created and reused' do
+              ids = Feed::Item.asc(field_name).limit(2).map(&:id)
+              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, cursor|
+                new_cursor = cursor_type.new(cursor.to_s, field_type: field_type, field_name: field_name)
+                new_cursor.include_current = true
+                expect(Feed::Item.asc(field_name).limit(2).scroll(new_cursor).pluck(:id)).to eq ids
+                break
+              end
             end
           end
         end

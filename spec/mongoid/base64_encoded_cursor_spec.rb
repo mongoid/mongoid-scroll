@@ -131,7 +131,7 @@ describe Mongoid::Scroll::Base64EncodedCursor do
       end
       subject do
         Mongoid::Scroll::Base64EncodedCursor.new base64_string
-      end      
+      end
       its(:value) { should eq a_value }
       its(:tiebreak_id) { tiebreak_id }
       its(:tiebreak_id) { should eq tiebreak_id }
