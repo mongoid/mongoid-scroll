@@ -1,3 +1,7 @@
+### 1.0.1 (Next)
+
+* Your contribution here.
+
 ### 1.0.0 (2023/03/08)
 
 * [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Compatibility with Ruby 3 - [@leamotta](https://github.com/leamotta).
