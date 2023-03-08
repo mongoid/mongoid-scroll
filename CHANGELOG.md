@@ -1,4 +1,4 @@
-### 1.0.0 (Next)
+### 1.0.0 (2023/03/08)
 
 * [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Compatibility with Ruby 3 - [@leamotta](https://github.com/leamotta).
 * [#25](https://github.com/mongoid/mongoid-scroll/pull/25): Replace Travis CI with GHA - [@leamotta](https://github.com/leamotta).
@@ -7,7 +7,6 @@
 * [#32](https://github.com/mongoid/mongoid-scroll/pull/32): Add Base64 serialization for cursors - [@FabienChaynes](https://github.com/FabienChaynes).
 * [#33](https://github.com/mongoid/mongoid-scroll/pull/33): Removed support for Mongoid 3, 4 and Moped - [@dblock](https://github.com/dblock).
 * [#34](https://github.com/mongoid/mongoid-scroll/pull/34): Added support for Mongoid 8 - [@dblock](https://github.com/dblock).
-* Your contribution here.
 
 ### 0.3.7 (2021/06/01)
 
