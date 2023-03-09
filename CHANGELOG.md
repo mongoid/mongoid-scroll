@@ -1,5 +1,6 @@
 ### 1.0.1 (Next)
 
+* [#36](https://github.com/mongoid/mongoid-scroll/pull/36): Keep millisecond precision on time fields - [@FabienChaynes](https://github.com/FabienChaynes).
 * Your contribution here.
 
 ### 1.0.0 (2023/03/08)
