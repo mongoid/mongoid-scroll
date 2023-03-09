@@ -77,7 +77,7 @@ describe Mongoid::Scroll::Base64EncodedCursor do
       its(:to_s) { should eq(base64_string) }
     end
     context 'a date/time field cursor' do
-      let(:base64_string) { 'eyJ2YWx1ZSI6MTM4NzU5MDEyMywiZmllbGRfdHlwZSI6IkRhdGVUaW1lIiwiZmllbGRfbmFtZSI6ImFfZGF0ZXRpbWUiLCJkaXJlY3Rpb24iOjEsImluY2x1ZGVfY3VycmVudCI6ZmFsc2UsInRpZWJyZWFrX2lkIjoiNjQwNjQzYTcwOTQ0MzQyMzlmMmRiZjg2In0=' }
+      let(:base64_string) { 'eyJ2YWx1ZSI6MTM4NzU5MDEyMy4wLCJmaWVsZF90eXBlIjoiRGF0ZVRpbWUiLCJmaWVsZF9uYW1lIjoiYV9kYXRldGltZSIsImRpcmVjdGlvbiI6MSwiaW5jbHVkZV9jdXJyZW50IjpmYWxzZSwidGllYnJlYWtfaWQiOiI2NDA2NDNhNzA5NDQzNDIzOWYyZGJmODYifQ==' }
       let(:a_value) { DateTime.new(2013, 12, 21, 1, 42, 3, 'UTC') }
       let(:tiebreak_id) { BSON::ObjectId('640643a7094434239f2dbf86') }
       let(:criteria) do
@@ -117,7 +117,7 @@ describe Mongoid::Scroll::Base64EncodedCursor do
       its(:to_s) { should eq(base64_string) }
     end
     context 'a time field cursor' do
-      let(:base64_string) { 'eyJ2YWx1ZSI6MTM4NzYwNTcyMywiZmllbGRfdHlwZSI6IlRpbWUiLCJmaWVsZF9uYW1lIjoiYV90aW1lIiwiZGlyZWN0aW9uIjoxLCJpbmNsdWRlX2N1cnJlbnQiOmZhbHNlLCJ0aWVicmVha19pZCI6IjY0MDYzZDRhMDk0NDM0MTY2YmQwNTNlZCJ9' }
+      let(:base64_string) { 'eyJ2YWx1ZSI6MTM4NzYwNTcyMy4wLCJmaWVsZF90eXBlIjoiVGltZSIsImZpZWxkX25hbWUiOiJhX3RpbWUiLCJkaXJlY3Rpb24iOjEsImluY2x1ZGVfY3VycmVudCI6ZmFsc2UsInRpZWJyZWFrX2lkIjoiNjQwNjNkNGEwOTQ0MzQxNjZiZDA1M2VkIn0=' }
       let(:item_id) { BSON::ObjectId('640636f209443407333b46d4') }
       let(:a_value) { Time.new(2013, 12, 21, 6, 2, 3, '+00:00').utc }
       let(:tiebreak_id) { BSON::ObjectId('64063d4a094434166bd053ed') }
