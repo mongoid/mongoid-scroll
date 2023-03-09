@@ -59,11 +59,11 @@ describe Mongoid::Scroll::Cursor do
   context 'a date/time field cursor' do
     let(:feed_item) { Feed::Item.create!(a_datetime: DateTime.new(2013, 12, 21, 1, 42, 3, 'UTC')) }
     subject do
-      Mongoid::Scroll::Cursor.new "#{feed_item.a_datetime.utc.to_i}:#{feed_item.id}", field_name: 'a_datetime', field_type: DateTime
+      Mongoid::Scroll::Cursor.new "#{feed_item.a_datetime.utc.to_f.round(3)}:#{feed_item.id}", field_name: 'a_datetime', field_type: DateTime
     end
     its(:value) { should eq feed_item.a_datetime }
     its(:tiebreak_id) { should eq feed_item.id }
-    its(:to_s) { should eq "#{feed_item.a_datetime.utc.to_i}:#{feed_item.id}" }
+    its(:to_s) { should eq "#{feed_item.a_datetime.utc.to_f.round(3)}:#{feed_item.id}" }
     its(:criteria) do
       should eq('$or' => [
                   { 'a_datetime' => { '$gt' => feed_item.a_datetime } },
@@ -89,11 +89,11 @@ describe Mongoid::Scroll::Cursor do
   context 'a time field cursor' do
     let(:feed_item) { Feed::Item.create!(a_time: Time.new(2013, 12, 21, 1, 2, 3)) }
     subject do
-      Mongoid::Scroll::Cursor.new "#{feed_item.a_time.to_i}:#{feed_item.id}", field_name: 'a_time', field_type: Time
+      Mongoid::Scroll::Cursor.new "#{feed_item.a_time.to_f.round(3)}:#{feed_item.id}", field_name: 'a_time', field_type: Time
     end
     its(:value) { should eq feed_item.a_time }
     its(:tiebreak_id) { should eq feed_item.id }
-    its(:to_s) { should eq "#{feed_item.a_time.to_i}:#{feed_item.id}" }
+    its(:to_s) { should eq "#{feed_item.a_time.to_f.round(3)}:#{feed_item.id}" }
     its(:criteria) do
       should eq('$or' => [
                   { 'a_time' => { '$gt' => feed_item.a_time } },
@@ -104,11 +104,11 @@ describe Mongoid::Scroll::Cursor do
   context 'a time field cursor with a field option' do
     let(:feed_item) { Feed::Item.create!(a_time: Time.new(2013, 12, 21, 1, 2, 3)) }
     subject do
-      Mongoid::Scroll::Cursor.new "#{feed_item.a_time.to_i}:#{feed_item.id}", field: Feed::Item.fields['a_time']
+      Mongoid::Scroll::Cursor.new "#{feed_item.a_time.to_f.round(3)}:#{feed_item.id}", field: Feed::Item.fields['a_time']
     end
     its(:value) { should eq feed_item.a_time }
     its(:tiebreak_id) { should eq feed_item.id }
-    its(:to_s) { should eq "#{feed_item.a_time.to_i}:#{feed_item.id}" }
+    its(:to_s) { should eq "#{feed_item.a_time.to_f.round(3)}:#{feed_item.id}" }
     its(:criteria) do
       should eq('$or' => [
                   { 'a_time' => { '$gt' => feed_item.a_time } },

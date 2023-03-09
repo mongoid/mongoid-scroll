@@ -260,6 +260,23 @@ describe Mongoid::Criteria do
           expect(items).to eq([second_item, third_item])
         end
       end
+      context 'with DateTime with a milisecond precision' do
+        let!(:item_1) { Feed::Item.create!(a_datetime: DateTime.new(2013, 1, 21, 1, 42, 3.1, 'UTC')) }
+        let!(:item_2) { Feed::Item.create!(a_datetime: DateTime.new(2013, 1, 21, 1, 42, 3.2, 'UTC')) }
+        let!(:item_3) { Feed::Item.create!(a_datetime: DateTime.new(2013, 1, 21, 1, 42, 3.3, 'UTC')) }
+
+        it 'doesn\'t lose the precision when rebuilding the cursor' do
+          records = []
+          cursor = nil
+          Feed::Item.order_by(a_datetime: 1).limit(2).scroll(cursor_type) do |record, next_cursor|
+            records << record
+            cursor = next_cursor
+          end
+          expect(records).to eq [item_1, item_2]
+          cursor = cursor_type.new(cursor.to_s, field: Feed::Item.fields['a_datetime'])
+          expect(Feed::Item.order_by(a_datetime: 1).limit(2).scroll(cursor).to_a).to eq([item_3])
+        end
+      end
     end
   end
 end
