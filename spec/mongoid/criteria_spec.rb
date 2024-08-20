@@ -163,22 +163,21 @@ describe Mongoid::Criteria do
             it 'can scroll back with the previous cursor' do
               first_cursor = nil
               second_cursor = nil
-              third_cursor = nil
-              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, cursor|
-                second_cursor = cursor
+
+              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, next_cursor|
+                second_cursor = next_cursor
               end
-              Feed::Item.asc(field_name).limit(2).scroll(second_cursor) do |_, next_cursor, previous_cursor|
+              Feed::Item.asc(field_name).limit(2).scroll(second_cursor) do |_, _, previous_cursor|
                 first_cursor = previous_cursor
-                third_cursor = next_cursor
               end
 
-              first_item = Feed::Item.asc(field_name).to_a[0]
-              from_item = Feed::Item.asc(field_name).scroll(first_cursor).to_a.first
-              expect(from_item).to eq first_item
+              records = []
+              Feed::Item.asc(field_name).limit(2).scroll(first_cursor) do |record|
+                records << record
+              end
+              expect(records).to eq Feed::Item.asc(field_name).limit(2).to_a
 
-              fifth_item = Feed::Item.asc(field_name).to_a[4]
-              from_item = Feed::Item.asc(field_name).scroll(third_cursor).to_a.first
-              expect(from_item).to eq fifth_item
+              expect(Feed::Item.asc(field_name).scroll(first_cursor).to_a).to eq Feed::Item.asc(field_name).limit(2).to_a
             end
           end
         end

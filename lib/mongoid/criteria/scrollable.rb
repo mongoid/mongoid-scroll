@@ -14,9 +14,11 @@ module Mongoid
         direction = scroll_direction(criteria)
         raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
         cursor_criteria = build_cursor_criteria(criteria, cursor)
+        first_in_page = nil
         if block_given?
           cursor_criteria.order_by(_id: direction).each do |record|
-            yield record, cursor_from_record(cursor_type, record, cursor_options), cursor_from_record(cursor_type, record, cursor_options.merge(previous: true))
+            first_in_page ||= record
+            yield record, cursor_from_record(cursor_type, record, cursor_options), cursor_from_record(cursor_type, first_in_page, cursor_options.merge(previous: true))
           end
         else
           cursor_criteria
