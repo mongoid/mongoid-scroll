@@ -18,7 +18,8 @@ module Mongoid
             field_name: parsed['field_name'],
             direction: parsed['direction'],
             include_current: parsed['include_current'],
-            tiebreak_id: parsed['tiebreak_id'] && !parsed['tiebreak_id'].empty? ? BSON::ObjectId.from_string(parsed['tiebreak_id']) : nil
+            tiebreak_id: parsed['tiebreak_id'] && !parsed['tiebreak_id'].empty? ? BSON::ObjectId.from_string(parsed['tiebreak_id']) : nil,
+            previous: parsed['previous']
           }
         else
           super nil, options
@@ -32,7 +33,8 @@ module Mongoid
           field_name: field_name,
           direction: direction,
           include_current: include_current,
-          tiebreak_id: tiebreak_id && tiebreak_id.to_s
+          tiebreak_id: tiebreak_id && tiebreak_id.to_s,
+          previous: previous
         }.to_json)
       end
     end
