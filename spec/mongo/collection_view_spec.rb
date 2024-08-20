@@ -106,6 +106,28 @@ if Object.const_defined?(:Mongo)
                 expect(cursor.value).to eq record[field_name.to_s]
                 expect(cursor.tiebreak_id).to eq record['_id']
               end
+              it 'can scroll back with the previous cursor' do
+                records = []
+                first_cursor = nil
+                second_cursor = nil
+                third_cursor = nil
+                criteria = Mongoid.default_client['feed_items'].find.limit(2)
+                criteria.scroll(cursor_type) do |record, next_cursor|
+                  second_cursor = next_cursor
+                end
+                criteria.scroll(second_cursor) do |record, next_cursor, previous_cursor|
+                  first_cursor = previous_cursor
+                  third_cursor = next_cursor
+                end
+
+                first_item = Mongoid.default_client['feed_items'].find.to_a[0]
+                from_item = Mongoid.default_client['feed_items'].find.scroll(first_cursor).to_a.first
+                expect(from_item).to eq first_item
+
+                fifth_item = Mongoid.default_client['feed_items'].find.to_a[4]
+                from_item = Mongoid.default_client['feed_items'].find.scroll(third_cursor).to_a.first
+                expect(from_item).to eq fifth_item
+              end
             end
           end
         end

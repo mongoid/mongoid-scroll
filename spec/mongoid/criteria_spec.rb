@@ -171,6 +171,7 @@ describe Mongoid::Criteria do
                 first_cursor = previous_cursor
                 third_cursor = next_cursor
               end
+
               first_item = Feed::Item.asc(field_name).to_a[0]
               from_item = Feed::Item.asc(field_name).scroll(first_cursor).to_a.first
               expect(from_item).to eq first_item

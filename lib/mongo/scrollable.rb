@@ -27,7 +27,7 @@ module Mongo
       # scroll
       if block_given?
         view.each do |record|
-          yield record, cursor_type.from_record(record, cursor_options)
+          yield record, cursor_type.from_record(record, cursor_options), cursor_type.from_record(record, cursor_options.merge(previous: true))
         end
       else
         view
