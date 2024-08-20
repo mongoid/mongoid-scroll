@@ -11,11 +11,12 @@ module Mongoid
         criteria.merge!(default_sort) if no_sort_option?
         cursor_options = build_cursor_options(criteria)
         cursor = cursor.is_a?(cursor_type) ? cursor : new_cursor(cursor_type, cursor, cursor_options)
+        direction = scroll_direction(criteria)
         raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
         cursor_criteria = build_cursor_criteria(criteria, cursor)
         if block_given?
-          cursor_criteria.order_by(_id: scroll_direction(criteria)).each do |record|
-            yield record, cursor_from_record(cursor_type, record, cursor_options)
+          cursor_criteria.order_by(_id: direction).each do |record|
+            yield record, cursor_from_record(cursor_type, record, cursor_options), cursor_from_record(cursor_type, record, cursor_options.merge(previous: true))
           end
         else
           cursor_criteria

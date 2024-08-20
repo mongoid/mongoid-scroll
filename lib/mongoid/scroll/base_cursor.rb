@@ -1,7 +1,7 @@
 module Mongoid
   module Scroll
     class BaseCursor
-      attr_accessor :value, :tiebreak_id, :field_type, :field_name, :direction, :include_current
+      attr_accessor :value, :tiebreak_id, :field_type, :field_name, :direction, :include_current, :previous
 
       def initialize(value, options = {})
         @value = value
@@ -10,6 +10,7 @@ module Mongoid
         @field_name = options[:field_name]
         @direction = options[:direction] || 1
         @include_current = options[:include_current] || false
+        @previous = options[:previous] || false
       end
 
       def criteria
@@ -81,25 +82,30 @@ module Mongoid
       end
 
       def extract_field_options(options)
-        if options && (field_name = options[:field_name]) && (field_type = options[:field_type])
-          {
-            field_type: field_type.to_s,
-            field_name: field_name.to_s,
-            direction: options[:direction] || 1,
-            include_current: options[:include_current] || false
-          }
-        elsif options && (field = options[:field])
-          {
-            field_type: field.type.to_s,
-            field_name: field.name.to_s,
-            direction: options[:direction] || 1,
-            include_current: options[:include_current] || false
-          }
+        return nil unless options
+
+        {
+          direction: options[:direction] || 1,
+          include_current: options[:include_current] || false,
+          previous: options[:previous] || false
+        }.tap do |extracted_options|
+          if (field_name = options[:field_name]) && (field_type = options[:field_type])
+            extracted_options.merge!({
+              field_type: field_type.to_s,
+              field_name: field_name.to_s
+            })
+          elsif (field = options[:field])
+            extracted_options.merge!({
+              field_type: field.type.to_s,
+              field_name: field.name.to_s
+            })
+          end
         end
       end
 
       def compare_direction
-        direction == 1 ? '$gt' : '$lt'
+        dir = previous ? -direction : direction
+        dir == 1 ? '$gt' : '$lt'
       end
 
       def tiebreak_compare_direction
