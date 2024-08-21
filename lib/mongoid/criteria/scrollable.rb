@@ -14,9 +14,10 @@ module Mongoid
         raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
         records = find_records(criteria, cursor)
         if block_given?
-          first_cursor = cursor_from_record(cursor_type, records.first, cursor_options.merge(previous: true))
+          previous_cursor = nil
           records.each do |record|
-            yield record, cursor_from_record(cursor_type, record, cursor_options), first_cursor
+            previous_cursor ||= cursor_from_record(cursor_type, record, cursor_options.merge(previous: true))
+            yield record, cursor_from_record(cursor_type, record, cursor_options), previous_cursor
           end
         else
           records
