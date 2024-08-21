@@ -11,17 +11,15 @@ module Mongoid
         criteria.merge!(default_sort) if no_sort_option?
         cursor_options = build_cursor_options(criteria)
         cursor = cursor.is_a?(cursor_type) ? cursor : new_cursor(cursor_type, cursor, cursor_options)
-        direction = scroll_direction(criteria)
         raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
-        cursor_criteria = build_cursor_criteria(criteria, cursor)
-        first_in_page = nil
+        records = find_records(criteria, cursor)
         if block_given?
-          cursor_criteria.order_by(_id: direction).each do |record|
-            first_in_page ||= record
-            yield record, cursor_from_record(cursor_type, record, cursor_options), cursor_from_record(cursor_type, first_in_page, cursor_options.merge(previous: true))
+          first_cursor = cursor_from_record(cursor_type, records.first, cursor_options.merge(previous: true))
+          records.each do |record|
+            yield record, cursor_from_record(cursor_type, record, cursor_options), first_cursor
           end
         else
-          cursor_criteria
+          records
         end
       end
 
@@ -63,10 +61,21 @@ module Mongoid
         cursor_type.new(cursor, cursor_options)
       end
 
-      def build_cursor_criteria(criteria, cursor)
+      def find_records(criteria, cursor)
         cursor_criteria = criteria.dup
         cursor_criteria.selector = { '$and' => [criteria.selector, cursor.criteria] }
-        cursor_criteria
+        if cursor.previous && criteria.options[:limit]
+          pipeline = [
+            { '$match' => cursor_criteria.selector },
+            { '$sort' => { cursor.field_name => -cursor.direction } },
+            { '$limit' => criteria.options[:limit] },
+            { '$sort' => { cursor.field_name => cursor.direction } }
+          ]
+          aggregation = cursor_criteria.view.aggregate(pipeline)
+          aggregation.map { Mongoid::Factory.from_db(cursor_criteria.klass, _1) }
+        else
+          cursor_criteria.order_by(_id: scroll_direction(criteria))
+        end
       end
 
       def cursor_from_record(cursor_type, record, cursor_options)

@@ -161,23 +161,26 @@ describe Mongoid::Criteria do
               end
             end
             it 'can scroll back with the previous cursor' do
-              first_cursor = nil
-              second_cursor = nil
+              cursor = nil
+              first_previous_cursor = nil
+              second_previous_cursor = nil
 
               Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, next_cursor|
-                second_cursor = next_cursor
-              end
-              Feed::Item.asc(field_name).limit(2).scroll(second_cursor) do |_, _, previous_cursor|
-                first_cursor = previous_cursor
+                cursor = next_cursor
               end
 
-              records = []
-              Feed::Item.asc(field_name).limit(2).scroll(first_cursor) do |record|
-                records << record
+              Feed::Item.asc(field_name).limit(2).scroll(cursor) do |_, next_cursor, previous_cursor|
+                cursor = next_cursor
+                first_previous_cursor = previous_cursor
               end
-              expect(records).to eq Feed::Item.asc(field_name).limit(2).to_a
 
-              expect(Feed::Item.asc(field_name).scroll(first_cursor).to_a).to eq Feed::Item.asc(field_name).limit(2).to_a
+              Feed::Item.asc(field_name).limit(2).scroll(cursor) do |_, _, previous_cursor|
+                second_previous_cursor = previous_cursor
+              end
+
+              records = Feed::Item.asc(field_name)
+              expect(Feed::Item.asc(field_name).limit(2).scroll(first_previous_cursor)).to eq(records.limit(2))
+              expect(Feed::Item.asc(field_name).limit(2).scroll(second_previous_cursor)).to eq(records.skip(2).limit(2))
             end
           end
         end
