@@ -73,7 +73,7 @@ module Mongoid
             { '$sort' => { cursor.field_name => cursor.direction } }
           ]
           aggregation = cursor_criteria.view.aggregate(pipeline)
-          aggregation.map { Mongoid::Factory.from_db(cursor_criteria.klass, _1) }
+          aggregation.map { |record| Mongoid::Factory.from_db(cursor_criteria.klass, record) }
         else
           cursor_criteria.order_by(_id: scroll_direction(criteria))
         end
