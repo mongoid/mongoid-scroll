@@ -1,6 +1,6 @@
 ### 1.0.2 (Next)
 
-* [#38](https://github.com/mongoid/mongoid-scroll/pull/38):  gives the previous cursor in the scroll block - [@GCorbel](https://github.com/GCorbel).
+* [#38](https://github.com/mongoid/mongoid-scroll/pull/38): Allow to reverse the scroll - [@GCorbel](https://github.com/GCorbel).
 
 ### 1.0.1 (2023/03/15)
 

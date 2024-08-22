@@ -79,9 +79,17 @@ end
 Resume iterating using the previously saved cursor.
 
 ```ruby
-Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record, next_cursor|
+Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record, _, previous_cursor|
   # each record, one-by-one
-  saved_cursor = next_cursor
+  saved_cursor = previous_cursor
+end
+```
+
+A cursor to get the previous records is available.
+
+```ruby
+Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record|
+  # Loop over the 5 first records
 end
 ```
 
@@ -179,7 +187,7 @@ Feed::Item.desc(:created_at).scroll(cursor) # Raises a Mongoid::Scroll::Errors::
 
 ### Standard Cursor
 
-The `Mongoid::Scroll::Cursor` encodes a value and a tiebreak ID separated by `:`, and does not include other options, such as scroll direction. Take extra care not to pass a cursor into a scroll with different options. 
+The `Mongoid::Scroll::Cursor` encodes a value and a tiebreak ID separated by `:`, and does not include other options, such as scroll direction. Take extra care not to pass a cursor into a scroll with different options.
 
 ### Base64 Encoded Cursor
 
