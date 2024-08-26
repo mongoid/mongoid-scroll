@@ -1,6 +1,7 @@
-### 1.0.2 (Next)
+### 1.1.0 (Next)
 
 * [#38](https://github.com/mongoid/mongoid-scroll/pull/38): Allow to reverse the scroll - [@GCorbel](https://github.com/GCorbel).
+* Your contribution here.
 
 ### 1.0.1 (2023/03/15)
 

@@ -76,7 +76,7 @@ Feed::Item.desc(:position).limit(5).scroll do |record, next_cursor|
 end
 ```
 
-Resume iterating using the previously saved cursor.
+Resume iterating using saved cursor and save the cursor to go backward.
 
 ```ruby
 Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record, _, previous_cursor|
@@ -85,11 +85,12 @@ Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record, _, previous
 end
 ```
 
-A cursor to get the previous records is available.
+Loop over the first records again.
 
 ```ruby
-Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record|
-  # Loop over the 5 first records
+Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record, next_cursor|
+  # each record, one-by-one
+  saved_cursor = next_cursor
 end
 ```
 

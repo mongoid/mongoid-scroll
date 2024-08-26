@@ -19,7 +19,7 @@ module Mongo
 
       records = nil
       if cursor.previous && limit
-        # scroll backards by reversing the sort order, limit and then reverse again
+        # scroll backwards by reversing the sort order, limit and then reverse again
         pipeline = [
           { '$match' => view.selector.merge(cursor.criteria) },
           { '$sort' => { scroll_field => -scroll_direction } },
