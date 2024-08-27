@@ -107,26 +107,25 @@ if Object.const_defined?(:Mongo)
                 expect(cursor.tiebreak_id).to eq record['_id']
               end
               it 'can scroll back with the previous cursor' do
-                cursor = nil
-                first_previous_cursor = nil
-                second_previous_cursor = nil
+                first_iterator = nil
+                second_iterator = nil
+                third_iterator = nil
 
                 Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(cursor_type, field_type: field_type) do |_, iterator|
-                  cursor = iterator.next_cursor
+                  first_iterator = iterator
                 end
 
-                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(cursor, field_type: field_type) do |_, iterator|
-                  cursor = iterator.next_cursor
-                  first_previous_cursor = iterator.previous_cursor
+                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(first_iterator.next_cursor, field_type: field_type) do |_, iterator|
+                  second_iterator = iterator
                 end
 
-                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(cursor, field_type: field_type) do |_, iterator|
-                  second_previous_cursor = iterator.previous_cursor
+                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(second_iterator.next_cursor, field_type: field_type) do |_, iterator|
+                  third_iterator = iterator
                 end
 
                 records = Mongoid.default_client['feed_items'].find.sort(field_name => 1)
-                expect(Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(first_previous_cursor, field_type: field_type).to_a).to eq(records.limit(2).to_a)
-                expect(Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(second_previous_cursor, field_type: field_type).to_a).to eq(records.skip(2).limit(2).to_a)
+                expect(Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(second_iterator.previous_cursor, field_type: field_type).to_a).to eq(records.limit(2).to_a)
+                expect(Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(third_iterator.previous_cursor, field_type: field_type).to_a).to eq(records.skip(2).limit(2).to_a)
               end
             end
           end

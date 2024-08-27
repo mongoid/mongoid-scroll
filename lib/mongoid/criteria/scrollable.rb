@@ -69,7 +69,7 @@ module Mongoid
       def find_records(criteria, cursor)
         cursor_criteria = criteria.dup
         cursor_criteria.selector = { '$and' => [criteria.selector, cursor.criteria] }
-        if cursor.type == :previous && criteria.options[:limit]
+        if cursor.type == :previous
           pipeline = [
             { '$match' => cursor_criteria.selector },
             { '$sort' => { cursor.field_name => -cursor.direction } },

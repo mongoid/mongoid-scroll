@@ -18,7 +18,7 @@ module Mongo
       raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
 
       records = nil
-      if cursor.type == :previous && limit
+      if cursor.type == :previous
         # scroll backwards by reversing the sort order, limit and then reverse again
         pipeline = [
           { '$match' => view.selector.merge(cursor.criteria) },
