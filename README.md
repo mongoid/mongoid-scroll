@@ -69,35 +69,37 @@ end
 Scroll by `:position` and save a cursor to the last item.
 
 ```ruby
-saved_cursor = nil
-Feed::Item.desc(:position).limit(5).scroll do |record, next_cursor|
+saved_previous_cursor = nil
+saved_next_cursor = nil
+
+Feed::Item.desc(:position).limit(5).scroll do |record, next_cursor, previous_cursor|
   # each record, one-by-one
-  saved_cursor = next_cursor
+  saved_next_cursor = next_cursor
 end
 ```
 
 Resume iterating using saved cursor and save the cursor to go backward.
 
 ```ruby
-Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record, _, previous_cursor|
+Feed::Item.desc(:position).limit(5).scroll(saved_next_cursor) do |record, next_cursor, previous_cursor|
   # each record, one-by-one
-  saved_cursor = previous_cursor
+  saved_previous_cursor = previous_previous_cursor
 end
 ```
 
 Loop over the first records again.
 
 ```ruby
-Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record, next_cursor|
+Feed::Item.desc(:position).limit(5).scroll(saved_previous_cursor) do |record, next_cursor, previous_cursor|
   # each record, one-by-one
-  saved_cursor = next_cursor
+  saved_next_cursor = next_cursor
 end
 ```
 
 The iteration finishes when no more records are available. You can also finish iterating over the remaining records by omitting the query limit.
 
 ```ruby
-Feed::Item.desc(:position).scroll(saved_cursor) do |record, next_cursor|
+Feed::Item.desc(:position).limit(5).scroll(saved_next_cursor) do |record, next_cursor, previous_cursor|
   # each record, one-by-one
 end
 ```
@@ -107,19 +109,19 @@ end
 Scroll a `Mongo::Collection::View` and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
 
 ```ruby
-saved_cursor = nil
-client[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
+saved_next_cursor = nil
+client[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor, previous_cursor|
   # each record, one-by-one
-  saved_cursor = next_cursor
+  saved_next_cursor = next_cursor
 end
 ```
 
 Resume iterating using the previously saved cursor.
 
 ```ruby
-session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
+session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_next_cursor, { field_type: DateTime }) do |record, next_cursor, previous_cursor|
   # each record, one-by-one
-  saved_cursor = next_cursor
+  saved_next_cursor = next_cursor
 end
 ```
 

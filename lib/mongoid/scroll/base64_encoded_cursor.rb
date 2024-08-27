@@ -19,7 +19,7 @@ module Mongoid
             direction: parsed['direction'],
             include_current: parsed['include_current'],
             tiebreak_id: parsed['tiebreak_id'] && !parsed['tiebreak_id'].empty? ? BSON::ObjectId.from_string(parsed['tiebreak_id']) : nil,
-            previous: parsed['previous']
+            type: parsed['type'].try(:to_sym)
           }
         else
           super nil, options
@@ -34,7 +34,7 @@ module Mongoid
           direction: direction,
           include_current: include_current,
           tiebreak_id: tiebreak_id && tiebreak_id.to_s,
-          previous: previous
+          type: type
         }.to_json)
       end
     end

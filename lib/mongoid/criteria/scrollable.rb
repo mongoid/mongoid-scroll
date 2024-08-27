@@ -16,7 +16,7 @@ module Mongoid
         if block_given?
           previous_cursor = nil
           records.each do |record|
-            previous_cursor ||= cursor_from_record(cursor_type, record, cursor_options.merge(previous: true))
+            previous_cursor ||= cursor_from_record(cursor_type, record, cursor_options.merge(type: :previous))
             yield record, cursor_from_record(cursor_type, record, cursor_options), previous_cursor
           end
         else
@@ -65,7 +65,7 @@ module Mongoid
       def find_records(criteria, cursor)
         cursor_criteria = criteria.dup
         cursor_criteria.selector = { '$and' => [criteria.selector, cursor.criteria] }
-        if cursor.previous && criteria.options[:limit]
+        if cursor.type == :previous && criteria.options[:limit]
           pipeline = [
             { '$match' => cursor_criteria.selector },
             { '$sort' => { cursor.field_name => -cursor.direction } },
