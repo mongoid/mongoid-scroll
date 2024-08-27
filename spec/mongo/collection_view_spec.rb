@@ -57,7 +57,7 @@ if Object.const_defined?(:Mongo)
           context 'default' do
             it 'scrolls all' do
               records = []
-              Mongoid.default_client['feed_items'].find.scroll(cursor_type) do |record, _next_cursor|
+              Mongoid.default_client['feed_items'].find.scroll(cursor_type) do |record, iterator|
                 records << record
               end
               expect(records.size).to eq 10
@@ -68,7 +68,7 @@ if Object.const_defined?(:Mongo)
             context field_type do
               it 'scrolls all with a block' do
                 records = []
-                Mongoid.default_client['feed_items'].find.sort(field_name => 1).scroll(cursor_type, field_type: field_type) do |record, _next_cursor|
+                Mongoid.default_client['feed_items'].find.sort(field_name => 1).scroll(cursor_type, field_type: field_type) do |record, iterator|
                   records << record
                 end
                 expect(records.size).to eq 10
@@ -77,15 +77,15 @@ if Object.const_defined?(:Mongo)
               it 'scrolls all with a break' do
                 records = []
                 cursor = nil
-                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(5).scroll(cursor_type, field_type: field_type) do |record, next_cursor|
+                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(5).scroll(cursor_type, field_type: field_type) do |record, iterator|
                   records << record
-                  cursor = next_cursor
+                  cursor = iterator.next_cursor
                   expect(cursor).to be_a cursor_type
                 end
                 expect(records.size).to eq 5
-                Mongoid.default_client['feed_items'].find.sort(field_name => 1).scroll(cursor, field_type: field_type) do |record, next_cursor|
+                Mongoid.default_client['feed_items'].find.sort(field_name => 1).scroll(cursor, field_type: field_type) do |record, iterator|
                   records << record
-                  cursor = next_cursor
+                  cursor = iterator.next_cursor
                   expect(cursor).to be_a cursor_type
                 end
                 expect(records.size).to eq 10
@@ -93,7 +93,7 @@ if Object.const_defined?(:Mongo)
               end
               it 'scrolls in descending order' do
                 records = []
-                Mongoid.default_client['feed_items'].find.sort(field_name => -1).limit(3).scroll(cursor_type, field_type: field_type, field_name: field_name) do |record, _next_cursor|
+                Mongoid.default_client['feed_items'].find.sort(field_name => -1).limit(3).scroll(cursor_type, field_type: field_type, field_name: field_name) do |record, iterator|
                   records << record
                 end
                 expect(records.size).to eq 3
@@ -111,17 +111,17 @@ if Object.const_defined?(:Mongo)
                 first_previous_cursor = nil
                 second_previous_cursor = nil
 
-                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(cursor_type, field_type: field_type) do |_, next_cursor|
-                  cursor = next_cursor
+                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(cursor_type, field_type: field_type) do |_, iterator|
+                  cursor = iterator.next_cursor
                 end
 
-                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(cursor, field_type: field_type) do |_, next_cursor, previous_cursor|
-                  cursor = next_cursor
-                  first_previous_cursor = previous_cursor
+                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(cursor, field_type: field_type) do |_, iterator|
+                  cursor = iterator.next_cursor
+                  first_previous_cursor = iterator.previous_cursor
                 end
 
-                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(cursor, field_type: field_type) do |_, _, previous_cursor|
-                  second_previous_cursor = previous_cursor
+                Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(cursor, field_type: field_type) do |_, iterator|
+                  second_previous_cursor = iterator.previous_cursor
                 end
 
                 records = Mongoid.default_client['feed_items'].find.sort(field_name => 1)
@@ -146,12 +146,12 @@ if Object.const_defined?(:Mongo)
             it "scrolls by #{sort_order}" do
               records = []
               cursor = nil
-              Mongoid.default_client['feed_items'].find.sort(sort_order).limit(2).scroll(cursor_type) do |record, next_cursor|
+              Mongoid.default_client['feed_items'].find.sort(sort_order).limit(2).scroll(cursor_type) do |record, iterator|
                 records << record
-                cursor = next_cursor
+                cursor = iterator.next_cursor
               end
               expect(records.size).to eq 2
-              Mongoid.default_client['feed_items'].find.sort(sort_order).scroll(cursor) do |record, _next_cursor|
+              Mongoid.default_client['feed_items'].find.sort(sort_order).scroll(cursor) do |record, iterator|
                 records << record
               end
               expect(records.size).to eq 3
