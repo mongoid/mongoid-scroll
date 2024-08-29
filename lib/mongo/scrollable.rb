@@ -16,21 +16,41 @@ module Mongo
       cursor_options = { field_name: scroll_field, direction: scroll_direction }.merge(options)
       cursor = cursor && cursor.is_a?(cursor_type) ? cursor : cursor_type.new(cursor, cursor_options)
       raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
-      # make a view
-      view = Mongo::Collection::View.new(
-        view.collection,
-        view.selector.merge(cursor.criteria),
-        sort: (view.sort || {}).merge(_id: scroll_direction),
-        skip: skip,
-        limit: limit
-      )
+
+      records = nil
+      if cursor.type == :previous
+        # scroll backwards by reversing the sort order, limit and then reverse again
+        pipeline = [
+          { '$match' => view.selector.merge(cursor.criteria) },
+          { '$sort' => { scroll_field => -scroll_direction } },
+          { '$limit' => limit },
+          { '$sort' => { scroll_field => scroll_direction } }
+        ]
+        aggregation_options = view.options.except(:sort)
+        records = view.aggregate(pipeline, aggregation_options)
+      else
+        # make a view
+        records = Mongo::Collection::View.new(
+          view.collection,
+          view.selector.merge(cursor.criteria),
+          sort: (view.sort || {}).merge(_id: scroll_direction),
+          skip: skip,
+          limit: limit
+        )
+      end
       # scroll
       if block_given?
-        view.each do |record|
-          yield record, cursor_type.from_record(record, cursor_options)
+        previous_cursor = nil
+        records.each do |record|
+          previous_cursor ||= cursor_type.from_record(record, cursor_options.merge(type: :previous))
+          iterator = Mongoid::Criteria::Scrollable::Iterator.new(
+            previous_cursor: previous_cursor,
+            next_cursor: cursor_type.from_record(record, cursor_options)
+          )
+          yield record, iterator
         end
       else
-        view
+        records
       end
     end
   end

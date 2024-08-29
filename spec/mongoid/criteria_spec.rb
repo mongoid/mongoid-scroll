@@ -51,7 +51,7 @@ describe Mongoid::Criteria do
         context 'default' do
           it 'scrolls all' do
             records = []
-            Feed::Item.all.scroll(cursor_type) do |record, _next_cursor|
+            Feed::Item.all.scroll(cursor_type) do |record, _iterator|
               records << record
             end
             expect(records.size).to eq 10
@@ -63,11 +63,11 @@ describe Mongoid::Criteria do
             criteria.limit(2).scroll(cursor_type)
             expect(criteria).to eq original_criteria
             cursor = nil
-            criteria.limit(2).scroll(cursor) do |_record, next_cursor|
-              cursor = next_cursor
+            criteria.limit(2).scroll(cursor) do |_record, iterator|
+              cursor = iterator.next_cursor
             end
-            criteria.scroll(cursor) do |_record, next_cursor|
-              cursor = next_cursor
+            criteria.scroll(cursor) do |_record, iterator|
+              cursor = iterator.next_cursor
             end
             expect(criteria).to eq original_criteria
           end
@@ -83,7 +83,7 @@ describe Mongoid::Criteria do
           context field_type do
             it 'scrolls all with a block' do
               records = []
-              Feed::Item.asc(field_name).scroll(cursor_type) do |record, _next_cursor|
+              Feed::Item.asc(field_name).scroll(cursor_type) do |record, iterator|
                 records << record
               end
               expect(records.size).to eq 10
@@ -92,14 +92,14 @@ describe Mongoid::Criteria do
             it 'scrolls all with a break' do
               records = []
               cursor = nil
-              Feed::Item.asc(field_name).limit(5).scroll(cursor_type) do |record, next_cursor|
+              Feed::Item.asc(field_name).limit(5).scroll(cursor_type) do |record, iterator|
                 records << record
-                cursor = next_cursor
+                cursor = iterator.next_cursor
               end
               expect(records.size).to eq 5
-              Feed::Item.asc(field_name).scroll(cursor) do |record, next_cursor|
+              Feed::Item.asc(field_name).scroll(cursor) do |record, iterator|
                 records << record
-                cursor = next_cursor
+                cursor = iterator.next_cursor
               end
               expect(records.size).to eq 10
               expect(records).to eq Feed::Item.all.to_a
@@ -107,9 +107,9 @@ describe Mongoid::Criteria do
             it 'scrolls from a cursor' do
               last_record = nil
               cursor = nil
-              Feed::Item.asc(field_name).limit(5).scroll(cursor_type) do |record, next_cursor|
+              Feed::Item.asc(field_name).limit(5).scroll(cursor_type) do |record, iterator|
                 last_record = record
-                cursor = next_cursor
+                cursor = iterator.next_cursor
               end
               sixth_item = Feed::Item.asc(field_name).to_a[5]
               from_item = Feed::Item.asc(field_name).scroll(cursor).to_a.first
@@ -118,9 +118,9 @@ describe Mongoid::Criteria do
             it 'includes the current record when Mongoid::Scroll::Cursor#include_current is true' do
               last_record = nil
               cursor = nil
-              Feed::Item.asc(field_name).limit(5).scroll(cursor_type) do |record, next_cursor|
+              Feed::Item.asc(field_name).limit(5).scroll(cursor_type) do |record, iterator|
                 last_record = record
-                cursor = next_cursor
+                cursor = iterator.next_cursor
               end
               fifth_item = last_record
               cursor.include_current = true
@@ -129,7 +129,7 @@ describe Mongoid::Criteria do
             end
             it 'scrolls in descending order' do
               records = []
-              Feed::Item.desc(field_name).limit(3).scroll(cursor_type) do |record, _next_cursor|
+              Feed::Item.desc(field_name).limit(3).scroll(cursor_type) do |record, _iterator|
                 records << record
               end
               expect(records.size).to eq 3
@@ -145,20 +145,41 @@ describe Mongoid::Criteria do
             end
             it 'can be reused' do
               ids = Feed::Item.asc(field_name).limit(2).map(&:id)
-              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, cursor|
-                cursor.include_current = true
-                expect(Feed::Item.asc(field_name).limit(2).scroll(cursor).pluck(:id)).to eq ids
+              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, iterator|
+                iterator.next_cursor.include_current = true
+                expect(Feed::Item.asc(field_name).limit(2).scroll(iterator.next_cursor).pluck(:id)).to eq ids
                 break
               end
             end
             it 'can be re-created and reused' do
               ids = Feed::Item.asc(field_name).limit(2).map(&:id)
-              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, cursor|
-                new_cursor = cursor_type.new(cursor.to_s, field_type: field_type, field_name: field_name)
+              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, iterator|
+                new_cursor = cursor_type.new(iterator.next_cursor.to_s, field_type: field_type, field_name: field_name)
                 new_cursor.include_current = true
                 expect(Feed::Item.asc(field_name).limit(2).scroll(new_cursor).pluck(:id)).to eq ids
                 break
               end
+            end
+            it 'can scroll back with the previous cursor' do
+              first_iterator = nil
+              second_iterator = nil
+              third_iterator = nil
+
+              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, iterator|
+                first_iterator = iterator
+              end
+
+              Feed::Item.asc(field_name).limit(2).scroll(first_iterator.next_cursor) do |_, iterator|
+                second_iterator = iterator
+              end
+
+              Feed::Item.asc(field_name).limit(2).scroll(second_iterator.next_cursor) do |_, iterator|
+                third_iterator = iterator
+              end
+
+              records = Feed::Item.asc(field_name)
+              expect(Feed::Item.asc(field_name).limit(2).scroll(second_iterator.previous_cursor)).to eq(records.limit(2))
+              expect(Feed::Item.asc(field_name).limit(2).scroll(third_iterator.previous_cursor)).to eq(records.skip(2).limit(2))
             end
           end
         end
@@ -190,16 +211,16 @@ describe Mongoid::Criteria do
           ).asc(:a_time)
           records = []
           cursor = nil
-          criteria.limit(2).scroll(cursor_type) do |record, next_cursor|
+          criteria.limit(2).scroll(cursor_type) do |record, iterator|
             records << record
-            cursor = next_cursor
+            cursor = iterator.next_cursor
           end
           expect(records.size).to eq 2
           expect(records.map(&:name)).to eq ['Feed Item 0', 'Feed Item 1']
           records = []
-          criteria.limit(2).scroll(cursor) do |record, next_cursor|
+          criteria.limit(2).scroll(cursor) do |record, iterator|
             records << record
-            cursor = next_cursor
+            cursor = iterator.next_cursor
           end
           expect(records.size).to eq 1
           expect(records.map(&:name)).to eq ['Feed Item 2']
@@ -213,7 +234,7 @@ describe Mongoid::Criteria do
         it 'respects embedded queries' do
           records = []
           criteria = @item.embedded_items.limit(2)
-          criteria.scroll(cursor_type) do |record, _next_cursor|
+          criteria.scroll(cursor_type) do |record, _iterator|
             records << record
           end
           expect(records.size).to eq 1
@@ -235,12 +256,12 @@ describe Mongoid::Criteria do
           it "scrolls by #{sort_order}" do
             records = []
             cursor = nil
-            Feed::Item.order_by(sort_order).limit(2).scroll(cursor_type) do |record, next_cursor|
+            Feed::Item.order_by(sort_order).limit(2).scroll(cursor_type) do |record, iterator|
               records << record
-              cursor = next_cursor
+              cursor = iterator.next_cursor
             end
             expect(records.size).to eq 2
-            Feed::Item.order_by(sort_order).scroll(cursor) do |record, _next_cursor|
+            Feed::Item.order_by(sort_order).scroll(cursor) do |record, _iterator|
               records << record
             end
             expect(records.size).to eq 3
@@ -268,9 +289,9 @@ describe Mongoid::Criteria do
         it 'doesn\'t lose the precision when rebuilding the cursor' do
           records = []
           cursor = nil
-          Feed::Item.order_by(a_datetime: 1).limit(2).scroll(cursor_type) do |record, next_cursor|
+          Feed::Item.order_by(a_datetime: 1).limit(2).scroll(cursor_type) do |record, iterator|
             records << record
-            cursor = next_cursor
+            cursor = iterator.next_cursor
           end
           expect(records).to eq [item_1, item_2]
           cursor = cursor_type.new(cursor.to_s, field: Feed::Item.fields['a_datetime'])

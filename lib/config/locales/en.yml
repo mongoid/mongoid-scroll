@@ -27,4 +27,7 @@ en:
             message: "Unsupported field type."
             summary: "The type of the field '%{field}' is not supported: %{type}."
             resolution: "Please open a feature request in https://github.com/mongoid/mongoid-scroll."
-
+          unsupported_type:
+            message: "Unsupported type."
+            summary: "The type supplied in the cursor is not supported: %{type}."
+            resolution: "The cursor type can be either ':previous' or ':next'."

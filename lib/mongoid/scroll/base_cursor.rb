@@ -1,7 +1,7 @@
 module Mongoid
   module Scroll
     class BaseCursor
-      attr_accessor :value, :tiebreak_id, :field_type, :field_name, :direction, :include_current
+      attr_accessor :value, :tiebreak_id, :field_type, :field_name, :direction, :include_current, :type
 
       def initialize(value, options = {})
         @value = value
@@ -10,6 +10,9 @@ module Mongoid
         @field_name = options[:field_name]
         @direction = options[:direction] || 1
         @include_current = options[:include_current] || false
+        @type = options[:type] || :next
+
+        raise Mongoid::Scroll::Errors::UnsupportedTypeError.new(type: @type) if ![:previous, :next].include?(@type)
       end
 
       def criteria
@@ -86,20 +89,23 @@ module Mongoid
             field_type: field_type.to_s,
             field_name: field_name.to_s,
             direction: options[:direction] || 1,
-            include_current: options[:include_current] || false
+            include_current: options[:include_current] || false,
+            type: options[:type].try(:to_sym) || :next
           }
         elsif options && (field = options[:field])
           {
             field_type: field.type.to_s,
             field_name: field.name.to_s,
             direction: options[:direction] || 1,
-            include_current: options[:include_current] || false
+            include_current: options[:include_current] || false,
+            type: options[:type].try(:to_sym) || :next
           }
         end
       end
 
       def compare_direction
-        direction == 1 ? '$gt' : '$lt'
+        dir = type == :previous ? -direction : direction
+        dir == 1 ? '$gt' : '$lt'
       end
 
       def tiebreak_compare_direction

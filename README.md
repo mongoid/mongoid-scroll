@@ -69,27 +69,38 @@ end
 Scroll by `:position` and save a cursor to the last item.
 
 ```ruby
-saved_cursor = nil
-Feed::Item.desc(:position).limit(5).scroll do |record, next_cursor|
+saved_iterator = nil
+
+Feed::Item.desc(:position).limit(5).scroll do |record, iterator|
   # each record, one-by-one
-  saved_cursor = next_cursor
+  saved_iterator = iterator
 end
 ```
 
-Resume iterating using the previously saved cursor.
+Resume iterating using saved cursor and save the cursor to go backward.
 
 ```ruby
-Feed::Item.desc(:position).limit(5).scroll(saved_cursor) do |record, next_cursor|
+Feed::Item.desc(:position).limit(5).scroll(saved_iterator.next_cursor) do |record, iterator|
   # each record, one-by-one
-  saved_cursor = next_cursor
+  saved_iterator = iterator
+end
+```
+
+Loop over the first records again.
+
+```ruby
+Feed::Item.desc(:position).limit(5).scroll(saved_iterator.previous_cursor) do |record, iterator|
+  # each record, one-by-one
+  saved_iterator = iterator
 end
 ```
 
 The iteration finishes when no more records are available. You can also finish iterating over the remaining records by omitting the query limit.
 
 ```ruby
-Feed::Item.desc(:position).scroll(saved_cursor) do |record, next_cursor|
+Feed::Item.desc(:position).limit(5).scroll(saved_iterator.next_cursor) do |record, iterator|
   # each record, one-by-one
+  saved_iterator = iterator
 end
 ```
 
@@ -98,19 +109,19 @@ end
 Scroll a `Mongo::Collection::View` and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
 
 ```ruby
-saved_cursor = nil
-client[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, next_cursor|
+saved_iterator = nil
+client[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, iterator|
   # each record, one-by-one
-  saved_cursor = next_cursor
+  saved_iterator = iterator
 end
 ```
 
 Resume iterating using the previously saved cursor.
 
 ```ruby
-session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_cursor, { field_type: DateTime }) do |record, next_cursor|
+session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_iterator.next_cursor, { field_type: DateTime }) do |record, iterator|
   # each record, one-by-one
-  saved_cursor = next_cursor
+  saved_iterator = iterator
 end
 ```
 
@@ -179,15 +190,15 @@ Feed::Item.desc(:created_at).scroll(cursor) # Raises a Mongoid::Scroll::Errors::
 
 ### Standard Cursor
 
-The `Mongoid::Scroll::Cursor` encodes a value and a tiebreak ID separated by `:`, and does not include other options, such as scroll direction. Take extra care not to pass a cursor into a scroll with different options. 
+The `Mongoid::Scroll::Cursor` encodes a value and a tiebreak ID separated by `:`, and does not include other options, such as scroll direction. Take extra care not to pass a cursor into a scroll with different options.
 
 ### Base64 Encoded Cursor
 
 The `Mongoid::Scroll::Base64EncodedCursor` can be used instead of `Mongoid::Scroll::Cursor` to generate a base64-encoded string (using RFC 4648) containing all the information needed to rebuild a cursor.
 
 ```ruby
-Feed::Item.desc(:position).limit(5).scroll(Mongoid::Scroll::Base64EncodedCursor) do |record, next_cursor|
-   # next_cursor is of type Mongoid::Scroll::Base64EncodedCursor
+Feed::Item.desc(:position).limit(5).scroll(Mongoid::Scroll::Base64EncodedCursor) do |record, iterator|
+   # iterator.next_cursor is of type Mongoid::Scroll::Base64EncodedCursor
 end
 ```
 
