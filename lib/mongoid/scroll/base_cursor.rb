@@ -11,6 +11,8 @@ module Mongoid
         @direction = options[:direction] || 1
         @include_current = options[:include_current] || false
         @type = options[:type] || :next
+
+        raise Mongoid::Scroll::Errors::UnsupportedTypeError.new(type: @type) if ![:previous, :next].include?(@type)
       end
 
       def criteria

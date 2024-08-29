@@ -131,6 +131,14 @@ describe Mongoid::Scroll::Cursor do
       end.to raise_error ArgumentError
     end
   end
+  context 'an invalid type cursor' do
+    let(:feed_item) { Feed::Item.create!(a_string: 'astring') }
+    it 'raises Mongoid::Scroll::Errors::UnsupportedTypeError' do
+      expect do
+        Mongoid::Scroll::Cursor.new "#{feed_item.a_string}:#{feed_item.id}", field_name: 'a_string', field_type: String, include_current: true, type: :invalid
+      end.to raise_error Mongoid::Scroll::Errors::UnsupportedTypeError, /The type supplied in the cursor is not supported: invalid./
+    end
+  end
   context 'a cursor with include_current set to true' do
     let(:feed_item) { Feed::Item.create!(a_string: 'astring') }
     subject do
