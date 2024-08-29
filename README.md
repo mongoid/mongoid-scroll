@@ -89,7 +89,7 @@ end
 Loop over the first records again.
 
 ```ruby
-Feed::Item.desc(:position).limit(5).scroll(saved_previous_cursor) do |record, iterator|
+Feed::Item.desc(:position).limit(5).scroll(saved_iterator.previous_cursor) do |record, iterator|
   # each record, one-by-one
   saved_iterator = iterator
 end
@@ -119,7 +119,7 @@ end
 Resume iterating using the previously saved cursor.
 
 ```ruby
-session[:feed_items].find.sort(position: -1).limit(5).scroll(iterator.next_cursor, { field_type: DateTime }) do |record, iterator|
+session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_iterator.next_cursor, { field_type: DateTime }) do |record, iterator|
   # each record, one-by-one
   saved_iterator = iterator
 end

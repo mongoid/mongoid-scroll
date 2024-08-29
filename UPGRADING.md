@@ -2,7 +2,7 @@
 
 ## Upgrading to >= 2.0.0
 
-The second argument passed to the block in `Mongoid::Criteria::Scrollable#scroll` and `Mongo::Scrollable#scroll` has changed. It is now an instance of `Mongoid::Criteria::Scrollable` that provides two methods: `next_cursor` and `previous_cursor`. The `next_cursor` method returns the same cursor as in versions prior to 2.0.0.
+The second argument yielded in the block in `Mongoid::Criteria::Scrollable#scroll` and `Mongo::Scrollable#scroll` has changed from a cursor to an instance of `Mongoid::Criteria::Scrollable` which provides `next_cursor` and `previous_cursor`. The `next_cursor` method returns the same cursor as in versions prior to 2.0.0.
 
 For example, this code:
 
