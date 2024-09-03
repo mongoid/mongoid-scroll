@@ -9,7 +9,7 @@ module Mongoid
           @next_cursor = next_cursor
         end
 
-        def first_page_cursor
+        def first_cursor
           next_cursor.class.new(nil, next_cursor.sort_options)
         end
       end

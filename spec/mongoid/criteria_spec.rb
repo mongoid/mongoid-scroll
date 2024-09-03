@@ -182,14 +182,13 @@ describe Mongoid::Criteria do
               expect(Feed::Item.asc(field_name).limit(2).scroll(third_iterator.previous_cursor)).to eq(records.skip(2).limit(2))
             end
             it 'can loop over the first records with the first page cursor' do
-              records = []
-              iterator = nil
+              first_cursor = nil
 
-              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, iterator|
-                iterator = iterator
+              Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, it|
+                first_cursor = it.first_cursor
               end
 
-              expect(Feed::Item.asc(field_name).limit(2).scroll(iterator.first_page_cursor).to_a).to eq(Feed::Item.asc(field_name).limit(2).to_a)
+              expect(Feed::Item.asc(field_name).limit(2).scroll(first_cursor).to_a).to eq(Feed::Item.asc(field_name).limit(2).to_a)
             end
           end
         end
