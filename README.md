@@ -161,14 +161,7 @@ end
 
 ## Cursors
 
-You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. A cursor points at the last record of the 
-
-
-
-
-
-
-iteration and unlike MongoDB cursors will not expire.
+You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. A cursor points at the last record of the iteration and unlike MongoDB cursors will not expire.
 
 ```ruby
 record = Feed::Item.desc(:position).limit(3).last
