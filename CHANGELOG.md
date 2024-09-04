@@ -1,7 +1,7 @@
 ### 2.0.0 (Next)
 
 * [#38](https://github.com/mongoid/mongoid-scroll/pull/38): Allow to reverse the scroll - [@GCorbel](https://github.com/GCorbel).
-* [#43](https://github.com/mongoid/mongoid-scroll/pull/43): Add a cursor to go to the current page - [@GCorbel](https://github.com/GCorbel).
+* [#43](https://github.com/mongoid/mongoid-scroll/pull/43): Add a current cursor - [@GCorbel](https://github.com/GCorbel).
 * Your contribution here.
 
 ### 1.0.1 (2023/03/15)
