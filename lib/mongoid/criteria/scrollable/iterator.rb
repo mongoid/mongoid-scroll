@@ -10,7 +10,7 @@ module Mongoid
         end
 
         def first_cursor
-          next_cursor.class.new(nil, next_cursor.sort_options)
+          @first_cursor ||= next_cursor.class.new(nil, next_cursor.sort_options)
         end
       end
     end
