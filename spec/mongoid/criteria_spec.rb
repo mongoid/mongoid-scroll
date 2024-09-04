@@ -181,6 +181,16 @@ describe Mongoid::Criteria do
               expect(Feed::Item.asc(field_name).limit(2).scroll(second_iterator.previous_cursor)).to eq(records.limit(2))
               expect(Feed::Item.asc(field_name).limit(2).scroll(third_iterator.previous_cursor)).to eq(records.skip(2).limit(2))
             end
+            it 'can loop over the same records with the current cursor' do
+              current_cursor = nil
+              cursor = cursor_type.from_record Feed::Item.skip(4).first, field_name: field_name, field_type: field_type, include_current: true
+
+              Feed::Item.asc(field_name).limit(2).scroll(cursor) do |_, iterator|
+                current_cursor = iterator.current_cursor
+              end
+
+              expect(Feed::Item.asc(field_name).limit(2).scroll(current_cursor).to_a).to eq(Feed::Item.asc(field_name).skip(4).limit(2).to_a)
+            end
             it 'can loop over the first records with the first page cursor' do
               first_cursor = nil
 

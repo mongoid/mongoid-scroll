@@ -41,11 +41,14 @@ module Mongo
       # scroll
       if block_given?
         previous_cursor = nil
+        current_cursor = nil
         records.each do |record|
           previous_cursor ||= cursor_type.from_record(record, cursor_options.merge(type: :previous))
+          current_cursor ||= cursor_type.from_record(record, cursor_options.merge(include_current: true))
           iterator = Mongoid::Criteria::Scrollable::Iterator.new(
             previous_cursor: previous_cursor,
-            next_cursor: cursor_type.from_record(record, cursor_options)
+            next_cursor: cursor_type.from_record(record, cursor_options),
+            current_cursor: current_cursor
           )
           yield record, iterator
         end
