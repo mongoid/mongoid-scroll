@@ -8,6 +8,10 @@ module Mongoid
           @previous_cursor = previous_cursor
           @next_cursor = next_cursor
         end
+
+        def first_cursor
+          @first_cursor ||= next_cursor.class.new(nil, next_cursor.sort_options)
+        end
       end
     end
   end

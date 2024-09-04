@@ -127,6 +127,17 @@ if Object.const_defined?(:Mongo)
                 expect(Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(second_iterator.previous_cursor, field_type: field_type).to_a).to eq(records.limit(2).to_a)
                 expect(Mongoid.default_client['feed_items'].find.sort(field_name => 1).limit(2).scroll(third_iterator.previous_cursor, field_type: field_type).to_a).to eq(records.skip(2).limit(2).to_a)
               end
+              it 'can loop over the first records with the first cursor' do
+                first_cursor = nil
+                records = Mongoid.default_client['feed_items'].find.sort(field_name => 1)
+                cursor = cursor_type.from_record records.skip(4).first, field_name: field_name, field_type: field_type, include_current: true
+
+                records.limit(2).scroll(cursor, field_type: field_type) do |_, iterator|
+                  first_cursor = iterator.first_cursor
+                end
+
+                expect(records.limit(2).scroll(first_cursor, field_type: field_type).to_a).to eq(records.limit(2).to_a)
+              end
             end
           end
         end

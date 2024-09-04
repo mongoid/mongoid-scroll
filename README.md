@@ -95,6 +95,8 @@ Feed::Item.desc(:position).limit(5).scroll(saved_iterator.previous_cursor) do |r
 end
 ```
 
+Use `saved_iterator.first_cursor` to loop over the first records.
+
 The iteration finishes when no more records are available. You can also finish iterating over the remaining records by omitting the query limit.
 
 ```ruby
