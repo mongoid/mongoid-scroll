@@ -48,7 +48,7 @@ module Mongo
           iterator = Mongoid::Criteria::Scrollable::Iterator.new(
             previous_cursor: previous_cursor,
             next_cursor: cursor_type.from_record(record, cursor_options),
-              current_cursor: current_cursor
+            current_cursor: current_cursor
           )
           yield record, iterator
         end
