@@ -95,7 +95,7 @@ Feed::Item.desc(:position).limit(5).scroll(saved_iterator.previous_cursor) do |r
 end
 ```
 
-Use `saved_iterator.current_cursor` to loop over the same records again.
+Use `saved_iterator.first_cursor` to loop over the first records or `saved_iterator.current_cursor` to loop over the same records again.
 
 The iteration finishes when no more records are available. You can also finish iterating over the remaining records by omitting the query limit.
 
@@ -161,7 +161,14 @@ end
 
 ## Cursors
 
-You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. A cursor points at the last record of the previous iteration and unlike MongoDB cursors will not expire.
+You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. A cursor points at the last record of the 
+
+
+
+
+
+
+iteration and unlike MongoDB cursors will not expire.
 
 ```ruby
 record = Feed::Item.desc(:position).limit(3).last
