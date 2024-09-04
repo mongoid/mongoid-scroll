@@ -95,7 +95,7 @@ Feed::Item.desc(:position).limit(5).scroll(saved_iterator.previous_cursor) do |r
 end
 ```
 
-`saved_iterator.current_cursor` can be used to loop over the same records again.
+Use `saved_iterator.current_cursor` to loop over the same records again.
 
 The iteration finishes when no more records are available. You can also finish iterating over the remaining records by omitting the query limit.
 
