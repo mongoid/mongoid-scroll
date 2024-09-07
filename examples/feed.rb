@@ -38,7 +38,7 @@ loop do
   next_cursor = nil
   Feed::Item.asc(:position).limit(scroll_by).scroll(current_cursor) do |item, cursor|
     puts "#{item.position}: #{item.title}"
-    next_cursor = cursor
+    next_cursor = cursor.next_cursor
     total_shown += 1
   end
   break unless next_cursor
