@@ -1,3 +1,5 @@
+require_relative 'item'
+
 module Feed
   class EmbeddedItem
     include Mongoid::Document
