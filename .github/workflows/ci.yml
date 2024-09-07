@@ -7,8 +7,6 @@ jobs:
     strategy:
       matrix:
         entry:
-          - { ruby: '2.6', mongodb: '4.4', mongoid: '5' }
-          - { ruby: '3.2', mongodb: '6.0', mongoid: '5' }
           - { ruby: '2.7', mongodb: '4.4', mongoid: '6' }
           - { ruby: '2.7', mongodb: '4.4', mongoid: '7' }
           - { ruby: '3.0', mongodb: '4.4', mongoid: '6' }

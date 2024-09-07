@@ -3,6 +3,7 @@
 * [#38](https://github.com/mongoid/mongoid-scroll/pull/38): Add `previous_cursor` - [@GCorbel](https://github.com/GCorbel).
 * [#42](https://github.com/mongoid/mongoid-scroll/pull/42): Add `first_cursor` - [@GCorbel](https://github.com/GCorbel).
 * [#43](https://github.com/mongoid/mongoid-scroll/pull/43): Add `current_cursor` - [@GCorbel](https://github.com/GCorbel).
+* [#44](https://github.com/mongoid/mongoid-scroll/pull/44): Drop support for Mogoid 5 and Mongo Ruby Driver - [@dblock](https://github.com/dblock).
 * Your contribution here.
 
 ### 1.0.1 (2023/03/15)
@@ -16,8 +17,8 @@
 * [#29](https://github.com/mongoid/mongoid-scroll/pull/29): Add ability to include the current record to the cursor - [@FabienChaynes](https://github.com/FabienChaynes).
 * [#30](https://github.com/mongoid/mongoid-scroll/pull/30): Prevent discrepancy between the original sort and the cursor sort - [@FabienChaynes](https://github.com/FabienChaynes).
 * [#32](https://github.com/mongoid/mongoid-scroll/pull/32): Add Base64 serialization for cursors - [@FabienChaynes](https://github.com/FabienChaynes).
-* [#33](https://github.com/mongoid/mongoid-scroll/pull/33): Removed support for Mongoid 3, 4 and Moped - [@dblock](https://github.com/dblock).
-* [#34](https://github.com/mongoid/mongoid-scroll/pull/34): Added support for Mongoid 8 - [@dblock](https://github.com/dblock).
+* [#33](https://github.com/mongoid/mongoid-scroll/pull/33): Remove support for Mongoid 3, 4 and Moped - [@dblock](https://github.com/dblock).
+* [#34](https://github.com/mongoid/mongoid-scroll/pull/34): Add support for Mongoid 8 - [@dblock](https://github.com/dblock).
 
 ### 0.3.7 (2021/06/01)
 
@@ -32,7 +33,7 @@
 ### 0.3.5 (2016/09/27)
 
 * [#11](https://github.com/mongoid/mongoid-scroll/pull/11): Compatibility with Mongoid 6 - [@dblock](https://github.com/dblock).
-* [#12](https://github.com/mongoid/mongoid-scroll/pull/12): Added Danger, PR linter - [@dblock](https://github.com/dblock).
+* [#12](https://github.com/mongoid/mongoid-scroll/pull/12): Add Danger, PR linter - [@dblock](https://github.com/dblock).
 
 ### 0.3.4 (2015/10/22)
 
@@ -55,7 +56,7 @@
 ### 0.3.0 (2014/1/7)
 
 * Compatibility with Mongoid 4.x - [@dblock](https://github.com/dblock).
-* Implemeneted Rubocop, Ruby linter - [@dblock](https://github.com/dblock).
+* Implemenet Rubocop, Ruby linter - [@dblock](https://github.com/dblock).
 
 ### 0.2.1 (2013/3/21)
 
@@ -63,7 +64,7 @@
 
 ### 0.2.0 (2013/3/14)
 
-* Extended `Moped::Query` with `scroll` - [@dblock](https://github.com/dblock).
+* Extend `Moped::Query` with `scroll` - [@dblock](https://github.com/dblock).
 * `Mongoid::Scroll::Cursor.from_record` can now be called with either a Mongoid field or `field_type` and `field_name` in the `options` hash - [@dblock](https://github.com/dblock).
 
 ### 0.1.0 (2013/2/14)

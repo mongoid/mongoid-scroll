@@ -51,8 +51,7 @@ Style/Documentation:
   Exclude:
     - 'spec/**/*'
     - 'test/**/*'
-    - 'examples/mongoid_scroll_feed.rb'
-    - 'lib/mongo/scrollable.rb'
+    - 'examples/feed.rb'
     - 'lib/mongoid/criteria/scrollable.rb'
     - 'lib/mongoid/scroll/base_cursor.rb'
     - 'lib/mongoid/scroll/cursor.rb'

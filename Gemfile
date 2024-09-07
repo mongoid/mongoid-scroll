@@ -7,9 +7,6 @@ when 'HEAD' then gem 'mongoid', github: 'mongodb/mongoid'
 when /8/    then gem 'mongoid', '~> 8.0'
 when /7/    then gem 'mongoid', '~> 7.0'
 when /6/    then gem 'mongoid', '~> 6.0'
-when /5/    then
-  gem 'bigdecimal', '1.3.5'
-  gem 'mongoid', '~> 5.0'
 else gem 'mongoid', version
 end
 
