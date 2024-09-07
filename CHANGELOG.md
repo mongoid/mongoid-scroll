@@ -6,6 +6,7 @@
 * [#44](https://github.com/mongoid/mongoid-scroll/pull/44): Drop support for Mogoid 5 and Mongo Ruby Driver - [@dblock](https://github.com/dblock).
 * [#45](https://github.com/mongoid/mongoid-scroll/pull/45): Add support for Mogoid 9 - [@dblock](https://github.com/dblock).
 * [#46](https://github.com/mongoid/mongoid-scroll/pull/46): Upgrade RuboCop to 1.66.1 - [@dblock](https://github.com/dblock).
+* [#47](https://github.com/mongoid/mongoid-scroll/pull/47): Add code coverage - [@dblock](https://github.com/dblock).
 * Your contribution here.
 
 ### 1.0.1 (2023/03/15)
