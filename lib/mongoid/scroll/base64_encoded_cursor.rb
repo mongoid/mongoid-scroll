@@ -10,19 +10,19 @@ module Mongoid
         if value
           begin
             parsed = ::JSON.parse(::Base64.strict_decode64(value))
-          rescue
+          rescue StandardError
             raise Mongoid::Scroll::Errors::InvalidBase64CursorError.new(cursor: value)
           end
-          super parse_field_value(parsed['field_type'], parsed['field_name'], parsed['value']), {
+          super(parse_field_value(parsed['field_type'], parsed['field_name'], parsed['value']), {
             field_type: parsed['field_type'],
             field_name: parsed['field_name'],
             direction: parsed['direction'],
             include_current: parsed['include_current'],
             tiebreak_id: parsed['tiebreak_id'] && !parsed['tiebreak_id'].empty? ? BSON::ObjectId.from_string(parsed['tiebreak_id']) : nil,
             type: parsed['type'].try(:to_sym)
-          }
+          })
         else
-          super nil, options
+          super(nil, options)
         end
       end
 

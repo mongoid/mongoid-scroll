@@ -4,20 +4,20 @@ module Mongoid
       def initialize(value = nil, options = {})
         options = extract_field_options(options)
         raise ArgumentError.new 'Missing options[:field_name] and/or options[:field_type].' unless options
+
         if value
           parts = value.split(':') if value
-          unless parts && parts.length >= 2
-            raise Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value)
-          end
+          raise Mongoid::Scroll::Errors::InvalidCursorError.new(cursor: value) unless parts && parts.length >= 2
+
           value = parse_field_value(
             options[:field_type],
             options[:field_name],
             parts[0...-1].join(':')
           )
           options[:tiebreak_id] = BSON::ObjectId.from_string(parts[-1])
-          super value, options
+          super
         else
-          super nil, options
+          super(nil, options)
         end
       end
 

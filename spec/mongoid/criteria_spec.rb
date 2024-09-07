@@ -7,19 +7,23 @@ describe Mongoid::Criteria do
         subject do
           Feed::Item.desc(:name).asc(:value)
         end
+
         it ':scroll' do
           expect(subject).to respond_to(:scroll)
         end
+
         it 'raises Mongoid::Scroll::Errors::MultipleSortFieldsError' do
           expect do
             subject.scroll(cursor_type)
           end.to raise_error Mongoid::Scroll::Errors::MultipleSortFieldsError, /You're attempting to scroll over data with a sort order that includes multiple fields: name, value./
         end
       end
+
       context 'with different sort fields between the cursor and the criteria' do
         subject do
           Feed::Item.desc(:name)
         end
+
         it 'raises Mongoid::Scroll::Errors::MismatchedSortFieldsError' do
           record = Feed::Item.create!
           cursor = cursor_type.from_record(record, field: record.fields['a_string'])
@@ -27,16 +31,19 @@ describe Mongoid::Criteria do
           expect { subject.scroll(cursor) }.to raise_error Mongoid::Scroll::Errors::MismatchedSortFieldsError, error_string
         end
       end
+
       context 'with no sort' do
         subject do
           Feed::Item.all
         end
+
         it 'adds a default sort by _id' do
           expect(subject.scroll(cursor_type).options[:sort]).to eq('_id' => 1)
         end
       end
+
       context 'with data' do
-        before :each do
+        before do
           10.times do |i|
             Feed::Item.create!(
               name: i.to_s,
@@ -48,6 +55,7 @@ describe Mongoid::Criteria do
             )
           end
         end
+
         context 'default' do
           it 'scrolls all' do
             records = []
@@ -57,6 +65,7 @@ describe Mongoid::Criteria do
             expect(records.size).to eq 10
             expect(records).to eq Feed::Item.all.to_a
           end
+
           it 'does not change original criteria' do
             criteria = Feed::Item.where(:a_time.gt => Time.new(2013, 7, 22, 1, 2, 3))
             original_criteria = criteria.dup
@@ -72,6 +81,7 @@ describe Mongoid::Criteria do
             expect(criteria).to eq original_criteria
           end
         end
+
         context 'with a foreign key' do
           it 'sorts by object id' do
             records = []
@@ -79,16 +89,18 @@ describe Mongoid::Criteria do
             expect(records).not_to be_empty
           end
         end
+
         { a_string: String, a_integer: Integer, a_date: Date, a_datetime: DateTime }.each_pair do |field_name, field_type|
           context field_type do
             it 'scrolls all with a block' do
               records = []
-              Feed::Item.asc(field_name).scroll(cursor_type) do |record, iterator|
+              Feed::Item.asc(field_name).scroll(cursor_type) do |record, _iterator|
                 records << record
               end
               expect(records.size).to eq 10
               expect(records).to eq Feed::Item.all.to_a
             end
+
             it 'scrolls all with a break' do
               records = []
               cursor = nil
@@ -104,6 +116,7 @@ describe Mongoid::Criteria do
               expect(records.size).to eq 10
               expect(records).to eq Feed::Item.all.to_a
             end
+
             it 'scrolls from a cursor' do
               last_record = nil
               cursor = nil
@@ -115,6 +128,7 @@ describe Mongoid::Criteria do
               from_item = Feed::Item.asc(field_name).scroll(cursor).to_a.first
               expect(from_item).to eq sixth_item
             end
+
             it 'includes the current record when Mongoid::Scroll::Cursor#include_current is true' do
               last_record = nil
               cursor = nil
@@ -127,6 +141,7 @@ describe Mongoid::Criteria do
               from_item = Feed::Item.asc(field_name).scroll(cursor).to_a.first
               expect(from_item).to eq fifth_item
             end
+
             it 'scrolls in descending order' do
               records = []
               Feed::Item.desc(field_name).limit(3).scroll(cursor_type) do |record, _iterator|
@@ -135,14 +150,16 @@ describe Mongoid::Criteria do
               expect(records.size).to eq 3
               expect(records).to eq Feed::Item.desc(field_name).limit(3).to_a
             end
+
             it 'map' do
               record = Feed::Item.desc(field_name).limit(3).scroll(cursor_type).map { |r| r }.last
-              expect(record).to_not be nil
+              expect(record).not_to be_nil
               cursor = cursor_type.from_record(record, field_type: field_type, field_name: field_name)
-              expect(cursor).to_not be nil
+              expect(cursor).not_to be_nil
               expect(cursor.tiebreak_id).to eq record.id
               expect(cursor.value).to eq record.send(field_name)
             end
+
             it 'can be reused' do
               ids = Feed::Item.asc(field_name).limit(2).map(&:id)
               Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, iterator|
@@ -151,6 +168,7 @@ describe Mongoid::Criteria do
                 break
               end
             end
+
             it 'can be re-created and reused' do
               ids = Feed::Item.asc(field_name).limit(2).map(&:id)
               Feed::Item.asc(field_name).limit(2).scroll(cursor_type) do |_, iterator|
@@ -160,6 +178,7 @@ describe Mongoid::Criteria do
                 break
               end
             end
+
             it 'can scroll back with the previous cursor' do
               first_iterator = nil
               second_iterator = nil
@@ -181,6 +200,7 @@ describe Mongoid::Criteria do
               expect(Feed::Item.asc(field_name).limit(2).scroll(second_iterator.previous_cursor)).to eq(records.limit(2))
               expect(Feed::Item.asc(field_name).limit(2).scroll(third_iterator.previous_cursor)).to eq(records.skip(2).limit(2))
             end
+
             it 'can loop over the same records with the current cursor' do
               current_cursor = nil
               cursor = cursor_type.from_record Feed::Item.skip(4).first, field_name: field_name, field_type: field_type, include_current: true
@@ -191,6 +211,7 @@ describe Mongoid::Criteria do
 
               expect(Feed::Item.asc(field_name).limit(2).scroll(current_cursor).to_a).to eq(Feed::Item.asc(field_name).skip(4).limit(2).to_a)
             end
+
             it 'can loop over the first records with the first page cursor' do
               first_cursor = nil
 
@@ -203,8 +224,9 @@ describe Mongoid::Criteria do
           end
         end
       end
+
       context 'with logic in initial criteria' do
-        before :each do
+        before do
           3.times do |i|
             Feed::Item.create!(
               name: "Feed Item #{i}",
@@ -224,6 +246,7 @@ describe Mongoid::Criteria do
             a_time: Time.new(2014, 2, 2, 1, 2, 3)
           )
         end
+
         it 'respects original criteria with OR logic' do
           criteria = Feed::Item.where(
             '$or' => [{ :a_time.gt => Time.new(2015, 7, 22, 1, 2, 3) }, { :a_time.lte => Time.new(2015, 7, 22, 1, 2, 3), :a_date.gte => Date.new(2015, 7, 30) }]
@@ -245,11 +268,13 @@ describe Mongoid::Criteria do
           expect(records.map(&:name)).to eq ['Feed Item 2']
         end
       end
+
       context 'with embeddable objects' do
         before do
           @item = Feed::Item.create! a_integer: 1, name: 'item'
           @embedded_item = Feed::EmbeddedItem.create! name: 'embedded', item: @item
         end
+
         it 'respects embedded queries' do
           records = []
           criteria = @item.embedded_items.limit(2)
@@ -260,17 +285,20 @@ describe Mongoid::Criteria do
           expect(records.map(&:name)).to eq ['embedded']
         end
       end
+
       context 'with overlapping data', if: MongoDB.mmapv1? do
-        before :each do
+        before do
           3.times { Feed::Item.create! a_integer: 5 }
           Feed::Item.first.update_attributes!(name: Array(1000).join('a'))
         end
+
         it 'natural order is different from order by id' do
           # natural order isn't necessarily going to be the same as _id order
           # if a document is updated and grows in size, it may need to be relocated and
           # thus cause the natural order to change
-          expect(Feed::Item.order_by('$natural' => 1).to_a).to_not eq(Feed::Item.order_by(_id: 1).to_a)
+          expect(Feed::Item.order_by('$natural' => 1).to_a).not_to eq(Feed::Item.order_by(_id: 1).to_a)
         end
+
         [{ a_integer: 1 }, { a_integer: -1 }].each do |sort_order|
           it "scrolls by #{sort_order}" do
             records = []
@@ -288,10 +316,12 @@ describe Mongoid::Criteria do
           end
         end
       end
+
       context 'with several records having the same value' do
-        before :each do
+        before do
           3.times { Feed::Item.create! a_integer: 5 }
         end
+
         it 'returns records from the current one when Mongoid::Scroll::Cursor#include_current is true' do
           _first_item, second_item, third_item = Feed::Item.asc(:a_integer).to_a
           cursor = Mongoid::Scroll::Cursor.from_record(second_item, field: Feed::Item.fields['a_integer'])
@@ -300,6 +330,7 @@ describe Mongoid::Criteria do
           expect(items).to eq([second_item, third_item])
         end
       end
+
       context 'with DateTime with a milisecond precision' do
         let!(:item_1) { Feed::Item.create!(a_datetime: DateTime.new(2013, 1, 21, 1, 42, 3.1, 'UTC')) }
         let!(:item_2) { Feed::Item.create!(a_datetime: DateTime.new(2013, 1, 21, 1, 42, 3.2, 'UTC')) }
