@@ -19,11 +19,7 @@ module Mongoid
         mongo_value = value.class.mongoize(value) if value
         cursor_criteria = { field_name => { compare_direction => mongo_value } } if mongo_value
         tiebreak_criteria = { field_name => mongo_value, :_id => { tiebreak_compare_direction => tiebreak_id } } if mongo_value && tiebreak_id
-        cursor_selector = if Mongoid::Compatibility::Version.mongoid6_or_newer?
-                            Mongoid::Criteria::Queryable::Selector.new
-                          else
-                            Origin::Selector.new
-                          end
+        cursor_selector = Mongoid::Criteria::Queryable::Selector.new
         cursor_selector['$or'] = [cursor_criteria, tiebreak_criteria].compact if cursor_criteria || tiebreak_criteria
         cursor_selector.__evolve_object_id__
       end

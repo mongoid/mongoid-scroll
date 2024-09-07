@@ -37,3 +37,18 @@ jobs:
         run: bundle exec rspec
       - name: Run examples
         run: bundle exec ruby examples/feed.rb
+      - name: Report Coverage
+        uses: coverallsapp/github-action@v2
+        with:
+          flag-name: run-${{ join(matrix.*, '-') }}
+          parallel: true
+
+  upload-coverage:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload Code Coverage Report
+      uses: coverallsapp/github-action@v2
+      with:
+        parallel-finished: true

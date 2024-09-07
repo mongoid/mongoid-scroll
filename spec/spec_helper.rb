@@ -1,6 +1,11 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
+require 'coveralls'
+Coveralls.wear! do
+  add_filter 'spec'
+end
+
 require 'rubygems'
 require 'rspec'
 require 'rspec/its'
@@ -20,7 +25,7 @@ end
 RSpec.configure do |config|
   config.before :all do
     Mongoid.logger.level = Logger::INFO
-    Mongo::Logger.logger.level = Logger::INFO if Mongoid::Compatibility::Version.mongoid5_or_newer?
+    Mongo::Logger.logger.level = Logger::INFO
   end
   config.before do
     DatabaseCleaner.clean

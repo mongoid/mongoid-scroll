@@ -5,7 +5,6 @@ require 'mongoid-scroll'
 require 'faker'
 
 Mongoid.logger.level = Logger::INFO
-Mongo::Logger.logger.level = Logger::INFO if Mongoid::Compatibility::Version.mongoid5?
 Mongoid.connect_to 'mongoid_scroll_demo'
 Mongoid.purge!
 

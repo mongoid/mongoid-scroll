@@ -12,6 +12,7 @@ end
 
 group :development, :test do
   gem 'bundler'
+  gem 'coveralls_reborn', require: false
   gem 'database_cleaner', '~> 1.8.5'
   gem 'faker'
   gem 'mongoid-danger', '~> 0.2.0', require: false

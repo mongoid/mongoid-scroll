@@ -15,7 +15,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/mongoid-scroll.svg)](https://badge.fury.io/rb/mongoid-scroll)
 [![Build Status](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml/badge.svg)](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml)
-[![Dependency Status](https://gemnasium.com/mongoid/mongoid-scroll.svg)](https://gemnasium.com/mongoid/mongoid-scroll)
+[![Coverage Status](https://coveralls.io/repos/github/mongoid/mongoid-scroll/badge.svg?branch=master)](https://coveralls.io/github/mongoid/mongoid-scroll?branch=master)
 [![Code Climate](https://codeclimate.com/github/mongoid/mongoid-scroll.svg)](https://codeclimate.com/github/mongoid/mongoid-scroll)
 
 Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `Mongo::Collection::View`.
