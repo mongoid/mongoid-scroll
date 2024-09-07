@@ -1,4 +1,4 @@
-$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+$LOAD_PATH.push File.expand_path('lib', __dir__)
 require 'mongoid/scroll/version'
 
 Gem::Specification.new do |s|
@@ -13,7 +13,8 @@ Gem::Specification.new do |s|
   s.homepage = 'http://github.com/mongoid/mongoid-scroll'
   s.licenses = ['MIT']
   s.summary = 'Mongoid extensions to enable infinite scroll.'
+  s.add_dependency 'i18n'
   s.add_dependency 'mongoid', '>= 6.0'
   s.add_dependency 'mongoid-compatibility'
-  s.add_dependency 'i18n'
+  s.metadata['rubygems_mfa_required'] = 'true'
 end

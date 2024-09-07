@@ -10,7 +10,7 @@ module Mongoid
         criteria = dup
         criteria.merge!(default_sort) if no_sort_option?
         cursor_options = build_cursor_options(criteria)
-        cursor = cursor.is_a?(cursor_type) ? cursor : new_cursor(cursor_type, cursor, cursor_options)
+        cursor = new_cursor(cursor_type, cursor, cursor_options) unless cursor.is_a?(cursor_type)
         raise_mismatched_sort_fields_error!(cursor, cursor_options) if different_sort_fields?(cursor, cursor_options)
         records = find_records(criteria, cursor)
         if block_given?
@@ -99,4 +99,4 @@ module Mongoid
   end
 end
 
-Mongoid::Criteria.send(:include, Mongoid::Criteria::Scrollable)
+Mongoid::Criteria.include Mongoid::Criteria::Scrollable

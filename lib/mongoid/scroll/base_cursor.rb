@@ -12,7 +12,7 @@ module Mongoid
         @include_current = options[:include_current] || false
         @type = options[:type] || :next
 
-        raise Mongoid::Scroll::Errors::UnsupportedTypeError.new(type: @type) if ![:previous, :next].include?(@type)
+        raise Mongoid::Scroll::Errors::UnsupportedTypeError.new(type: @type) unless %i[previous next].include?(@type)
       end
 
       def criteria
@@ -72,8 +72,7 @@ module Mongoid
         return nil unless value
 
         case field_type.to_s
-        when 'BSON::ObjectId' then value.to_s
-        when 'String' then value.to_s
+        when 'BSON::ObjectId', 'String' then value.to_s
         when 'Date' then Time.utc(value.year, value.month, value.day).to_i
         when 'DateTime', 'Time' then value.utc.to_f.round(3)
         when 'Float' then value.to_f

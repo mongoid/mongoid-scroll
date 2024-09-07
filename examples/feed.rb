@@ -24,7 +24,7 @@ total_items = 20
 scroll_by = 7
 
 # insert items with a position out-of-order
-rands = (0..total_items).to_a.sort { rand }[0..total_items]
+rands = (0..total_items).to_a.sort { |_l, _r| rand }[0..total_items]
 total_items.times do |_i|
   Feed::Item.create! title: Faker::Lorem.sentence, position: rands.pop
 end
@@ -42,6 +42,7 @@ loop do
     total_shown += 1
   end
   break unless next_cursor
+
   # destroy an item just for the heck of it, scroll is not affected
   Feed::Item.asc(:position).first.destroy
 end
