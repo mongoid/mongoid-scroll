@@ -1,3 +1,7 @@
+### 2.0.1 (Next)
+
+* Your contribution here.
+
 ### 2.0.0 (2024/09/07)
 
 * [#38](https://github.com/mongoid/mongoid-scroll/pull/38): Add `previous_cursor` - [@GCorbel](https://github.com/GCorbel).
