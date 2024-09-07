@@ -7,6 +7,8 @@ require 'rspec/its'
 require 'database_cleaner'
 require 'mongoid-scroll'
 
+Time.zone ||= 'EST'
+
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each do |f|
   require f
 end
