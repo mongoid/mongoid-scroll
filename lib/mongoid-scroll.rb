@@ -12,5 +12,4 @@ require 'mongoid/scroll/base64_encoded_cursor'
 require 'mongoid/criteria/scrollable/fields'
 require 'mongoid/criteria/scrollable/cursors'
 require 'mongoid/criteria/scrollable/iterator'
-require 'mongo/scrollable' if Object.const_defined?(:Mongo)
 require 'mongoid/criteria/scrollable'

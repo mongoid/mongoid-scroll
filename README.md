@@ -4,8 +4,6 @@
   - [The Problem](#the-problem)
   - [Installation](#installation)
   - [Usage](#usage)
-    - [Mongoid](#mongoid)
-    - [Mongo-Ruby-Driver (Mongoid 5)](#mongo-ruby-driver-mongoid-5)
   - [Indexes and Performance](#indexes-and-performance)
   - [Cursors](#cursors)
     - [Standard Cursor](#standard-cursor)
@@ -24,13 +22,13 @@ Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `M
 
 ## Compatibility
 
-This gem supports Mongoid 5, 6, 7 and 8.
+This gem supports Mongoid 6, 7 and 8.
 
 ## Demo
 
 Check out [shows on artsy.net](http://artsy.net/shows). Keep scrolling down.
 
-There're also two code samples for Mongoid in [examples](examples). Run `bundle exec ruby examples/mongoid_scroll_feed.rb`.
+There're also two code samples for Mongoid in [examples](examples). Run `bundle exec ruby examples/feed.rb`.
 
 ## The Problem
 
@@ -50,8 +48,6 @@ gem 'mongoid-scroll'
 ```
 
 ## Usage
-
-### Mongoid
 
 A sample model.
 
@@ -101,27 +97,6 @@ The iteration finishes when no more records are available. You can also finish i
 
 ```ruby
 Feed::Item.desc(:position).limit(5).scroll(saved_iterator.next_cursor) do |record, iterator|
-  # each record, one-by-one
-  saved_iterator = iterator
-end
-```
-
-### Mongo-Ruby-Driver (Mongoid 5)
-
-Scroll a `Mongo::Collection::View` and save a cursor to the last item. You must also supply a `field_type` of the sort criteria.
-
-```ruby
-saved_iterator = nil
-client[:feed_items].find.sort(position: -1).limit(5).scroll(nil, { field_type: DateTime }) do |record, iterator|
-  # each record, one-by-one
-  saved_iterator = iterator
-end
-```
-
-Resume iterating using the previously saved cursor.
-
-```ruby
-session[:feed_items].find.sort(position: -1).limit(5).scroll(saved_iterator.next_cursor, { field_type: DateTime }) do |record, iterator|
   # each record, one-by-one
   saved_iterator = iterator
 end
@@ -212,4 +187,4 @@ Fork the project. Make your feature addition or bug fix with tests. Send a pull 
 
 MIT License, see [LICENSE](http://github.com/mongoid/mongoid-scroll/raw/master/LICENSE.md) for details.
 
-(c) 2013-2023 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)
+(c) 2013-2024 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)
