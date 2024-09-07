@@ -22,13 +22,11 @@ Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `M
 
 ## Compatibility
 
-This gem supports Mongoid 6, 7 and 8.
+This gem supports Mongoid 6, 7, 8 and 9.
 
 ## Demo
 
-Check out [shows on artsy.net](http://artsy.net/shows). Keep scrolling down.
-
-There're also two code samples for Mongoid in [examples](examples). Run `bundle exec ruby examples/feed.rb`.
+Take a look at [this example](examples/feed.rb). Try with with `bundle exec ruby examples/feed.rb`.
 
 ## The Problem
 
@@ -55,8 +53,10 @@ A sample model.
 module Feed
   class Item
     include Mongoid::Document
+
     field :title, type: String
     field :position, type: Integer
+
     index({ position: 1, _id: 1 })
   end
 end
@@ -73,7 +73,7 @@ Feed::Item.desc(:position).limit(5).scroll do |record, iterator|
 end
 ```
 
-Resume iterating using saved cursor and save the cursor to go backward.
+Resume iterating using the saved cursor and save the cursor to go backwards.
 
 ```ruby
 Feed::Item.desc(:position).limit(5).scroll(saved_iterator.next_cursor) do |record, iterator|
