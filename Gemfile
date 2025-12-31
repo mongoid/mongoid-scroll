@@ -13,9 +13,11 @@ end
 group :development, :test do
   gem 'bundler'
   gem 'coveralls_reborn', require: false
+  gem 'danger', require: false
+  gem 'danger-changelog', require: false
+  gem 'danger-pr-comment', require: false
   gem 'database_cleaner', '~> 1.8.5'
   gem 'faker'
-  gem 'mongoid-danger', '~> 0.2.0', require: false
   gem 'rake'
   gem 'rspec', '~> 3.0'
   gem 'rspec-its'
