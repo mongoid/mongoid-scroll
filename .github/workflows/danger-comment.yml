@@ -5,5 +5,5 @@ on:
     types: [completed]
 jobs:
   comment:
-    uses: numbata/danger-pr-comment/.github/workflows/comment.yml@v0.1.0
+    uses: numbata/danger-pr-comment/.github/workflows/danger-comment.yml@v0.1.0
     secrets: inherit

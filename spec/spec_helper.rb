@@ -9,7 +9,8 @@ end
 require 'rubygems'
 require 'rspec'
 require 'rspec/its'
-require 'database_cleaner'
+require 'logger'
+require 'database_cleaner/mongoid'
 require 'mongoid-scroll'
 
 Time.zone ||= 'EST'

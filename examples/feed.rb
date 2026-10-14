@@ -1,6 +1,7 @@
 require 'bundler'
 Bundler.setup(:default, :development)
 
+require 'logger'
 require 'mongoid-scroll'
 require 'faker'
 

@@ -188,3 +188,6 @@ Fork the project. Make your feature addition or bug fix with tests. Send a pull 
 MIT License, see [LICENSE](http://github.com/mongoid/mongoid-scroll/raw/master/LICENSE.md) for details.
 
 (c) 2013-2024 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)
+## CI compatibility
+
+CI exercises Mongoid 6–9 with representative Ruby 2.7–4.0 and MongoDB 4.4–8.0 combinations without allowed failures; set `MONGOID_VERSION` to select the dependency family, then run `bundle exec rspec` and `bundle exec ruby examples/feed.rb`.
