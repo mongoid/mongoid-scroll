@@ -4,8 +4,8 @@ on:
     types: [opened, reopened, edited, synchronize]
 jobs:
   danger:
-    uses: numbata/danger-pr-comment/.github/workflows/danger.yml@v0.1.0
+    uses: numbata/danger-pr-comment/.github/workflows/danger-run.yml@v0.1.0
     with:
-      ruby-version: '3.0'
+      ruby-version: '3.4'
       bundler-cache: true
     secrets: inherit

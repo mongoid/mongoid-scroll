@@ -5,6 +5,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         entry:
           - { ruby: '2.7', mongodb: '4.4', mongoid: '6' }
@@ -19,15 +20,22 @@ jobs:
           - { ruby: '3.2', mongodb: '7.0', mongoid: '8' }
           - { ruby: '3.3', mongodb: '6.0', mongoid: '9' }
           - { ruby: '3.3', mongodb: '7.0', mongoid: '9' }
+          - { ruby: '3.4', mongodb: '8.0', mongoid: '9' }
+          - { ruby: '4.0', mongodb: '8.0', mongoid: '9' }
     name: test (ruby=${{ matrix.entry.ruby }}, mongodb=${{ matrix.entry.mongodb }}), mongoid=${{ matrix.entry.mongoid }})
     env:
       MONGOID_VERSION: ${{ matrix.entry.mongoid }}
+    services:
+      mongodb:
+        image: mongo:${{ matrix.entry.mongodb }}
+        ports: ['27017:27017']
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping: 1})' || mongo --quiet --eval 'db.adminCommand({ping: 1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
     steps:
-      - name: Set up MongoDB ${{ matrix.entry.mongodb }}
-        uses: supercharge/mongodb-github-action@1.8.0
-        with:
-          mongodb-version: ${{ matrix.entry.mongodb }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
