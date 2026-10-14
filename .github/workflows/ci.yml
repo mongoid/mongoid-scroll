@@ -21,10 +21,11 @@ jobs:
           - { ruby: '3.3', mongodb: '6.0', mongoid: '9' }
           - { ruby: '3.3', mongodb: '7.0', mongoid: '9' }
           - { ruby: '3.4', mongodb: '8.0', mongoid: '9' }
-          - { ruby: '4.0', mongodb: '8.0', mongoid: '9' }
+          - { ruby: '4.0', mongodb: '8.0', mongoid: '9', coverage: 'true' }
     name: test (ruby=${{ matrix.entry.ruby }}, mongodb=${{ matrix.entry.mongodb }}), mongoid=${{ matrix.entry.mongoid }})
     env:
       MONGOID_VERSION: ${{ matrix.entry.mongoid }}
+      COVERAGE: ${{ matrix.entry.coverage }}
     services:
       mongodb:
         image: mongo:${{ matrix.entry.mongodb }}
@@ -46,17 +47,9 @@ jobs:
       - name: Run examples
         run: bundle exec ruby examples/feed.rb
       - name: Report Coverage
+        if: ${{ matrix.entry.coverage == 'true' }}
         uses: coverallsapp/github-action@v2
         with:
-          flag-name: run-${{ join(matrix.*, '-') }}
-          parallel: true
-
-  upload-coverage:
-    needs: test
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: Upload Code Coverage Report
-      uses: coverallsapp/github-action@v2
-      with:
-        parallel-finished: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: coverage/.resultset.json
+          format: simplecov

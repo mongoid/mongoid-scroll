@@ -1,5 +1,6 @@
 ### 2.0.1 (Next)
 
+* [#51](https://github.com/mongoid/mongoid-scroll/pull/51): Report SimpleCov coverage to Coveralls once per build without duplicate gem uploads and refresh CI and coverage badges - [@dblock](https://github.com/dblock).
 * [#50](https://github.com/mongoid/mongoid-scroll/pull/50): Modernize CI through Ruby 4.0, Mongoid 9 and MongoDB 8; fix Mongoid 9 dependency selection, database cleaner compatibility and invalid Danger workflow references - [@dblock](https://github.com/dblock).
 * [#49](https://github.com/mongoid/mongoid-scroll/pull/49): Migrate Danger to danger-pr-comment workflow - [@dblock](https://github.com/dblock).
 * Your contribution here.

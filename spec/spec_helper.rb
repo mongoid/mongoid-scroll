@@ -1,9 +1,12 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require 'coveralls'
-Coveralls.wear! do
-  add_filter 'spec'
+if ENV['COVERAGE'] == 'true'
+  require 'simplecov'
+  SimpleCov.start do
+    track_files 'lib/**/*.rb'
+    add_filter '/spec/'
+  end
 end
 
 require 'rubygems'

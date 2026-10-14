@@ -16,7 +16,6 @@ group :development, :test do
   gem 'benchmark'
   gem 'bigdecimal'
   gem 'bundler'
-  gem 'coveralls_reborn', require: false
   gem 'danger', require: false
   gem 'danger-changelog', require: false
   gem 'danger-pr-comment', require: false
@@ -27,6 +26,7 @@ group :development, :test do
   gem 'rake'
   gem 'rspec', '~> 3.0'
   gem 'rspec-its'
+  gem 'simplecov', '>= 0.22', require: false
   gem 'rubocop', '1.66.1'
   gem 'rubocop-rake'
   gem 'rubocop-rspec'
