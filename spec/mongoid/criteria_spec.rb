@@ -42,6 +42,37 @@ describe Mongoid::Criteria do
         end
       end
 
+      context 'with a missing field' do
+        it 'rejects a sort field that is not defined on the model' do
+          expect do
+            Feed::Item.asc(:removed_field).scroll(cursor_type)
+          end.to raise_error Mongoid::Scroll::Errors::NoSuchFieldError, /does not exist: removed_field/
+        end
+
+        it 'rejects a cursor whose field is no longer defined on the model' do
+          cursor = cursor_type.new(nil, field_name: 'removed_field', field_type: String)
+          expect do
+            Feed::Item.asc(:name).scroll(cursor)
+          end.to raise_error Mongoid::Scroll::Errors::NoSuchFieldError, /does not exist: removed_field/
+        end
+
+        it 'does not confuse a nil field value with a missing field' do
+          record = Feed::Item.create!
+          cursor = cursor_type.from_record(record, field: record.fields['name'])
+          expect { Feed::Item.asc(:name).scroll(cursor) }.not_to raise_error
+        end
+
+        if cursor_type == Mongoid::Scroll::Base64EncodedCursor
+          it 'rejects a serialized cursor whose field is no longer defined on the model' do
+            cursor = cursor_type.new(nil, field_name: 'removed_field', field_type: String)
+            saved_cursor = cursor_type.new(cursor.to_s)
+            expect do
+              Feed::Item.asc(:name).scroll(saved_cursor)
+            end.to raise_error Mongoid::Scroll::Errors::NoSuchFieldError, /does not exist: removed_field/
+          end
+        end
+      end
+
       context 'with data' do
         before do
           10.times do |i|

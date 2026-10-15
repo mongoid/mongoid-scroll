@@ -74,6 +74,8 @@ end
 
 Resume iterating using the saved cursor and save the cursor to go backwards.
 
+If the sort field or a saved cursor's field is no longer defined on the model, `scroll` raises `Mongoid::Scroll::Errors::NoSuchFieldError`. A defined field with a `nil` value is not considered missing.
+
 ```ruby
 Feed::Item.desc(:position).limit(5).scroll(saved_iterator.next_cursor) do |record, iterator|
   # each record, one-by-one
