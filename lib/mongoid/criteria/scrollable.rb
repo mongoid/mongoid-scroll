@@ -92,7 +92,7 @@ module Mongoid
 
       def scroll_field_type(criteria)
         scroll_field = scroll_field(criteria)
-        field = criteria.klass.fields[scroll_field.to_s]
+        field = scroll_model_field(scroll_field)
         field.foreign_key? && field.object_id_field? ? BSON::ObjectId : field.type
       end
     end
