@@ -1,3 +1,7 @@
+### 2.0.2 (Next)
+
+* Your contribution here.
+
 ### 2.0.1 (2026/10/15)
 
 * [#48](https://github.com/mongoid/mongoid-scroll/issues/48): Raise `NoSuchFieldError` when a sort or cursor refers to a field no longer defined on the model - [@dblock](https://github.com/dblock).
