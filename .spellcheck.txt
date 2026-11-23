@@ -3,6 +3,7 @@ ArgumentError
 asgerb
 astring
 BSON
+Bundler
 CHANGELOG
 changelog
 config
@@ -15,11 +16,13 @@ EmbeddedItem
 FabienChaynes
 GCorbel
 Gemfile
+gemspec
 GHA
 gte
 Implemenet
 InvalidCursorError
 joeyAghion
+JRuby
 JSON
 leamotta
 linter
@@ -34,11 +37,15 @@ mongo
 mongodb
 Mongoid
 mongoid
+MongoidScrollRelease
 MultipleSortFieldsError
 ObjectId
 params
 pre
+Rakefile
 rb
+README
+RSpec
 RuboCop
 RubyGems
 Scrollable

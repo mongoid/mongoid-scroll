@@ -102,3 +102,26 @@ Lint/Void:
     - Exclude
   Exclude:
   - "**/*.md"
+
+# One release example verifies the tag, the next development commit, and their files together.
+RSpec/MultipleExpectations:
+  inherit_mode:
+    merge:
+      - Exclude
+  Exclude:
+    - spec/release/release_spec.rb
+
+RSpec/ExampleLength:
+  inherit_mode:
+    merge:
+      - Exclude
+  Exclude:
+    - spec/release/release_spec.rb
+
+# Gemfile groups are declarative and grow with the dependency list.
+Metrics/BlockLength:
+  inherit_mode:
+    merge:
+      - Exclude
+  Exclude:
+    - Gemfile

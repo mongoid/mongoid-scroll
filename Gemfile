@@ -29,6 +29,7 @@ group :development, :test do
   gem 'rspec-its'
   gem 'simplecov', '>= 0.22', require: false
   if RUBY_ENGINE == 'ruby' && Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.3')
+    gem 'commonmarker', '~> 2.10', require: false
     gem 'rubocop', '~> 1.92'
     gem 'rubocop-md', '~> 3.0', require: false
     gem 'rubocop-prose', '~> 0.2', require: false
@@ -36,5 +37,6 @@ group :development, :test do
     gem 'rubocop-rspec', '~> 3.10', require: false
     gem 'rubocop-spellcheck', '~> 0.2', require: false
     gem 'rubocop-yaml', '~> 0.1.0', require: false
+    gem 'ruby-gem-release', '0.9.0', require: false
   end
 end
