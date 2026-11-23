@@ -2,6 +2,7 @@
 
 * [#53](https://github.com/mongoid/mongoid-scroll/pull/53): Cover float cursor round trips, serialization errors, abstract contracts and descending tiebreaker inclusion - [@dblock](https://github.com/dblock).
 * Your contribution here.
+* [#54](https://github.com/mongoid/mongoid-scroll/pull/54): Lint Markdown, YAML, and spelling with rubocop-md, rubocop-prose, rubocop-spellcheck, and rubocop-yaml in a separate Lint workflow, and clean up documentation - [@dblock](https://github.com/dblock).
 
 ### 2.0.1 (2026/10/15)
 

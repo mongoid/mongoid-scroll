@@ -1,21 +1,18 @@
-- [Mongoid::Scroll](#mongoidscroll)
-  - [Compatibility](#compatibility)
-  - [Demo](#demo)
-  - [The Problem](#the-problem)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [Indexes and Performance](#indexes-and-performance)
-  - [Cursors](#cursors)
-    - [Standard Cursor](#standard-cursor)
-    - [Base64 Encoded Cursor](#base64-encoded-cursor)
-  - [Contributing](#contributing)
-  - [Copyright and License](#copyright-and-license)
-
 # Mongoid::Scroll
 
-[![Gem Version](https://badge.fury.io/rb/mongoid-scroll.svg)](https://badge.fury.io/rb/mongoid-scroll)
-[![CI](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml?query=branch%3Amaster)
-[![Coverage Status](https://coveralls.io/repos/github/mongoid/mongoid-scroll/badge.svg?branch=master)](https://coveralls.io/github/mongoid/mongoid-scroll?branch=master)
+[![Gem Version](https://badge.fury.io/rb/mongoid-scroll.svg)](https://badge.fury.io/rb/mongoid-scroll) [![CI](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/mongoid/mongoid-scroll/actions/workflows/ci.yml?query=branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/mongoid/mongoid-scroll/badge.svg?branch=master)](https://coveralls.io/github/mongoid/mongoid-scroll?branch=master)
+
+- [Compatibility](#compatibility)
+- [Demo](#demo)
+- [The Problem](#the-problem)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Indexes and Performance](#indexes-and-performance)
+- [Cursors](#cursors)
+  - [Standard Cursor](#standard-cursor)
+  - [Base64 Encoded Cursor](#base64-encoded-cursor)
+- [Contributing](#contributing)
+- [Copyright and License](#copyright-and-license)
 
 Mongoid extension that enables infinite scrolling for `Mongoid::Criteria` and `Mongo::Collection::View`.
 
@@ -31,8 +28,8 @@ Take a look at [this example](examples/feed.rb). Try with with `bundle exec ruby
 
 Traditional pagination does not work when data changes between paginated requests, which makes it unsuitable for infinite scroll behaviors.
 
-* If a record is inserted before the current page limit, items will shift right, and the next page will include a duplicate.
-* If a record is removed before the current page limit, items will shift left, and the next page will be missing a record.
+- If a record is inserted before the current page limit, items will shift right, and the next page will include a duplicate.
+- If a record is removed before the current page limit, items will shift left, and the next page will be missing a record.
 
 The solution implemented by the `scroll` extension paginates data using a cursor, giving you the ability to restart pagination where you left it off. This is a non-trivial problem when combined with sorting over non-unique record fields, such as timestamps.
 
@@ -107,24 +104,24 @@ end
 
 A query without a cursor is identical to a query without a scroll.
 
-``` ruby
+```ruby
 # db.feed_items.find().sort({ position: 1 }).limit(7)
 Feed::Item.desc(:position).limit(7).scroll
 ```
 
 Subsequent queries use an `$or` to avoid skipping items with the same value as the one at the current cursor position.
 
-``` ruby
+```ruby
 # db.feed_items.find({ "$or" : [
 #   { "position" : { "$gt" : 13 }},
 #   { "position" : 13, "_id": { "$gt" : ObjectId("511d7c7c3b5552c92400000e") }}
 # ]}).sort({ position: 1 }).limit(7)
-Feed:Item.desc(:position).limit(7).scroll(cursor)
+Feed :Item.desc(:position).limit(7).scroll(cursor)
 ```
 
 This means you need to hit an index on `position` and `_id`.
 
-``` ruby
+```ruby
 # db.feed_items.ensureIndex({ position: 1, _id: 1 })
 
 module Feed
@@ -141,28 +138,28 @@ You can use `Mongoid::Scroll::Cursor.from_record` to generate a cursor. A cursor
 
 ```ruby
 record = Feed::Item.desc(:position).limit(3).last
-cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields["position"] })
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields['position'] })
 # cursor or cursor.to_s can be returned to a client and passed into .scroll(cursor)
 ```
 
 You can also a `field_name` and `field_type` instead of a Mongoid field.
 
 ```ruby
-cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: "position" })
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: 'position' })
 ```
 
 When the `include_current` option is set to `true`, the cursor will include the record it points to:
 
 ```ruby
 record = Feed::Item.desc(:position).limit(3).last
-cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields["position"], include_current: true })
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field: Feed::Item.fields['position'], include_current: true })
 Feed::Item.asc(:position).limit(1).scroll(cursor).first # record
 ```
 
 If the `field_name`, `field_type` or `direction` options you specify when creating the cursor are different from the original criteria, a `Mongoid::Scroll::Errors::MismatchedSortFieldsError` will be raised.
 
 ```ruby
-cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: "position" })
+cursor = Mongoid::Scroll::Cursor.from_record(record, { field_type: DateTime, field_name: 'position' })
 Feed::Item.desc(:created_at).scroll(cursor) # Raises a Mongoid::Scroll::Errors::MismatchedSortFieldsError
 ```
 
@@ -182,10 +179,10 @@ end
 
 ## Contributing
 
-Fork the project. Make your feature addition or bug fix with tests. Send a pull request. Bonus points for topic branches.
+See [CHANGELOG.md](CHANGELOG.md), [UPGRADING.md](UPGRADING.md), and [RELEASING.md](RELEASING.md).
 
 ## Copyright and License
 
-MIT License, see [LICENSE](http://github.com/mongoid/mongoid-scroll/raw/master/LICENSE.md) for details.
+MIT License, see [LICENSE.md](LICENSE.md) for details.
 
-(c) 2013-2024 [Daniel Doubrovkine](http://github.com/dblock), based on code by [Frank Macreery](http://github.com/macreery), [Artsy Inc.](http://artsy.net)
+(c) 2013-2024 [Daniel Doubrovkine](https://github.com/dblock), based on code by [Frank Macreery](https://github.com/macreery), [Artsy Inc.](https://www.artsy.net)
