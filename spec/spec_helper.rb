@@ -16,7 +16,7 @@ require 'logger'
 require 'database_cleaner/mongoid'
 require 'mongoid-scroll'
 
-Time.zone ||= 'EST'
+Time.zone ||= 'Etc/GMT+5'
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each do |f|
   require f

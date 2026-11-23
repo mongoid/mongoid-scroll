@@ -22,7 +22,7 @@ jobs:
           - { ruby: '3.3', mongodb: '7.0', mongoid: '9' }
           - { ruby: '3.4', mongodb: '8.0', mongoid: '9' }
           - { ruby: '4.0', mongodb: '8.0', mongoid: '9', coverage: 'true' }
-    name: test (ruby=${{ matrix.entry.ruby }}, mongodb=${{ matrix.entry.mongodb }}), mongoid=${{ matrix.entry.mongoid }})
+    name: test (ruby=${{ matrix.entry.ruby }}, mongodb=${{ matrix.entry.mongodb }}, mongoid=${{ matrix.entry.mongoid }})
     env:
       MONGOID_VERSION: ${{ matrix.entry.mongoid }}
       COVERAGE: ${{ matrix.entry.coverage }}
@@ -31,7 +31,8 @@ jobs:
         image: mongo:${{ matrix.entry.mongodb }}
         ports: ['27017:27017']
         options: >-
-          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping: 1})' || mongo --quiet --eval 'db.adminCommand({ping: 1})'"
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping: 1})' ||
+          mongo --quiet --eval 'db.adminCommand({ping: 1})'"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10

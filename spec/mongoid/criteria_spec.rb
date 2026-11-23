@@ -362,7 +362,7 @@ describe Mongoid::Criteria do
         end
       end
 
-      context 'with DateTime with a milisecond precision' do
+      context 'with DateTime with a millisecond precision' do
         let!(:item_1) { Feed::Item.create!(a_datetime: DateTime.new(2013, 1, 21, 1, 42, 3.1, 'UTC')) }
         let!(:item_2) { Feed::Item.create!(a_datetime: DateTime.new(2013, 1, 21, 1, 42, 3.2, 'UTC')) }
         let!(:item_3) { Feed::Item.create!(a_datetime: DateTime.new(2013, 1, 21, 1, 42, 3.3, 'UTC')) }
