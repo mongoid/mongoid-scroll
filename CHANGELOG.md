@@ -1,7 +1,6 @@
-### 2.0.2 (Next)
+### 2.0.2 (2026/11/24)
 
 * [#53](https://github.com/mongoid/mongoid-scroll/pull/53): Cover float cursor round trips, serialization errors, abstract contracts and descending tiebreaker inclusion - [@dblock](https://github.com/dblock).
-* Your contribution here.
 * [#54](https://github.com/mongoid/mongoid-scroll/pull/54): Lint Markdown, YAML, and spelling with rubocop-md, rubocop-prose, rubocop-spellcheck, and rubocop-yaml in a separate Lint workflow, and clean up documentation - [@dblock](https://github.com/dblock).
 * [#55](https://github.com/mongoid/mongoid-scroll/pull/55): Run CI pushes only on the default branch, cancel superseded pull request runs, skip duplicate lint in the test matrix, and bound job times - [@dblock](https://github.com/dblock).
 * [#56](https://github.com/mongoid/mongoid-scroll/pull/56): Release with ruby-gem-release from a manually dispatched GitHub Actions workflow using RubyGems Trusted Publishing, with dry runs - [@dblock](https://github.com/dblock).
