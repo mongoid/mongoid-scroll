@@ -5,6 +5,7 @@
 * [#54](https://github.com/mongoid/mongoid-scroll/pull/54): Lint Markdown, YAML, and spelling with rubocop-md, rubocop-prose, rubocop-spellcheck, and rubocop-yaml in a separate Lint workflow, and clean up documentation - [@dblock](https://github.com/dblock).
 * [#55](https://github.com/mongoid/mongoid-scroll/pull/55): Run CI pushes only on the default branch, cancel superseded pull request runs, skip duplicate lint in the test matrix, and bound job times - [@dblock](https://github.com/dblock).
 * [#56](https://github.com/mongoid/mongoid-scroll/pull/56): Release with ruby-gem-release from a manually dispatched GitHub Actions workflow using RubyGems Trusted Publishing, with dry runs - [@dblock](https://github.com/dblock).
+* [#58](https://github.com/mongoid/mongoid-scroll/pull/58): Upgrade danger-pr-comment to 0.3.0 from the `danger` organization and skip empty Danger report comments - [@dblock](https://github.com/dblock).
 
 ### 2.0.1 (2026/10/15)
 
