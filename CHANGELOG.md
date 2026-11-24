@@ -1,3 +1,7 @@
+### 2.0.3 (Next)
+
+* Your contribution here.
+
 ### 2.0.2 (2026/11/24)
 
 * [#53](https://github.com/mongoid/mongoid-scroll/pull/53): Cover float cursor round trips, serialization errors, abstract contracts and descending tiebreaker inclusion - [@dblock](https://github.com/dblock).
